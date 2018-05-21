@@ -18,6 +18,7 @@ Suggests:
   mockery,
   testthat
 Collate:
+  'generation.R'
   'tracking.R'
   'ui-package.R'
 Remotes:
