@@ -1,0 +1,2 @@
+options(repository.debug = TRUE)
+
