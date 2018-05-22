@@ -20,7 +20,9 @@ Suggests:
 Collate:
   'generation.R'
   'tracking.R'
+  'ui.R'
   'ui-package.R'
+  'utils.R'
 Remotes:
   lbartnik/repository
   lbartnik/storage
