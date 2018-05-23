@@ -7,6 +7,7 @@
 \alias{start_tracking}
 \alias{stop_tracking}
 \alias{open_repo}
+\alias{pick_branch}
 \title{Global state of the tracker.}
 \format{An object of class \code{environment} of length 0.}
 \usage{
@@ -19,6 +20,8 @@ start_tracking()
 stop_tracking()
 
 open_repo(create = FALSE)
+
+pick_branch(repo)
 }
 \description{
 \describe{

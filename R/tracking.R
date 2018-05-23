@@ -23,6 +23,8 @@ initiate_state <- function ()
 {
   state$repo             <- open_repo(create = TRUE)
   state$task_callback_id <- NA
+
+  pick_branch(state$repo)
 }
 
 
@@ -64,6 +66,51 @@ open_repo <- function (create = FALSE)
   path  <- file.path(getwd(), 'repository')
   store <- storage::filesystem(path, create = create)
   repository::repository(store)
+}
+
+
+#' @rdname internal_state
+#' @import repository
+#'
+pick_branch <- function (repo)
+{
+  hs <- repository::repository_history(repo)
+
+  if (length(ls(globalenv()))) {
+    m <- repository::history_match(hs, globalenv())
+    if (!length(m)) {
+      stop("global environment cannot be matched against history, cannot attach to repository",
+           call. = FALSE)
+    }
+
+    if (length(m) > 1) {
+      stop("global environment matched more than once against history, cannot attach to repository",
+           call. = FALSE)
+    }
+
+    warning("global environment matches history, attaching to repository", call. = FALSE)
+    repository::repository_rewind(repo, m)
+
+    return()
+  }
+
+  # if globalenv is empty try attaching to one of the "leaves"
+  lv <- repository::history_leaves(hs)
+  if (!length(lv)) return()
+
+  if (length(lv) == 1) {
+    warning("attaching to repository, single branch present", call. = FALSE)
+
+    repository::repository_rewind(repo, lv)
+    data <- repository::history_data(hs, lv)
+    mapply(names(data), data, FUN = function (name, value) {
+      assign(name, value, envir = globalenv())
+    })
+
+    return()
+  }
+
+  warning("repository contains more than one branch, aborting")
 }
 
 
