@@ -95,14 +95,15 @@ pick_branch <- function (repo)
   }
 
   # if globalenv is empty try attaching to one of the "leaves"
-  lv <- repository::history_leaves(hs)
+  lv <- repository::history_ends(hs)
   if (!length(lv)) return()
 
   if (length(lv) == 1) {
     warning("attaching to repository, single branch present", call. = FALSE)
 
-    repository::repository_rewind(repo, lv)
-    data <- repository::history_data(hs, lv)
+    lv <- first(lv)
+    repository::repository_rewind(repo, lv$id)
+    data <- repository::repository_data(repo, lv$objects)
     mapply(names(data), data, FUN = function (name, value) {
       assign(name, value, envir = globalenv())
     })
