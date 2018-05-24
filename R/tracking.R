@@ -77,7 +77,7 @@ pick_branch <- function (repo)
   hs <- repository::repository_history(repo)
 
   if (length(ls(globalenv()))) {
-    m <- repository::history_match(hs, globalenv())
+    m <- repository::filter(hs, data_matches(data = as.list(globalenv())))
     if (!length(m)) {
       stop("global environment cannot be matched against history, cannot attach to repository",
            call. = FALSE)
@@ -89,13 +89,13 @@ pick_branch <- function (repo)
     }
 
     warning("global environment matches history, attaching to repository", call. = FALSE)
-    repository::repository_rewind(repo, m)
+    repository::repository_rewind(repo, first(m)$id)
 
     return()
   }
 
   # if globalenv is empty try attaching to one of the "leaves"
-  lv <- repository::history_ends(hs)
+  lv <- repository::filter(hs, branch_tip())
   if (!length(lv)) return()
 
   if (length(lv) == 1) {
