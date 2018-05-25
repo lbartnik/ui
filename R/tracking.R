@@ -103,8 +103,7 @@ pick_branch <- function (repo)
 
     lv <- first(lv)
     repository::repository_rewind(repo, lv$id)
-    data <- repository::repository_data(repo, lv$objects)
-    mapply(names(data), data, FUN = function (name, value) {
+    mapply(names(lv$data), lv$data, FUN = function (name, value) {
       assign(name, value, envir = globalenv())
     })
 

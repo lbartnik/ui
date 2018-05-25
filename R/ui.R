@@ -14,10 +14,8 @@ tracker <- session_tracker()
 #' @export
 `$.tracker` <- function (x, i) {
   if (identical(i, 'history')) {
-    h  <- repository::repository_history(state$repo)
-    id <- repository::repository_last_commit(state$repo)
-    a  <- repository::filter(h, ancestor_of(id))
-    mapply(rev(seq_along(a)), a, FUN = function (no, commit) {
+    h  <- repository::repository_history(state$repo, 'current')
+    mapply(rev(seq_along(h)), h, FUN = function (no, commit) {
       cat(no, ': ')
       ccat('green', deparse(commit$expr), '\n')
     })
