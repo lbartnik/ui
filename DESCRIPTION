@@ -1,0 +1,31 @@
+Package: ui
+Type: Package
+Title: User Interface for Artifact Repository
+Version: 0.1
+Date: 2018-05-20
+Authors@R: person("Lukasz", "Bartnik", email = "l.bartnik@gmail.com", role = c("aut", "cre"))
+Description: Provides user interface for the repository package.
+License: MIT + file LICENSE
+URL: https://github.com/lbartnik/ui
+BugReports: https://github.com/lbartnik/ui/issues
+Depends:
+  R (>= 3.4.0)
+Imports:
+  repository,
+  storage
+Suggests:
+  devtools,
+  mockery,
+  testthat
+Collate:
+  'generation.R'
+  'tracking.R'
+  'ui.R'
+  'ui-package.R'
+  'utils.R'
+Remotes:
+  lbartnik/repository
+  lbartnik/storage
+VignetteBuilder: knitr
+RoxygenNote: 6.0.1
+Roxygen: list(markdown = TRUE)
