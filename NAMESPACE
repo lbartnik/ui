@@ -2,7 +2,10 @@
 
 S3method("$",tracker)
 S3method(.DollarNames,tracker)
+S3method(print,branches)
+S3method(print,history)
 export(tracker)
+import(broom)
 import(grDevices)
 import(proto)
 import(repository)

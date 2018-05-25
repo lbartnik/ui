@@ -1,3 +1,10 @@
+is_empty <- function (x) {
+  (is.environment(x) && !length(x)) ||
+    is.null(x) || is.na(x) || !length(x) || (is.character(x) && !nchar(x))
+}
+
+
+
 nth <- function(x, n) {
   if (!length(x)) return(vector(mode = typeof(x)))
   x[[n]]
@@ -6,6 +13,8 @@ nth <- function(x, n) {
 last <- function (x) nth(x, length(x))
 
 first <- function(x) nth(x, 1)
+
+
 
 
 cat0 <- function (..., sep = '') cat(..., sep = sep)

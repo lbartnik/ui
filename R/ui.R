@@ -14,11 +14,7 @@ tracker <- session_tracker()
 #' @export
 `$.tracker` <- function (x, i) {
   if (identical(i, 'history')) {
-    h  <- repository::repository_history(state$repo, 'current')
-    mapply(rev(seq_along(h)), h, FUN = function (no, commit) {
-      cat(no, ': ')
-      ccat('green', deparse(commit$expr), '\n')
-    })
+    return(repository::repository_history(state$repo, 'current'))
   }
 
   if (identical(i, 'branches')) {
@@ -26,20 +22,65 @@ tracker <- session_tracker()
     br <- repository::filter(hs, branch_tip())
 
     if (!length(br)) {
-      warning("no branches found in the repository", call. = FALSE)
+      stop("no branches found in the repository")
     }
-    else {
-      lapply(br, function (ct) {
-        ccat('yellow', toString(ct$time))
-        cat0(',  ', storage::shorten(ct$id), '\n')
-        ccat_(list('  ', silver = 'expr: ', deparse(ct$expr), '\n'))
-        ccat_(list('  ', silver = 'vars: ', paste(names(ct$objects), collapse = ' '), '\n'))
-      })
-    }
+
+    return(structure(br, class = c("branches", class(br))))
   }
 
-  invisible()
+  stop("unknown tracker key: ", i, call. = FALSE)
 }
 
 
+#' @export
+print.history <- function (x, ...) {
+  mapply(rev(seq_along(x)), x, FUN = function (no, commit) {
+    ccat0('green', no, ': ')
+    ccat0('yellow', deparse(commit$expr), '\n')
+    ccat0('silver', '  new:   ')
+    lapply(commit$new, function (name) {
+      cat0(name, ' [', description(commit$data[[name]]), '] ')
+    })
+    cat('\n')
+    ccat0('silver', '  other: ')
+    cat(paste(setdiff(names(commit$objects), commit$new), collapse = ' '), '\n')
+  })
+}
+
+
+#' @export
+print.branches <- function (x, ...) {
+  cat0('Found ', length(x), ' branch', if (length(x)>1) 'es', ':\n\n')
+
+  lapply(x, function (ct) {
+    ccat0('yellow', toString(ct$time), '\n')
+    ccat_(list('  ', silver = 'id:   ', storage::shorten(ct$id), '\n'))
+    ccat_(list('  ', silver = 'expr: ', deparse(ct$expr), '\n'))
+    ccat_(list('  ', silver = 'vars: ', paste(names(ct$objects), collapse = ' '), '\n'))
+  })
+}
+
+
+#' Provide a summary of an object.
+#'
+#' @param object Object to be described.
+#'
+#' @import broom
+#' @rdname internals
+#'
+description <- function (object)
+{
+  if (is_empty(object)) return(NA_character_)
+
+  if (is.data.frame(object)) return(paste0('data.frame[', nrow(object), ', ', ncol(object), ']'))
+
+  if (inherits(object, 'lm')) {
+    g <- broom::glance(object)
+    return(paste0('lm adjR2:', format(g$adj.r.squared, digits = 2),
+                 ' AIC:', format(g$AIC, digits = 2),
+                 ' df:', g$df))
+  }
+
+  paste(class(object), collapse = '::')
+}
 
