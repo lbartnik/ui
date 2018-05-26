@@ -41,3 +41,21 @@ ccat_ <- function (chunks, sep = ' ')
            ccat0(color, paste(chunk, collapse = sep))
          })
 }
+
+
+
+# --- evaluatee --------------------------------------------------------
+
+evaluatee <- function (expr) {
+  quo <- rlang::enquo(expr)
+  env <- rlang::caller_env()
+
+  structure(list(quo = quo, env = env), class = 'evaluatee')
+}
+
+
+#' @export
+print.evaluatee <- function (x) {
+  rlang::eval_tidy(x$quo, env = x$env)
+}
+
