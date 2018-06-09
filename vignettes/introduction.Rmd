@@ -72,6 +72,46 @@ the network of relationships between them and from this, the overall
 narrative about the understanding and applicability of the knowledge
 obtained in said project.
 
+## Abstract 2
+
+Unless and until knowledge is internalized, it has to be organized in an intuitive structure which tends to be a personal choice. Be it a report, a mind map, a compiled notebook or a series of plots, knowledge needs to be collected and presented repeatedly in order to continue research and share it with peers.
+
+
+Three phases:
+
+* store everything and make it simple to keep storing after shutting down and starting up R
+* enable lookup of artiacts; fast, to consult previous results and a slower one, to
+  remember the state of the work
+* enable read from the repository: make it simple to read objects and pass them as input
+  to ad-hoc code - AD HOC is IMPORTANT
+
+
+REPOSITORY CANNOT REQUIRE PRE-PLANNED INTERACTIONS, EVERYTHING NEEDS TO HAPPEN AT AN AD-HOC BASIS
+
+
+
+1. store and keep all artifacts produced in a session; after a restart re-attach to the store
+and make it simple to keep track, either by choosing the most-recent commit as the starting
+point, or by creating a brand-new commit out of the contents of the session and working from
+there
+
+2. make it easy to see all that has happened so far, re-build the context after a break,
+be it for the night between two days of work, for the weekend or a longer one when coming
+back to a project that was put on hold
+
+re-building the context
+
+but also make it simple to to rewind the history, or to hold a number of artifacts
+in a temporary notebook... or maybe develop stories? maybe position this whole thing
+as a STORY-TELLING tool?
+so a browser based on the trees of objects (history/origin) + set of stories where
+artifacts can be dumped to in order to maintain fast access to currently important
+objects
+
+3. ad-hoc reads and pipeing objects directly into ad-hoc code:
+tracker$objects$x %>% {lm(x ~ y, data = .)}
+
+
 
 ## Supporting data exploration in R
 

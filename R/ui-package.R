@@ -8,6 +8,9 @@ NULL
   if (interactive()) {
     initiate_state()
     start_tracking()
+
+    # here it's still possible to change contents of the namespace
+    objects <<- wrap(repository::filter(state$repo))
   }
 }
 

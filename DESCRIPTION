@@ -19,6 +19,7 @@ Suggests:
   testthat
 Collate:
   'generation.R'
+  'query.R'
   'tracking.R'
   'ui.R'
   'ui-impl.R'

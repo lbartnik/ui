@@ -1,25 +1,3 @@
-#' Provide a summary of an object.
-#'
-#' @param object Object to be described.
-#'
-#' @import broom
-#' @rdname internals
-#'
-description <- function (object)
-{
-  if (is_empty(object)) return(NA_character_)
-
-  if (is.data.frame(object)) return(paste0('data.frame[', nrow(object), ', ', ncol(object), ']'))
-
-  if (inherits(object, 'lm')) {
-    g <- broom::glance(object)
-    return(paste0('lm adjR2:', format(g$adj.r.squared, digits = 2),
-                  ' AIC:', format(g$AIC, digits = 2),
-                  ' df:', g$df))
-  }
-
-  paste(class(object), collapse = '::')
-}
 
 
 # --- reporting --------------------------------------------------------
