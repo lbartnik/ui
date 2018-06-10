@@ -53,7 +53,7 @@ dollar_name.query <- function (x, n) {
   # 3. if `i` is a valid id check if it exists; if so, add to the query
   # 4. else treat `i` as a name specifier
 
-  is_query_key <- function (x) (x %in% c('time', 'name', 'class', 'id'))
+  is_query_key <- function (x) (x %in% c('time', 'names', 'class', 'id'))
   is_action_key <- function (x) (x %in% ACTION_KEYS)
 
   if (is_action_key(n)) {
@@ -72,6 +72,31 @@ dollar_name.query <- function (x, n) {
 }
 
 
+#' @export
+print.query <- function (x, ...) {
+  repository:::print.query(x)
+
+  # lapply(x$filter)
+
+  res <- x %>% select(-object, -parent_commit, -id, -parents) %>% execute
+  cat('\nmatched ', nrow(res), ' object(s), of that ', sum(res$class == "plot"), " plot(s)",
+      sep = "")
+  cat('\n\n')
+
+  Map(names(res), res, f = function (name, values) {
+    cat('   ', name, ': ', paste(unique(as.character(values)), collapse = ', '), '\n', sep = '')
+  })
+
+  cat('\nFirst three object(s):\n\n')
+
+  # TODO
+
+
+  # 1. exclude tags that are already specified
+  # 2. print the number of total objects matching, how many plots
+  # 3. print the first three objects
+}
+
 
 
 #' @importFrom rlang UQ
@@ -81,7 +106,7 @@ key_specifier <- function (query, key) {
 
 #' @export
 print.key_specifier <- function (ks) {
-  # TODO print results
+  # TODO
   # ... for this key there are the following allowed values ...
 }
 
@@ -92,7 +117,8 @@ dollar_names.key_specifier <- function (x, pattern = "") {
 
 #' @importFrom rlang UQ
 dollar_name.key_specifier <- function (x, i) {
-  repository::filter(x$query, UQ(x$key) == UQ(i))
+  tag <- as.symbol(x$key)
+  wrap(repository::filter(x$query, UQ(i) %in% UQ(tag)))
 }
 
 
