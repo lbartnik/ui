@@ -29,7 +29,7 @@ is_wrapper <- function (x) inherits(x, 'wrapper')
 
 #' @export
 print.wrapper <- function (x) {
-  print(unwrap(x))
+  wrap(print(unwrap(x)))
 }
 
 
@@ -70,29 +70,36 @@ dollar_name.query <- function (x, n) {
 }
 
 
+#' @importFrom repository execute select top_n
 #' @export
 print.query <- function (x, ...) {
+  cat('Query:\n\n')
+
   repository:::print.query(x)
 
   # lapply(x$filter)
 
   res <- x %>% select(-object, -parent_commit, -id, -parents) %>% execute
-  cat('\nmatched ', nrow(res), ' object(s), of that ', sum(res$class == "plot"), " plot(s)",
+  cat('\nMatched ', nrow(res), ' object(s), of that ', sum(res$class == "plot"), " plot(s)",
       sep = "")
   cat('\n\n')
 
+  # TODO
+  # 1. exclude tags that are already specified
   Map(names(res), res, f = function (name, values) {
     cat('   ', name, ': ', paste(unique(as.character(values)), collapse = ', '), '\n', sep = '')
   })
 
   cat('\nFirst three object(s):\n\n')
 
-  # TODO
+  # 2. print the first three objects
+  res <- x %>% select(object) %>% top_n(3) %>% execute
+  lapply(res$object, function (obj) {
+    cat0('  ', repository:::description(obj), '\n')
+  })
 
-
-  # 1. exclude tags that are already specified
-  # 2. print the number of total objects matching, how many plots
-  # 3. print the first three objects
+  cat('\n')
+  invisible(x)
 }
 
 
