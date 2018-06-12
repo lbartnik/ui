@@ -11,6 +11,7 @@ NULL
 
     # here it's still possible to change contents of the namespace
     objects <<- wrap(repository::filter(state$repo, isTRUE(artifact)))
+    DollarNamesMapping <<- createDollarNamesMapping()
   }
 }
 

@@ -11,8 +11,11 @@ BugReports: https://github.com/lbartnik/ui/issues
 Depends:
   R (>= 3.4.0)
 Imports:
+  lubridate,
   repository,
-  storage
+  rlang,
+  storage,
+  stringi
 Suggests:
   devtools,
   mockery,

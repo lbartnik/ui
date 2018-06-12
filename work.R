@@ -9,6 +9,7 @@ x <-
   state$repo %>%
   filter(class == "commit") %>%
   select(object) %>%
+  top_n(3) %>%
   execute
 
 debug(repository:::all_tag_names)

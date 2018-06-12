@@ -18,7 +18,7 @@ is_wrapper <- function (x) inherits(x, 'wrapper')
 
 #' @export
 `.DollarNames.wrapper` <- function (x, pattern = "") {
-  grep(pattern, dollar_names(unwrap(x)), value = TRUE)
+  grep(pattern, dollar_names(unwrap(x), pattern), value = TRUE)
 }
 
 
@@ -35,12 +35,12 @@ print.wrapper <- function (x) {
 
 # --- the actual implementation ---
 
-dollar_names <- function (x) UseMethod("dollar_names")
+dollar_names <- function (x, pattern = "") UseMethod("dollar_names")
 
 dollar_name <- function (x, n) UseMethod("dollar_name")
 
 
-dollar_names.query <- function (x) {
+dollar_names.query <- function (x, pattern = "") {
   c("class", "id", "name", "time")
 }
 
@@ -79,7 +79,7 @@ print.query <- function (x, ...) {
 
   # lapply(x$filter)
 
-  res <- x %>% select(-object, -parent_commit, -id, -parents) %>% execute
+  res <- x %>% select(-object, -parent_commit, -id, -parents, .force = TRUE) %>% execute(.warn = FALSE)
   cat('\nMatched ', nrow(res), ' object(s), of that ', sum(res$class == "plot"), " plot(s)",
       sep = "")
   cat('\n\n')
@@ -90,15 +90,17 @@ print.query <- function (x, ...) {
     cat('   ', name, ': ', paste(unique(as.character(values)), collapse = ', '), '\n', sep = '')
   })
 
-  cat('\nFirst three object(s):\n\n')
+  if (nrow(res)) {
+    cat('\nFirst three object(s):\n\n')
+    # 2. print the first three objects
+    res <- x %>% select(object, .force = TRUE) %>% top_n(3) %>% execute
+    lapply(res$object, function (obj) {
+      cat0('  ', repository:::description(obj), '\n')
+    })
 
-  # 2. print the first three objects
-  res <- x %>% select(object) %>% top_n(3) %>% execute
-  lapply(res$object, function (obj) {
-    cat0('  ', repository:::description(obj), '\n')
-  })
+    cat('\n')
+  }
 
-  cat('\n')
   invisible(x)
 }
 
@@ -121,6 +123,8 @@ dollar_names.specifier <- function (x, pattern = "") {
 }
 
 #' @importFrom rlang UQ
+#' @importFrom repository filter
+#'
 dollar_name.specifier <- function (x, i) {
   tag <- as.symbol(x$key)
   repository::filter(x$query, UQ(i) %in% UQ(tag))
@@ -128,6 +132,45 @@ dollar_name.specifier <- function (x, i) {
 
 
 # --- key-speciic specifiers -------------------------------------------
+
+#' Assigned in .onLoad
+#'
+DollarNamesMapping <- NULL
+
+
+#' @importFrom rlang quo
+#' @importFrom lubridate as_date ddays dhours floor_date today
+#'
+createDollarNamesMapping <- function () {
+  last_wday <- function (which) {
+    date <- today() - wday(today(), week_start = 7) + which
+    if (date > today()) date <- date - 7
+    as.character(date)
+  }
+
+  list(
+    time = list(
+      today           = quo(as_date(time) == today()),
+      yesterday       = quo(as_date(time) == today()-1),
+      thisweek        = quo(as_date(time) >= floor_date(today(), "week")),
+      last_24hrs      = quo(time > today() - dhours(24)),
+      last_3days      = quo(as_date(time) > today() - ddays(3)),
+      last_7days      = quo(as_date(time) > today() - ddays(7)),
+      last_day        = quo(as_date(time) > today() - ddays(1)),
+      last_week       = quo(as_date(time) > today() - ddays(7)),
+      since_yesterday = quo(as_date(time) >= today() - ddays(1)),
+      since_Monday    = quo(as_date(time) >= UQ(last_wday(1))),
+      since_Tuesday   = quo(as_date(time) >= UQ(last_wday(2))),
+      since_Wednesay  = quo(as_date(time) >= UQ(last_wday(3))),
+      since_Thursday  = quo(as_date(time) >= UQ(last_wday(4))),
+      since_Friday    = quo(as_date(time) >= UQ(last_wday(5))),
+      since_Saturday  = quo(as_date(time) >= UQ(last_wday(6))),
+      since_Sunday    = quo(as_date(time) >= UQ(last_wday(7)))
+    )
+  )
+}
+
+
 
 dollar_names.name <- function (x, pattern = "") {
   vls <- tag_values(x$query)[["names"]]
@@ -139,8 +182,33 @@ dollar_name.name <- function (x, i) {
 }
 
 
+
+
+dollar_names.time <- function (x, pattern = "") {
+  top_keys <- c("last", "since", "today", "yesterday", "thisweek")
+
+  # RStudio intercepts the pattern and calls .DollarNames with pattern
+  # set to ""; see below for details
+  # https://github.com/rstudio/rstudio/commit/c25739a15ca49fda68c10f6fd2d25266065cb80b
+  if (rstudioapi::isAvailable()) {
+    return(names(DollarNamesMapping$time))
+  }
+
+  if (any(stringi::stri_detect_fixed(pattern, c("last", "since")))) {
+    keys <- grep(pattern, names(DollarNamesMapping$time), value = TRUE)
+  }
+
+  grep(pattern, keys, value = TRUE)
+}
+
+
+#' @importFrom rlang UQ has_name
+#'
 dollar_name.time <- function (x, i) {
-  repository::filter(x$query, as.character(time) == UQ(i))
+  stopifnot(has_name(DollarNamesMapping$time, i))
+
+  expr <- DollarNamesMapping$time[[i]]
+  repository::filter(x$query, UQ(expr))
 }
 
 
