@@ -1,3 +1,9 @@
+map_chr <- function (x, f, ...) {
+  ans <- lapply(x, f, ...)
+  as.character(unlist(ans))
+}
+
+
 is_empty <- function (x) {
   (is.environment(x) && !length(x)) ||
     is.null(x) || is.na(x) || !length(x) || (is.character(x) && !nchar(x))

@@ -39,6 +39,10 @@ dollar_names <- function (x, pattern = "") UseMethod("dollar_names")
 
 dollar_name <- function (x, n) UseMethod("dollar_name")
 
+print_dollar_names <- function (x) UseMethod("print_dollar_names")
+
+
+
 
 dollar_names.query <- function (x, pattern = "") {
   c("class", "id", "name", "time")
@@ -111,11 +115,12 @@ new_specifier <- function (query, key) {
   structure(list(query = query, key = key), class = c(key, 'specifier'))
 }
 
+#' For this key there are following values
 #' @export
 print.specifier <- function (x, ...) {
-  # TODO
-  # ... for this key there are the following allowed values ...
+  print_dollar_names(x)
 }
+
 
 dollar_names.specifier <- function (x, pattern = "") {
   vls <- tag_values(x$query)[[x$key]]
@@ -130,6 +135,29 @@ dollar_name.specifier <- function (x, i) {
   repository::filter(x$query, UQ(i) %in% UQ(tag))
 }
 
+
+#' @importFrom rlang UQ
+print_dollar_names.specifier <- function (x) {
+  format_tag_values(x$key, table_tag_values(x$query, x$key))
+  invisible(x)
+}
+
+
+table_tag_values <- function (qry, tag) {
+  vls <- qry %>% select(UQ(as.symbol(tag))) %>% execute
+  vls <- table(vls)
+  paste0(names(vls), ' (', as.integer(vls), ')')
+}
+
+#' @importFrom stringi stri_wrap
+format_tag_values <- function (tag, values) {
+  cat0('Tag: ', tag, '\n\nAllowed values:\n')
+
+  fmt <- paste0("%-", max(nchar(values)) + 2, "s")
+  pad <- map_chr(values, function (v) sprintf(fmt, v))
+  lns <- stri_wrap(paste(pad, collapse = ''), prefix = '  ', normalize = FALSE)
+  cat(paste(lns, collapse = '\n'))
+}
 
 # --- key-speciic specifiers -------------------------------------------
 
@@ -211,5 +239,12 @@ dollar_name.time <- function (x, i) {
   repository::filter(x$query, UQ(expr))
 }
 
+print_dollar_names.time <- function (x) {
+  format_tag_values("time", names(DollarNamesMapping$time))
+}
+
+print_dollar_names.name <- function (x) {
+  format_tag_values("names", table_tag_values(x$query, "names"))
+}
 
 

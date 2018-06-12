@@ -1,16 +1,6 @@
-1) objects$last...    7 days, 24 hours
-           since...   yesterday, Monday, ...
-           yesterday
-           thisweek
-           <date>
+1) describe objects in line, repo::describe
 
-2) Tag values, printout
-   value + no. objects
-   objects$time
+2) return object if it is the only one the query result
 
-3) describe objects in line, repo::describe
-
-4) return object if it is the only one the query result
-
-5) do not store (task_callback): query, query result, repository;
+3) do not store (task_callback): query, query result, repository;
    ignore attributes assigned by the repository and ui packages
