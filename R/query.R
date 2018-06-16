@@ -48,6 +48,8 @@ dollar_names.query <- function (x, pattern = "") {
   c("class", "id", "name", "time")
 }
 
+
+#' @importFrom rlang abort
 dollar_name.query <- function (x, n) {
   # TODO
   # 1. if `i` is an action key (browse, etc.) run that action
@@ -67,10 +69,16 @@ dollar_name.query <- function (x, n) {
   }
 
   if (identical(n, "plots")) {
-    return(repository::filter(x, class == 'plot'))
+    return(repository::filter(x, 'plot' %in% class))
   }
 
-  x
+  res <- x %>% summarise(n = n()) %>% execute
+  if (res$n == 1) {
+    res <- x %>% select(object) %>% execute
+    return(first(res$object))
+  }
+
+  abort("unknown query key: ", n)
 }
 
 
