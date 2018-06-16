@@ -5,6 +5,12 @@ generate_simple(state$repo)
 
 state$repo$store
 
-tracker$history
+x <-
+  state$repo %>%
+  filter(class == "commit") %>%
+  select(object) %>%
+  top_n(3) %>%
+  execute
 
-repository::history_leaves(repository::repository_history(state$repo))
+debug(repository:::all_tag_names)
+tag_names(state$repo)

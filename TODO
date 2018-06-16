@@ -1,0 +1,28 @@
+1) describe objects in line, repo::describe
+
+2) return object if it is the only one the query result
+
+3) do not store (task_callback): query, query result, repository;
+   ignore attributes assigned by the repository and ui packages
+
+4) there could be a state of search, initiated by the "objects" keyword
+   and later stored as "search"; every subsequent query would further
+   narrow the list of results; this could be useful if the search term
+   cannot be easily expressed as a $ key; e.g.
+
+   > objects$other
+   [search]> x ~ y + z
+   * here the search engine recognizes a formula and searches tags for
+     objects that match it in any given way; it then saves the result
+     under "search" where from it can be built on
+   > search$class$lm
+   * this includes the previous formula search step
+
+5) maintain a history of searches (and their results?)
+
+6) topics for research when data on how this package is used is available:
+   * many similar objects: how to exclude artifacts leading up to the final
+     one; e.g. multiple plots slowly converging on the desired way of
+     presenting data; discover those that are only approximations of that
+     final one and "hide" them in the search results, or show only if
+     explicitly asked to

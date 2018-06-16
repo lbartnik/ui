@@ -1,3 +1,9 @@
+map_chr <- function (x, f, ...) {
+  ans <- lapply(x, f, ...)
+  as.character(unlist(ans))
+}
+
+
 is_empty <- function (x) {
   (is.environment(x) && !length(x)) ||
     is.null(x) || is.na(x) || !length(x) || (is.character(x) && !nchar(x))
@@ -41,3 +47,43 @@ ccat_ <- function (chunks, sep = ' ')
            ccat0(color, paste(chunk, collapse = sep))
          })
 }
+
+
+
+# --- evaluatee --------------------------------------------------------
+
+evaluatee <- function (expr) {
+  quo <- rlang::enquo(expr)
+  env <- rlang::caller_env()
+
+  structure(list(quo = quo, env = env), class = 'evaluatee')
+}
+
+
+#' @export
+print.evaluatee <- function (x) {
+  rlang::eval_tidy(x$quo, env = x$env)
+}
+
+# --- log & debug ------------------------------------------------------
+
+log <- function (level, ...) {
+  ccat0("red", '[', level, '] ', ..., '\n')
+}
+
+dbg <- function (...) {
+  if (isTRUE(getOption("ui.debug"))) log("DEBUG", ...)
+}
+
+guard <- function (...) {
+  x <- sys.call(-1)[[1]]
+  fname <- if (is.symbol(x)) deparse(x) else '<unnamed>'
+  dbg("-> ", fname, '() ', ...)
+
+  parent <- sys.frame(sys.parent(1))
+  expr <- substitute(dbg(x), list(x = paste0('<- ', fname, '()')))
+  do.call(on.exit, list(expr = expr, add = TRUE), envir = parent)
+
+  invisible()
+}
+

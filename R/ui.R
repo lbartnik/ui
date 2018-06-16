@@ -7,7 +7,7 @@ tracker <- session_tracker()
 
 #' @export
 `.DollarNames.tracker` <- function (x, pattern) {
-  nms <- c('history', 'branches')
+  nms <- c('branches', 'history', 'report')
   grep(pattern, nms, value = TRUE)
 }
 
@@ -26,6 +26,10 @@ tracker <- session_tracker()
     }
 
     return(structure(br, class = c("branches", class(br))))
+  }
+
+  if (identical(i, 'report')) {
+    return(reporter(state$repo))
   }
 
   stop("unknown tracker key: ", i, call. = FALSE)
@@ -59,28 +63,3 @@ print.branches <- function (x, ...) {
     ccat_(list('  ', silver = 'vars: ', paste(names(ct$objects), collapse = ' '), '\n'))
   })
 }
-
-
-#' Provide a summary of an object.
-#'
-#' @param object Object to be described.
-#'
-#' @import broom
-#' @rdname internals
-#'
-description <- function (object)
-{
-  if (is_empty(object)) return(NA_character_)
-
-  if (is.data.frame(object)) return(paste0('data.frame[', nrow(object), ', ', ncol(object), ']'))
-
-  if (inherits(object, 'lm')) {
-    g <- broom::glance(object)
-    return(paste0('lm adjR2:', format(g$adj.r.squared, digits = 2),
-                 ' AIC:', format(g$AIC, digits = 2),
-                 ' df:', g$df))
-  }
-
-  paste(class(object), collapse = '::')
-}
-
