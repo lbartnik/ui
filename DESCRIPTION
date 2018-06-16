@@ -23,6 +23,7 @@ Suggests:
 Collate:
   'generation.R'
   'query.R'
+  'query-impl.R'
   'tracking.R'
   'ui.R'
   'ui-impl.R'

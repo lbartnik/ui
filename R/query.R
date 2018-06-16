@@ -35,17 +35,19 @@ print.wrapper <- function (x) {
 
 # --- the actual implementation ---
 
+
+# this way we (1) don't risk injecting our names in unexpected places
+# and (2) expose explicit testing API
 dollar_names <- function (x, pattern = "") UseMethod("dollar_names")
 
+# this way we (1) don't risk intercepting actual operator $ call
+# and (2) expose explicit testing API
 dollar_name <- function (x, n) UseMethod("dollar_name")
-
-print_dollar_names <- function (x) UseMethod("print_dollar_names")
-
 
 
 
 dollar_names.query <- function (x, pattern = "") {
-  c("class", "id", "name", "time")
+  grep(pattern, c("class", "id", "name", "time", "session"), value = TRUE)
 }
 
 
@@ -57,8 +59,8 @@ dollar_name.query <- function (x, n) {
   # 3. if `i` is a valid id check if it exists; if so, add to the query
   # 4. else treat `i` as a name specifier
 
-  is_query_key <- function (x) (x %in% c('time', 'name', 'class', 'id'))
-  is_action_key <- function (x) FALSE
+  is_query_key <- function (k) identical(k, dollar_names(x, k))
+  is_action_key <- function (k) FALSE
 
   if (is_action_key(n)) {
     # TODO run the action
@@ -72,7 +74,8 @@ dollar_name.query <- function (x, n) {
     return(repository::filter(x, 'plot' %in% class))
   }
 
-  res <- x %>% summarise(n = n()) %>% execute
+  # if there is only one element that matches
+  res <- x %>% select(id) %>% summarise(n = n()) %>% execute
   if (res$n == 1) {
     res <- x %>% select(object) %>% execute
     return(first(res$object))
@@ -117,18 +120,12 @@ print.query <- function (x, ...) {
 }
 
 
+# --- specifiers -------------------------------------------------------
 
 #' @importFrom rlang UQ
 new_specifier <- function (query, key) {
   structure(list(query = query, key = key), class = c(key, 'specifier'))
 }
-
-#' For this key there are following values
-#' @export
-print.specifier <- function (x, ...) {
-  print_dollar_names(x)
-}
-
 
 dollar_names.specifier <- function (x, pattern = "") {
   vls <- tag_values(x$query)[[x$key]]
@@ -144,28 +141,26 @@ dollar_name.specifier <- function (x, i) {
 }
 
 
+#' For this key there are following values
+#' @export
+print.specifier <- function (x, ...) {
+  print_specifier(x)
+}
+
+# this way we can have print methods for classes like "time" or "class"
+# and it does not interfere with actual print methods for these classes,
+# esp. if at some point we introduce a specifier whose name collides
+# with something important
+print_specifier <- function (x) UseMethod("print_specifier")
+
+
+
 #' @importFrom rlang UQ
-print_dollar_names.specifier <- function (x) {
+print_specifier.specifier <- function (x) {
   format_tag_values(x$key, table_tag_values(x$query, x$key))
   invisible(x)
 }
 
-
-table_tag_values <- function (qry, tag) {
-  vls <- qry %>% select(UQ(as.symbol(tag))) %>% execute
-  vls <- table(vls)
-  paste0(names(vls), ' (', as.integer(vls), ')')
-}
-
-#' @importFrom stringi stri_wrap
-format_tag_values <- function (tag, values) {
-  cat0('Tag: ', tag, '\n\nAllowed values:\n')
-
-  fmt <- paste0("%-", max(nchar(values)) + 2, "s")
-  pad <- map_chr(values, function (v) sprintf(fmt, v))
-  lns <- stri_wrap(paste(pad, collapse = ''), prefix = '  ', normalize = FALSE)
-  cat(paste(lns, collapse = '\n'))
-}
 
 # --- key-speciic specifiers -------------------------------------------
 
@@ -218,6 +213,9 @@ dollar_name.name <- function (x, i) {
 }
 
 
+print_specifier.name <- function (x) {
+  format_tag_values("names", table_tag_values(x$query, "names"))
+}
 
 
 dollar_names.time <- function (x, pattern = "") {
@@ -247,12 +245,17 @@ dollar_name.time <- function (x, i) {
   repository::filter(x$query, UQ(expr))
 }
 
-print_dollar_names.time <- function (x) {
+print_specifier.time <- function (x) {
   format_tag_values("time", names(DollarNamesMapping$time))
 }
 
-print_dollar_names.name <- function (x) {
-  format_tag_values("names", table_tag_values(x$query, "names"))
-}
 
+#' @importFrom dplyr mutate group_by
+#' @importFrom lubridate as_date hour minute
+print_specifier.session <- function (x) {
+  raw <- x$query %>% select(session, time) %>% execute
+  vls <- raw %>% group_by(session) %>% summarise(time = min(time), n = n()) %>%
+    mutate(label = sprintf("%s: %s %s:%s (%s)", session, as_date(time), hour(time), minute(time), n))
+  format_tag_values("session", vls$label)
+}
 
