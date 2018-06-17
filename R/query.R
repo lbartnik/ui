@@ -1,48 +1,86 @@
-#' @export
-objects <- NULL
+#' Dollar-name interceptors. Wrappers.
+#'
+#' In the process of building a query, a number of objects of different
+#' classes are involved. In order to avoid defining multiple `$` operator
+#' methods and multiple `.DollarName` methods, we define and export only
+#' the pair of methods for the `wrapper` class. These methods pass the
+#' control to `dollar_name` and `dollar_names` generics, respectively.
+#' These, in turn, `unwrap` the actual object `o` and pass control to the
+#' `dollar_name` or `dollar_names` method for that object `o`.
+#'
+#' This way we:
+#'   * avoid the risk of defining and injecting the `$` operator method
+#'     into unexpected places, especially other packages
+#'   * expose explicit testing API
+#'
+#' @rdname wrapper
+dollar_names <- function (x, pattern = "") UseMethod("dollar_names")
+
+#' @rdname wrapper
+dollar_name <- function (x, n) UseMethod("dollar_name")
 
 
-wrap <- function (x) {
-  structure(list(x), class = 'wrapper')
-}
+#' @description `wrap` puts `x` in a list and sets that list's class
+#' to `"wrapper"`.
+#'
+#' @rdname wrapper
+wrap <- function (x) structure(list(x), class = 'wrapper')
 
 
+#' @description `unwrap` returns the original wrapped object.
+#'
+#' @rdname wrapper
 unwrap <- function (x) {
   stopifnot(is_wrapper(x))
   first(x)
 }
 
 
+#' @rdname wrapper
 is_wrapper <- function (x) inherits(x, 'wrapper')
 
 
+
+#' @rdname wrapper
 #' @export
-`.DollarNames.wrapper` <- function (x, pattern = "") {
+print.wrapper <- function (x) {
+  invisible(wrap(print(unwrap(x))))
+}
+
+#' @rdname wrapper
+#' @export
+`.DollarNames.wrapper` <- function (x, pattern = "") dollar_names(x, pattern)
+
+
+#' @rdname wrapper
+#' @export
+`$.wrapper` <- function (x, i) dollar_name(x, i)
+
+
+# --- generic dollar_name(s) -------------------------------------------
+
+#' @rdname wrapper
+dollar_names.wrapper <- function (x, pattern = "") {
   grep(pattern, dollar_names(unwrap(x), pattern), value = TRUE)
 }
 
+#' @rdname wrapper
+dollar_name.wrapper <- function (x, i) dollar_name(unwrap(x), i)
 
-#' @export
-`$.wrapper` <- function (x, i) {
-  wrap(dollar_name(unwrap(x), i))
+
+#' @rdname wrapper
+dollar_names.default <- function (x, pattern = "") {
+  grep(pattern, "unwrap", value = TRUE)
 }
 
-#' @export
-print.wrapper <- function (x) {
-  wrap(print(unwrap(x)))
+#' @rdname wrapper
+#' @importFrom rlang abort
+dollar_name.default <- function (x, i) {
+  if (identical(i, "unwrap")) return(x)
+  abort("unknown key: ", i)
 }
 
-
-# --- the actual implementation ---
-
-
-# this way we (1) don't risk injecting our names in unexpected places
-# and (2) expose explicit testing API
-dollar_names <- function (x, pattern = "") UseMethod("dollar_names")
-
-# this way we (1) don't risk intercepting actual operator $ call
-# and (2) expose explicit testing API
-dollar_name <- function (x, n) UseMethod("dollar_name")
+# --- the actual implementation ---------------------------------------
 
 
 
@@ -67,22 +105,26 @@ dollar_name.query <- function (x, n) {
   }
 
   if (is_query_key(n)) {
-    return(new_specifier(x, n))
+    return(wrap(new_specifier(x, n)))
   }
 
   if (identical(n, "plots")) {
-    return(repository::filter(x, 'plot' %in% class))
+    return(wrap(repository::filter(x, 'plot' %in% class)))
   }
 
   # if there is only one element that matches
-  res <- x %>% select(id) %>% summarise(n = n()) %>% execute
-  if (res$n == 1) {
-    res <- x %>% select(object) %>% execute
-    return(first(res$object))
+  if (identical(n, "value")) {
+    res <- x %>% select(id) %>% summarise(n = n()) %>% execute
+    if (res$n == 1) {
+      res <- x %>% select(object) %>% execute
+      return(first(res$object))
+    }
+    stop('value for multiple objects')
   }
 
   abort("unknown query key: ", n)
 }
+
 
 
 #' @importFrom repository execute select top_n
@@ -120,24 +162,46 @@ print.query <- function (x, ...) {
 }
 
 
+# --- query result -----------------------------------------------------
+
+
+
 # --- specifiers -------------------------------------------------------
 
+#' Key-specifier object.
+#'
+#' Key specifier serves in the process of building an object query. It
+#' provides an interface to define the `tag` and its value that will be
+#' sent to the repository when querying for objects.
+#'
+#' Each key specifier must adhere to this rule: if the result of the
+#' current query contains multiple objects, return a wrapped `query`
+#' object. However, if there is only one object in the repository that
+#' matches user query, return a wrapped single result.
+#'
+#' @rdname specifier
 #' @importFrom rlang UQ
+#'
 new_specifier <- function (query, key) {
   structure(list(query = query, key = key), class = c(key, 'specifier'))
 }
 
+#' @rdname specifier
+is_specifier <- function (x) inherits(x, 'specifier')
+
+#' @rdname specifier
 dollar_names.specifier <- function (x, pattern = "") {
   vls <- tag_values(x$query)[[x$key]]
   grep(pattern, vls, value = TRUE)
 }
 
+#' @rdname specifier
+#'
 #' @importFrom rlang UQ
 #' @importFrom repository filter
-#'
 dollar_name.specifier <- function (x, i) {
   tag <- as.symbol(x$key)
-  repository::filter(x$query, UQ(i) %in% UQ(tag))
+  check_single_result(repository::filter(x$query, UQ(i) %in% UQ(tag)))
 }
 
 
@@ -171,7 +235,7 @@ dollar_names.name <- function (x, pattern = "") {
 }
 
 dollar_name.name <- function (x, i) {
-  repository::filter(x$query, UQ(i) %in% names)
+  check_single_result(repository::filter(x$query, UQ(i) %in% names))
 }
 
 
@@ -204,7 +268,7 @@ dollar_name.time <- function (x, i) {
   stopifnot(has_name(DollarNamesMapping$time, i))
 
   expr <- DollarNamesMapping$time[[i]]
-  repository::filter(x$query, UQ(expr))
+  check_single_result(repository::filter(x$query, UQ(expr)))
 }
 
 print_specifier.time <- function (x) {

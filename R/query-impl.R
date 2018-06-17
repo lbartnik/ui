@@ -1,3 +1,30 @@
+with_id <- function (object, id) {
+  attr(object, 'ui::id') <- id
+  object
+}
+
+mark_single <- function (x) {
+  attr(x, 'ui::single') <- TRUE
+  x
+}
+
+is_single <- function (x) isTRUE(attr(x, 'ui::single'))
+
+
+check_single_result <- function (q) {
+  stopifnot(repository::is_query(q))
+
+  res <- q %>% select(id) %>% summarise(n = n()) %>% execute
+  if (identical(res$n, 1L)) {
+    ans <- q %>% select(object, id) %>% execute
+    return(mark_single(with_id(first(ans$object), ans$id)))
+  }
+
+  q
+}
+
+
+
 table_tag_values <- function (qry, tag) {
   vls <- qry %>% select(UQ(as.symbol(tag))) %>% execute
   vls <- table(vls)
