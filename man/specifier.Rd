@@ -5,6 +5,10 @@
 \alias{is_specifier}
 \alias{dollar_names.specifier}
 \alias{dollar_name.specifier}
+\alias{print.specifier}
+\alias{print_specifier}
+\alias{print_specifier.specifier}
+\alias{handle_result}
 \title{Key-specifier object.}
 \usage{
 new_specifier(query, key)
@@ -14,11 +18,30 @@ is_specifier(x)
 \method{dollar_names}{specifier}(x, pattern = "")
 
 \method{dollar_name}{specifier}(x, i)
+
+\method{print}{specifier}(x, ...)
+
+print_specifier(x)
+
+\method{print_specifier}{specifier}(x)
+
+handle_result(q)
 }
 \description{
 Key specifier serves in the process of building an object query. It
 provides an interface to define the \code{tag} and its value that will be
 sent to the repository when querying for objects.
+
+\code{print_specifier} is an interceptor for the standard set
+of S3 \code{print} methods. We do not want to redefine the print method for
+arbitrary classes, but at the same time have the ability to handle
+arbitrary specifier sub-classes (like \code{"time"} or \code{"class"}), whose
+names could potentially collide with existing S3 methods.
+
+\code{handle_result} makes the decision whether to return
+a wrapped \code{query} object for further narrowing of the query, or
+a \code{single_result} object which wraps a single object retrieved
+from the \link[repository:repository]{repository::repository}.
 }
 \details{
 Each key specifier must adhere to this rule: if the result of the

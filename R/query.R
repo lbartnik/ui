@@ -164,6 +164,19 @@ print.query <- function (x, ...) {
 
 # --- query result -----------------------------------------------------
 
+single_result <- function (id, repo) {
+  structure(list(id = id, repo = repo), class = 'single_result')
+}
+
+dollar_names.single_result <- function (x, pattern = "") {
+  grep(pattern, "value", value = TRUE)
+}
+
+#' @importFrom rlang abort
+dollar_name.single_result <- function (x, i) {
+  if (identical(i, "value")) return(first(x))
+  abort("unknown key: ", i)
+}
 
 
 # --- specifiers -------------------------------------------------------
@@ -201,28 +214,49 @@ dollar_names.specifier <- function (x, pattern = "") {
 #' @importFrom repository filter
 dollar_name.specifier <- function (x, i) {
   tag <- as.symbol(x$key)
-  check_single_result(repository::filter(x$query, UQ(i) %in% UQ(tag)))
+  handle_result(repository::filter(x$query, UQ(i) %in% UQ(tag)))
 }
 
 
-#' For this key there are following values
+#' @rdname specifier
 #' @export
 print.specifier <- function (x, ...) {
   print_specifier(x)
 }
 
-# this way we can have print methods for classes like "time" or "class"
-# and it does not interfere with actual print methods for these classes,
-# esp. if at some point we introduce a specifier whose name collides
-# with something important
+#' @description `print_specifier` is an interceptor for the standard set
+#' of S3 `print` methods. We do not want to redefine the print method for
+#' arbitrary classes, but at the same time have the ability to handle
+#' arbitrary specifier sub-classes (like `"time"` or `"class"`), whose
+#' names could potentially collide with existing S3 methods.
+#'
+#' @rdname specifier
 print_specifier <- function (x) UseMethod("print_specifier")
 
 
-
+#' @rdname specifier
 #' @importFrom rlang UQ
 print_specifier.specifier <- function (x) {
   format_tag_values(x$key, table_tag_values(x$query, x$key))
   invisible(x)
+}
+
+
+#' @description `handle_result` makes the decision whether to return
+#' a wrapped `query` object for further narrowing of the query, or
+#' a `single_result` object which wraps a single object retrieved
+#' from the [repository::repository].
+#'
+#' @rdname specifier
+handle_result <- function (q) {
+  stopifnot(repository::is_query(q))
+
+  res <- q %>% select(id) %>% summarise(n = n(), id = min(id)) %>% execute
+  if (identical(res$n, 1L)) {
+    return(wrap(single_result(first(ans$id), q$repo)))
+  }
+
+  wrap(q)
 }
 
 
@@ -235,7 +269,7 @@ dollar_names.name <- function (x, pattern = "") {
 }
 
 dollar_name.name <- function (x, i) {
-  check_single_result(repository::filter(x$query, UQ(i) %in% names))
+  handle_result(repository::filter(x$query, UQ(i) %in% names))
 }
 
 
@@ -268,7 +302,7 @@ dollar_name.time <- function (x, i) {
   stopifnot(has_name(DollarNamesMapping$time, i))
 
   expr <- DollarNamesMapping$time[[i]]
-  check_single_result(repository::filter(x$query, UQ(expr)))
+  handle_result(repository::filter(x$query, UQ(expr)))
 }
 
 print_specifier.time <- function (x) {
