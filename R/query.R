@@ -89,7 +89,8 @@ dollar_names.query <- function (x, pattern = "") {
 }
 
 
-#' @importFrom rlang abort
+#' @importFrom rlang abort UQ
+#' @importFrom lubridate as_date ymd
 dollar_name.query <- function (x, n) {
   # TODO
   # 1. if `i` is an action key (browse, etc.) run that action
@@ -122,7 +123,14 @@ dollar_name.query <- function (x, n) {
     stop('value for multiple objects')
   }
 
-  abort("unknown query key: ", n)
+  # if it looks like a date specification...
+  d <- ymd(n, quiet = TRUE)
+  if (!is.na(d)) {
+    return(wrap(repository::filter(x, as_date(time) == UQ(as.character(d)))))
+  }
+
+  # if it doesn't look like anything else, it must be an attempt at name
+  handle_result(repository::filter(x, UQ(n) %in% names))
 }
 
 
@@ -168,13 +176,27 @@ single_result <- function (id, repo) {
   structure(list(id = id, repo = repo), class = 'single_result')
 }
 
+#' @importFrom rlang UQ
+print.single_result <- function (x, ...) {
+  res <- x$repo %>% filter(id == UQ(x$id)) %>% select(-object) %>% execute
+  cat('<Object>\n\n')
+  cat0('  id:    ', x$id, '\n')
+  cat0('  time:  ', as.character(res$time), '\n')
+  cat0('  name:  ', res$names, '\n')
+  cat0('  class: ', res$class, '\n')
+  cat('\n')
+}
+
 dollar_names.single_result <- function (x, pattern = "") {
   grep(pattern, "value", value = TRUE)
 }
 
-#' @importFrom rlang abort
+#' @importFrom rlang abort UQ
 dollar_name.single_result <- function (x, i) {
-  if (identical(i, "value")) return(first(x))
+  if (identical(i, "value")) {
+    res <- x$repo %>% filter(id == UQ(x$id)) %>% select(object) %>% execute
+    return(with_id(res[[1]][[1]], x$id))
+  }
   abort("unknown key: ", i)
 }
 
@@ -253,7 +275,7 @@ handle_result <- function (q) {
 
   res <- q %>% select(id) %>% summarise(n = n(), id = min(id)) %>% execute
   if (identical(res$n, 1L)) {
-    return(wrap(single_result(first(ans$id), q$repo)))
+    return(wrap(single_result(first(res$id), q$repo)))
   }
 
   wrap(q)
