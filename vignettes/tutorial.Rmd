@@ -1,0 +1,72 @@
+---
+title: "Tutorial: Artifact Repository"
+author: "Lukasz A. Bartnik"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Tutorial: Artifact Repository}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", prompt = FALSE, echo = TRUE)
+```
+
+
+# Produce objects - sample research project
+
+Run a sample project generation.
+
+
+# Basic operations
+
+## Project overview
+
+We can look at R sessions recorded so far:
+
+```{r}
+objects$session
+```
+
+We can also see objects recorded in the repository:
+
+```{r}
+objects$name
+```
+
+Other keys are: `class`, `id` and `time`. Let's look at `time`:
+
+```{r}
+objects$time
+```
+
+
+## Limiting the selection
+
+We can limit the object selection by session identifier:
+
+```{r}
+objects$session$eba8e78f
+```
+
+Similarily, we can look at specific object creation time:
+
+```{r}
+objects$time$since_yesterday
+```
+
+In both cases, we see a `filter()` expression added to the selection
+query and at most the first three objects matching this query.
+
+
+## Selecting an object
+
+Finally, we can retrieve a specific object from the repository:
+
+```{r}
+objects$name$x
+```
+

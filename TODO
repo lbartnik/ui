@@ -1,6 +1,11 @@
+0) various small fixes
+  * limit the number of tag values presented, e.g. objects$time
+  * add legend to each tag help screen, e.g. ccat("silver", "Example: objects$time$...")
+  * rename "objects" to "artifacts"
+
 1) describe objects in line, repo::describe
 
-2) return object if it is the only one the query result
+2) return a tibble with objects from a query under $value
 
 3) do not store (task_callback): query, query result, repository;
    ignore attributes assigned by the repository and ui packages

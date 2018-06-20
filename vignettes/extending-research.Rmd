@@ -1,13 +1,27 @@
 ---
-title: "History Browser"
+title: "Extending the Research Tooling"
 author: "Lukasz A. Bartnik"
-date: "May 26, 2018"
-output: html_document
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Extending the Research Tooling}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", prompt = FALSE, echo = TRUE)
 ```
+
+
+## Extending the Research Process
+
+Repository that records everything and exposes the history of created
+artifacts through a query mechanism.
+
+
 
 ## Abstract
 
