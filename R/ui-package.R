@@ -3,6 +3,11 @@
 #' @description Provides user interface for the `repository` package.
 NULL
 
+
+#' @export
+objects <- NULL
+
+
 .onLoad <- function (libname, pkgname)
 {
   if (interactive()) {
