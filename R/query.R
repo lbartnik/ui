@@ -144,7 +144,7 @@ print.query <- function (x, ...) {
 
   # lapply(x$filter)
 
-  res <- x %>% select(-object, -parent_commit, -id, -parents, .force = TRUE) %>% execute(.warn = FALSE)
+  res <- x %>% unselect %>% select(-object, -parent_commit, -id, -parents) %>% execute(.warn = FALSE)
   cat('\nMatched ', nrow(res), ' object(s), of that ', sum(res$class == "plot"), " plot(s)",
       sep = "")
   cat('\n\n')
