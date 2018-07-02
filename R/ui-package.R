@@ -5,7 +5,7 @@ NULL
 
 
 #' @export
-objects <- NULL
+artifacts <- NULL
 
 
 .onLoad <- function (libname, pkgname)
@@ -15,7 +15,7 @@ objects <- NULL
     start_tracking()
 
     # here it's still possible to change contents of the namespace
-    objects <<- wrap(repository::filter(state$repo, isTRUE(artifact)))
+    artifacts <<- wrap(repository::filter(state$repo, isTRUE(artifact)))
     DollarNamesMapping <<- createDollarNamesMapping()
   }
 }
