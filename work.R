@@ -1,6 +1,8 @@
 options(repository.debug = TRUE)
 options(repository.debug = FALSE)
 
+options(ui.track = FALSE)
+
 generate_simple(state$repo)
 
 state$repo$store

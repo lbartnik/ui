@@ -44,7 +44,7 @@ artifacts$time
 ```
 
 
-## Limiting the selection
+## Searching for artifacts
 
 We can limit the object selection by session identifier:
 
@@ -62,7 +62,7 @@ In both cases, we see a `filter()` expression added to the selection
 query and at most the first three objects matching this query.
 
 
-## Selecting an object
+## Selecting an artifact
 
 We can retrieve a specific object from the repository:
 

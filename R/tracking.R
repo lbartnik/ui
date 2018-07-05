@@ -19,41 +19,10 @@ state <- new.env()
 #'
 #' @rdname internal_state
 #'
-initiate_state <- function ()
+initiate_state <- function (state)
 {
-  state$repo             <- open_repo(create = TRUE)
+  state$repo             <- NULL
   state$task_callback_id <- NA
-
-  pick_branch(state$repo)
-}
-
-
-#' @rdname internal_state
-#'
-start_tracking <- function ()
-{
-  if (!is.na(state$task_callback_id)) {
-    stop("task callback id found, tracking already started")
-  }
-
-  state$task_callback_id <- addTaskCallback(task_callback)
-
-  # TODO see if there is a match for the current globalenv() to continue
-  #      work from a given point; if not, ask the user if they want to
-  #      rewind to a specific existing commit
-}
-
-
-#' @rdname internal_state
-#'
-stop_tracking <- function ()
-{
-  if (!is.numeric(state$task_callback_id)) {
-    stop("task callback id not found, tracking not started")
-  }
-
-  removeTaskCallback(state$task_callback_id)
-  state$task_callback_id <- NA_character_
 }
 
 
@@ -61,23 +30,26 @@ stop_tracking <- function ()
 #' @import repository
 #' @import storage
 #'
-open_repo <- function (create = FALSE)
+open_default_repo <- function (state, env, create = FALSE)
 {
   path  <- file.path(getwd(), 'repository')
   store <- storage::filesystem(path, create = create)
-  repository::repository(store)
+  repo  <- repository::repository(store)
+  pick_branch(repo, env)
+
+  state$repo <- repo
 }
 
 
 #' @rdname internal_state
 #' @import repository
 #'
-pick_branch <- function (repo)
+pick_branch <- function (repo, env)
 {
   hs <- repository::repository_history(repo)
 
-  if (length(ls(globalenv()))) {
-    m <- repository::filter(hs, data_matches(data = as.list(globalenv())))
+  if (length(ls(env))) {
+    m <- repository::filter(hs, data_matches(data = as.list(env)))
     if (!length(m)) {
       stop("global environment cannot be matched against history, cannot attach to repository",
            call. = FALSE)
@@ -104,13 +76,42 @@ pick_branch <- function (repo)
     lv <- first(lv)
     repository::repository_rewind(repo, lv$id)
     mapply(names(lv$data), lv$data, FUN = function (name, value) {
-      assign(name, value, envir = globalenv())
+      assign(name, value, envir = env)
     })
 
     return()
   }
 
   warning("repository contains more than one branch, aborting")
+}
+
+
+#' @rdname internal_state
+#'
+start_tracking <- function (state)
+{
+  if (!is.na(state$task_callback_id)) {
+    stop("task callback id found, tracking already started")
+  }
+
+  state$task_callback_id <- addTaskCallback(task_callback)
+
+  # TODO see if there is a match for the current globalenv() to continue
+  #      work from a given point; if not, ask the user if they want to
+  #      rewind to a specific existing commit
+}
+
+
+#' @rdname internal_state
+#'
+stop_tracking <- function (state)
+{
+  if (!is.numeric(state$task_callback_id)) {
+    stop("task callback id not found, tracking not started")
+  }
+
+  removeTaskCallback(state$task_callback_id)
+  state$task_callback_id <- NA_character_
 }
 
 
