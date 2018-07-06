@@ -1,5 +1,9 @@
 sample_state <- function () {
-  initiate_state()
+  state <- new.env(parent = emptyenv())
+  initiate_state(state)
+  state$repo <- repository::sample_repository()
+
+  state
 }
 
 sample_query <- function (state = sample_state()) {

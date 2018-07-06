@@ -1,8 +1,18 @@
+map <- function (x, f, ...) {
+  ans <- lapply(x, f)
+  if (!is.null(names(ans))) return(ans)
+  names(ans) <- as.character(x)
+  ans
+}
+
 map_chr <- function (x, f, ...) {
   ans <- lapply(x, f, ...)
   as.character(unlist(ans))
 }
 
+join <- function (x, sep = ', ') {
+  paste(x, collapse = sep)
+}
 
 is_empty <- function (x) {
   (is.environment(x) && !length(x)) ||

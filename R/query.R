@@ -152,16 +152,26 @@ print.query <- function (x, ...) {
   # TODO
   # 1. exclude tags that are already specified
   Map(names(res), res, f = function (name, values) {
-    cat('   ', name, ': ', paste(unique(as.character(values)), collapse = ', '), '\n', sep = '')
+    values <- unique(unlist(values))
+    values <- values[!is.na(values)]
+
+    if (length(values) > 3) {
+      dots <- ' ...'
+      values <- values[1:3]
+    } else {
+      dots <- ''
+    }
+
+    cat('   ', name, ': ', join(values, ' '), dots, '\n', sep = '')
   })
 
   if (nrow(res)) {
     cat('\nFirst three object(s):\n\n')
     # 2. print the first three objects
-    res <- x %>% select(object, .force = TRUE) %>% top_n(3) %>% execute
-    lapply(res$object, function (obj) {
-      cat0('  ', repository:::description(obj), '\n')
-    })
+    res <- x %>% filter(!('plot' %in% class)) %>% select(object, names) %>% top_n(3) %>% execute
+    Map(function (obj, names) {
+      cat0('  ', first(names), ': ', repository:::description(obj), '\n')
+    }, res$object, res$names)
 
     cat('\n')
   }

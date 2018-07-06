@@ -35,7 +35,7 @@ DollarNamesMapping <- NULL
 
 
 #' @importFrom rlang quo
-#' @importFrom lubridate as_date ddays dhours floor_date today
+#' @importFrom lubridate as_date ddays dhours floor_date today wday
 #'
 createDollarNamesMapping <- function () {
   last_wday <- function (which) {

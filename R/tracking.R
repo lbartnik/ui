@@ -35,7 +35,10 @@ open_default_repo <- function (state, env, create = FALSE)
   path  <- file.path(getwd(), 'repository')
   store <- storage::filesystem(path, create = create)
   repo  <- repository::repository(store)
-  pick_branch(repo, env)
+
+  if (isTRUE(getOption("ui.pick_branch", FALSE))) {
+    pick_branch(repo, env)
+  }
 
   state$repo <- repo
 }
