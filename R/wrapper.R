@@ -48,6 +48,8 @@ print.wrapper <- function (x) {
 #' @description the `.DollarNames` method and the `$` operator are the
 #' only user-facing entry points into the tab-completion mechanism.
 #'
+#' @importFrom utils .DollarNames
+#'
 #' @rdname wrapper
 #' @export
 `.DollarNames.wrapper` <- function (x, pattern = "") dollar_names(x, pattern)

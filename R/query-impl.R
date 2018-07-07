@@ -11,7 +11,9 @@ mark_single <- function (x) {
 is_single <- function (x) isTRUE(attr(x, 'ui::single'))
 
 
-
+format_specifier_header <- function (tag_name) {
+  ccat(silver = 'Tag: ', tag_name, silver = '\nPossible values:\n')
+}
 
 table_tag_values <- function (qry, tag) {
   vls <- qry %>% select(UQ(as.symbol(tag))) %>% execute %>% first
@@ -19,9 +21,7 @@ table_tag_values <- function (qry, tag) {
 }
 
 #' @importFrom stringi stri_pad_right stri_replace_all_fixed stri_wrap
-format_tag_values <- function (tag, values) {
-  cat0('Tag: ', tag, '\n\nPossible values:\n')
-
+format_tag_values <- function (values) {
   values <- paste0(names(values), '*(', as.integer(values), ')')
   values <- stri_pad_right(values, max(nchar(values)))
   text <- join(values, '  ')

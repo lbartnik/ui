@@ -42,30 +42,24 @@ first <- function(x) nth(x, 1)
 
 cat0 <- function (..., sep = '') cat(..., sep = sep)
 
-ccat <- function (color, ..., sep = ' ')
+ccat <- function (..., sep = ' ', default = 'default')
 {
-  if (identical(color, 'default'))
-    cat(..., sep = sep)
-  else {
-    color <- get(color, envir = asNamespace("crayon"), inherits = FALSE)
-    cat(color(paste(..., sep = sep)))
+  cat_chunk <- function (color, chunk, sep) {
+    if (identical(color, 'default') || identical(color, '')) {
+      color <- default
+    } else {
+      color <- get_color(color)
+    }
+    cat0(color(chunk), sep)
   }
+  get_color <- function (color) get(color, envir = asNamespace("crayon"), inherits = FALSE)
+
+  default <- if (identical(default, 'default')) as.character else get_color(default)
+  chunks <- list(...)
+  Map(cat_chunk, names(chunks), as.character(chunks), c(rep(sep, length(chunks)-1), ''))
 }
 
-ccat0 <- function (color, ...) ccat(color, ..., sep = '')
-
-
-ccat_ <- function (chunks, sep = ' ')
-{
-  mapply(color = names(chunks), chunk = chunks,
-         function (color, chunk)
-         {
-           if (!nchar(color)) color <- 'default'
-           ccat0(color, paste(chunk, collapse = sep))
-         })
-}
-
-
+ccat0 <- function (...) ccat(..., sep = '')
 
 # --- evaluatee --------------------------------------------------------
 

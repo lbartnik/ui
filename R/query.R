@@ -53,16 +53,15 @@ dollar_name.query <- function (x, n) {
 #' @importFrom repository execute select top_n
 #' @export
 print.query <- function (x, ...) {
-  cat('Query:\n\n')
-
+  ccat(silver = 'Query:\n')
   repository:::print.query(x)
 
   # lapply(x$filter)
 
   res <- x %>% unselect %>% select(-object, -parent_commit, -id, -parents) %>% execute(.warn = FALSE)
-  cat('\nMatched ', nrow(res), ' object(s), of that ', sum(res$class == "plot"), " plot(s)",
-      sep = "")
-  cat('\n\n')
+  ccat0(silver = '\nMatched ', nrow(res),
+        silver = ' object(s), of that ', sum(res$class == "plot"),
+        silver = " plot(s)\n\n")
 
   # TODO
   # 1. exclude tags that are already specified
@@ -153,7 +152,8 @@ print_specifier <- function (x) UseMethod("print_specifier")
 #' @rdname specifier
 #' @importFrom rlang UQ
 print_specifier.specifier <- function (x) {
-  format_tag_values(x$key, table_tag_values(x$query, x$key))
+  format_specifier_header(x$key)
+  format_tag_values(table_tag_values(x$query, x$key))
   invisible(x)
 }
 
@@ -190,7 +190,8 @@ dollar_name.name <- function (x, i) {
 
 
 print_specifier.name <- function (x) {
-  format_tag_values("names", table_tag_values(x$query, "names"))
+  format_specifier_header("names")
+  format_tag_values(table_tag_values(x$query, "names"))
 }
 
 
@@ -222,7 +223,8 @@ dollar_name.time <- function (x, i) {
 }
 
 print_specifier.time <- function (x) {
-  format_tag_values("time", names(DollarNamesMapping$time))
+  format_specifier_header("time")
+  format_tag_values(names(DollarNamesMapping$time))
 }
 
 
@@ -233,7 +235,8 @@ print_specifier.session <- function (x) {
   vls <- raw %>% group_by(session) %>% summarise(time = min(time), n = n()) %>%
     mutate(label = sprintf("%s: %s %s:%s", session, as_date(time), hour(time), minute(time)))
 
-  format_tag_values("session", with_names(vls$n, vls$label))
+  format_specifier_header("session")
+  format_tag_values(with_names(vls$n, vls$label))
 }
 
 
