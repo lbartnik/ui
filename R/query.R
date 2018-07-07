@@ -51,44 +51,43 @@ dollar_name.query <- function (x, n) {
 
 
 #' @importFrom repository execute select top_n
+#' @importFrom stringi stri_paste
 #' @export
-print.query <- function (x, ...) {
+print.query <- function (x, ..., n = 3) {
+
+  # print the query itself
   ccat(silver = 'Query:\n')
   repository:::print.query(x)
 
-  # lapply(x$filter)
-
+  # and a short summary of types of artifacts
   res <- x %>% unselect %>% select(-object, -parent_commit, -id, -parents) %>% execute(.warn = FALSE)
   ccat0(silver = '\nMatched ', nrow(res),
         silver = ' object(s), of that ', sum(res$class == "plot"),
         silver = " plot(s)\n\n")
 
-  # TODO
-  # 1. exclude tags that are already specified
-  Map(names(res), res, f = function (name, values) {
-    values <- unique(unlist(values))
-    values <- values[!is.na(values)]
-
-    if (length(values) > 3) {
-      dots <- ' ...'
-      values <- values[1:3]
-    } else {
-      dots <- ''
-    }
-
-    cat('   ', name, ': ', join(values, ' '), dots, '\n', sep = '')
-  })
-
+  # print the first n objects
   if (nrow(res)) {
-    cat('\nFirst three object(s):\n\n')
-    # 2. print the first three objects
-    res <- x %>% filter(!('plot' %in% class)) %>% select(object, names) %>% top_n(3) %>% execute
-    Map(function (obj, names) {
-      cat0('  ', first(names), ': ', repository:::description(obj), '\n')
-    }, res$object, res$names)
+    ids <- x %>% filter(!('plot' %in% class)) %>% select(id, time) %>% top_n(n) %>%
+      arrange(desc(time)) %>% execute %>% nth("id")
 
-    cat('\n')
+    obj <- repository::repository_explain(x$repository, ids, 0)
+
+    z <- lapply(obj, function (x) {
+      ccat(green = '*\n')
+      print(x)
+      cat('\n\n')
+    })
+
+    if (n < nrow(res)) {
+      ccat(default = 'silver', 'Showing first', n, 'object(s)\n')
+    }
   }
+
+
+  # TODO exclude tags that are already specified
+  # inform what other tags are not yet specified
+  all_tags <- dollar_names(x)
+  ccat(default = 'silver', 'You can still specify following tags:', all_tags)
 
   invisible(x)
 }

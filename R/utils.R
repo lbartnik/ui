@@ -42,6 +42,7 @@ first <- function(x) nth(x, 1)
 
 cat0 <- function (..., sep = '') cat(..., sep = sep)
 
+#' @importFrom stringi stri_paste
 ccat <- function (..., sep = ' ', default = 'default')
 {
   cat_chunk <- function (color, chunk, sep) {
@@ -55,8 +56,10 @@ ccat <- function (..., sep = ' ', default = 'default')
   get_color <- function (color) get(color, envir = asNamespace("crayon"), inherits = FALSE)
 
   default <- if (identical(default, 'default')) as.character else get_color(default)
-  chunks <- list(...)
-  Map(cat_chunk, names(chunks), as.character(chunks), c(rep(sep, length(chunks)-1), ''))
+  chunks <- lapply(list(...), stri_paste, collapse = sep)
+  if (!length(names(chunks))) names(chunks) <- rep("", length(chunks))
+
+  Map(cat_chunk, names(chunks), chunks, c(rep(sep, length(chunks)-1), ''))
 }
 
 ccat0 <- function (...) ccat(..., sep = '')
