@@ -1,23 +1,18 @@
-#' Dollar-name interceptors. Wrappers.
+#' Wrapper and dollar-name interceptors.
 #'
-#' In the process of building a query, a number of objects of different
-#' classes are involved. In order to avoid defining multiple `$` operator
-#' methods and multiple `.DollarName` methods, we define and export only
-#' the pair of methods for the `wrapper` class. These methods pass the
-#' control to `dollar_name` and `dollar_names` generics, respectively.
-#' These, in turn, `unwrap` the actual object `o` and pass control to the
-#' `dollar_name` or `dollar_names` method for that object `o`.
-#'
-#' This way we:
-#'   * avoid the risk of defining and injecting the `$` operator method
-#'     into unexpected places, especially other packages
-#'   * expose explicit testing API
+#' In order to separate the user-facing API from the testable code that
+#' implements user-facing API, all user-facing S3 classes are always
+#' wrapped in the `"wrapper"` class. Moreover, instead of overloading
+#' the `$` operator and the `.DollarNames` method for all these
+#' user-facing classes, a `dollar_name` and `dollar_names` S3 methods
+#' are introduced. They have the exact same semantics. This way, in the
+#' test code, the `$` operator can be used to access actual data and
+#' clearly distinguished from the tab-completion mechanism for the end
+#' user.
 #'
 #' @rdname wrapper
-dollar_names <- function (x, pattern = "") UseMethod("dollar_names")
-
-#' @rdname wrapper
-dollar_name <- function (x, n) UseMethod("dollar_name")
+#' @name wrapper
+NULL
 
 
 #' @description `wrap` puts `x` in a list and sets that list's class
@@ -40,13 +35,19 @@ unwrap <- function (x) {
 is_wrapper <- function (x) inherits(x, 'wrapper')
 
 
-
+#' @description `print.wrapper` calls the actual `print` method for the
+#' unwrapped object.
+#'
 #' @rdname wrapper
 #' @export
 print.wrapper <- function (x) {
   invisible(wrap(print(unwrap(x))))
 }
 
+
+#' @description the `.DollarNames` method and the `$` operator are the
+#' only user-facing entry points into the tab-completion mechanism.
+#'
 #' @rdname wrapper
 #' @export
 `.DollarNames.wrapper` <- function (x, pattern = "") dollar_names(x, pattern)
@@ -57,7 +58,18 @@ print.wrapper <- function (x) {
 `$.wrapper` <- function (x, i) dollar_name(x, i)
 
 
-# --- generic dollar_name(s) -------------------------------------------
+#' @description `dollar_names` is an equivalent of `.DollarNames` and
+#' `dollar_name` is an equivalent of the `$` operator. All S3 classes
+#' that are publicly exposed via the `"wrapper"` class need to define
+#' their own version of these two methods to enable tab completion.
+#'
+#' @rdname wrapper
+dollar_names <- function (x, pattern = "") UseMethod("dollar_names")
+
+
+#' @rdname wrapper
+dollar_name <- function (x, n) UseMethod("dollar_name")
+
 
 #' @rdname wrapper
 dollar_names.wrapper <- function (x, pattern = "") {
