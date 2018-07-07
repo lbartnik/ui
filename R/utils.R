@@ -20,6 +20,13 @@ is_empty <- function (x) {
 }
 
 
+with_names <- function (lst, names) {
+  stopifnot(identical(length(lst), length(names)))
+  names(lst) <- names
+  lst
+}
+
+
 
 nth <- function(x, n) {
   if (!length(x)) return(vector(mode = typeof(x)))

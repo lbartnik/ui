@@ -231,8 +231,9 @@ print_specifier.time <- function (x) {
 print_specifier.session <- function (x) {
   raw <- x$query %>% select(session, time) %>% execute
   vls <- raw %>% group_by(session) %>% summarise(time = min(time), n = n()) %>%
-    mutate(label = sprintf("%s: %s %s:%s (%s)", session, as_date(time), hour(time), minute(time), n))
-  format_tag_values("session", vls$label)
+    mutate(label = sprintf("%s: %s %s:%s", session, as_date(time), hour(time), minute(time)))
+
+  format_tag_values("session", with_names(vls$n, vls$label))
 }
 
 

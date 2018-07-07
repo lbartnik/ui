@@ -1,5 +1,6 @@
 context("query")
 
+
 test_that("tag values", {
   q <- unwrap(sample_query())
 
@@ -16,3 +17,11 @@ test_that("tag values", {
   expect_tag_values("names", c("input", "m", "x"), c(5, 1, 4))
 })
 
+
+test_that("print artifacts by session", {
+  q <- sample_query()
+  s <- unwrap(dollar_name(q, "session"))
+
+  expect_true(is_specifier(s))
+  expect_output(print_specifier(s), "\\(16\\)$")
+})
