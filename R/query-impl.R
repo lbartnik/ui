@@ -14,18 +14,19 @@ is_single <- function (x) isTRUE(attr(x, 'ui::single'))
 
 
 table_tag_values <- function (qry, tag) {
-  vls <- qry %>% select(UQ(as.symbol(tag))) %>% execute
-  vls <- table(vls)
-  paste0(names(vls), ' (', as.integer(vls), ')')
+  vls <- qry %>% select(UQ(as.symbol(tag))) %>% execute %>% first
+  table(unlist(vls))
 }
 
-#' @importFrom stringi stri_wrap
+#' @importFrom stringi stri_pad_right stri_replace_all_fixed stri_wrap
 format_tag_values <- function (tag, values) {
-  cat0('Tag: ', tag, '\n\nAllowed values:\n')
+  cat0('Tag: ', tag, '\n\nPossible values:\n')
 
-  fmt <- paste0("%-", max(nchar(values)) + 2, "s")
-  pad <- map_chr(values, function (v) sprintf(fmt, v))
-  lns <- stri_wrap(paste(pad, collapse = ''), prefix = '  ', normalize = FALSE)
+  values <- paste0(names(values), '*(', as.integer(values), ')')
+  values <- stri_pad_right(values, max(nchar(values)))
+  text <- join(values, '  ')
+  lns <- stri_wrap(text, prefix = '  ', normalize = FALSE)
+  lns <- stri_replace_all_fixed(lns, '*', ' ')
   cat(paste(lns, collapse = '\n'))
 }
 

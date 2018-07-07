@@ -95,37 +95,6 @@ print.query <- function (x, ...) {
 }
 
 
-# --- query result -----------------------------------------------------
-
-single_result <- function (id, repo) {
-  structure(list(id = id, repo = repo), class = 'single_result')
-}
-
-#' @importFrom rlang UQ
-print.single_result <- function (x, ...) {
-  res <- x$repo %>% filter(id == UQ(x$id)) %>% select(-object) %>% execute
-  cat('<Object>\n\n')
-  cat0('  id:    ', x$id, '\n')
-  cat0('  time:  ', as.character(res$time), '\n')
-  cat0('  name:  ', res$names, '\n')
-  cat0('  class: ', res$class, '\n')
-  cat('\n')
-}
-
-dollar_names.single_result <- function (x, pattern = "") {
-  grep(pattern, "value", value = TRUE)
-}
-
-#' @importFrom rlang abort UQ
-dollar_name.single_result <- function (x, i) {
-  if (identical(i, "value")) {
-    res <- x$repo %>% filter(id == UQ(x$id)) %>% select(object) %>% execute
-    return(with_id(res[[1]][[1]], x$id))
-  }
-  abort("unknown key: ", i)
-}
-
-
 # --- specifiers -------------------------------------------------------
 
 #' Key-specifier object.
@@ -266,3 +235,33 @@ print_specifier.session <- function (x) {
   format_tag_values("session", vls$label)
 }
 
+
+# --- query result -----------------------------------------------------
+
+single_result <- function (id, repo) {
+  structure(list(id = id, repo = repo), class = 'single_result')
+}
+
+#' @importFrom rlang UQ
+print.single_result <- function (x, ...) {
+  res <- x$repo %>% filter(id == UQ(x$id)) %>% select(-object) %>% execute
+  cat('<Object>\n\n')
+  cat0('  id:    ', x$id, '\n')
+  cat0('  time:  ', as.character(res$time), '\n')
+  cat0('  name:  ', res$names, '\n')
+  cat0('  class: ', res$class, '\n')
+  cat('\n')
+}
+
+dollar_names.single_result <- function (x, pattern = "") {
+  grep(pattern, "value", value = TRUE)
+}
+
+#' @importFrom rlang abort UQ
+dollar_name.single_result <- function (x, i) {
+  if (identical(i, "value")) {
+    res <- x$repo %>% filter(id == UQ(x$id)) %>% select(object) %>% execute
+    return(with_id(res[[1]][[1]], x$id))
+  }
+  abort("unknown key: ", i)
+}
