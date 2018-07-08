@@ -8,10 +8,13 @@
 \alias{print.wrapper}
 \alias{.DollarNames.wrapper}
 \alias{$.wrapper}
+\alias{[[.wrapper}
 \alias{dollar_names}
 \alias{dollar_name}
+\alias{double_bracket}
 \alias{dollar_names.wrapper}
 \alias{dollar_name.wrapper}
+\alias{double_bracket.wrapper}
 \alias{dollar_names.default}
 \alias{dollar_name.default}
 \title{Wrapper and dollar-name interceptors.}
@@ -28,13 +31,19 @@ is_wrapper(x)
 
 \method{$}{wrapper}(x, i)
 
+\method{[[}{wrapper}(x, i)
+
 dollar_names(x, pattern = "")
 
 dollar_name(x, n)
 
+double_bracket(x, i)
+
 \method{dollar_names}{wrapper}(x, pattern = "")
 
 \method{dollar_name}{wrapper}(x, i)
+
+\method{double_bracket}{wrapper}(x, i)
 
 \method{dollar_names}{default}(x, pattern = "")
 
@@ -44,12 +53,12 @@ dollar_name(x, n)
 In order to separate the user-facing API from the testable code that
 implements user-facing API, all user-facing S3 classes are always
 wrapped in the \code{"wrapper"} class. Moreover, instead of overloading
-the \code{$} operator and the \code{.DollarNames} method for all these
-user-facing classes, a \code{dollar_name} and \code{dollar_names} S3 methods
-are introduced. They have the exact same semantics. This way, in the
-test code, the \code{$} operator can be used to access actual data and
-clearly distinguished from the tab-completion mechanism for the end
-user.
+the \code{[[} and \code{$} operators and the \code{.DollarNames} method for all these
+user-facing classes, three new methods are introduced, namely:
+\code{double_bracket}, \code{dollar_name} and \code{dollar_names}, which have the
+exact same semantics. This way, in the test code, accessing actual
+data can be clearly distinguished from the user-facing tab-completion
+mechanism.
 
 \code{wrap} puts \code{x} in a list and sets that list's class
 to \code{"wrapper"}.

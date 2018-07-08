@@ -3,6 +3,7 @@
 S3method("$",reporter)
 S3method("$",tracker)
 S3method("$",wrapper)
+S3method("[[",wrapper)
 S3method(.DollarNames,reporter)
 S3method(.DollarNames,tracker)
 S3method(.DollarNames,wrapper)

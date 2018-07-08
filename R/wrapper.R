@@ -3,12 +3,12 @@
 #' In order to separate the user-facing API from the testable code that
 #' implements user-facing API, all user-facing S3 classes are always
 #' wrapped in the `"wrapper"` class. Moreover, instead of overloading
-#' the `$` operator and the `.DollarNames` method for all these
-#' user-facing classes, a `dollar_name` and `dollar_names` S3 methods
-#' are introduced. They have the exact same semantics. This way, in the
-#' test code, the `$` operator can be used to access actual data and
-#' clearly distinguished from the tab-completion mechanism for the end
-#' user.
+#' the `[[` and `$` operators and the `.DollarNames` method for all these
+#' user-facing classes, three new methods are introduced, namely:
+#' `double_bracket`, `dollar_name` and `dollar_names`, which have the
+#' exact same semantics. This way, in the test code, accessing actual
+#' data can be clearly distinguished from the user-facing tab-completion
+#' mechanism.
 #'
 #' @rdname wrapper
 #' @name wrapper
@@ -60,6 +60,11 @@ print.wrapper <- function (x) {
 `$.wrapper` <- function (x, i) dollar_name(x, i)
 
 
+#' @rdname wrapper
+#' @export
+`[[.wrapper` <- function (x, i) double_bracket(x, i)
+
+
 #' @description `dollar_names` is an equivalent of `.DollarNames` and
 #' `dollar_name` is an equivalent of the `$` operator. All S3 classes
 #' that are publicly exposed via the `"wrapper"` class need to define
@@ -74,12 +79,19 @@ dollar_name <- function (x, n) UseMethod("dollar_name")
 
 
 #' @rdname wrapper
+double_bracket <- function (x, i) UseMethod("double_bracket")
+
+
+#' @rdname wrapper
 dollar_names.wrapper <- function (x, pattern = "") {
   grep(pattern, dollar_names(unwrap(x), pattern), value = TRUE)
 }
 
 #' @rdname wrapper
 dollar_name.wrapper <- function (x, i) dollar_name(unwrap(x), i)
+
+#' @rdname wrapper
+double_bracket.wrapper <- function (x, i) double_bracket(unwrap(x), i)
 
 
 #' @rdname wrapper
@@ -93,3 +105,6 @@ dollar_name.default <- function (x, i) {
   if (identical(i, "unwrap")) return(x)
   abort("unknown key: ", i)
 }
+
+#' @importFrom rlang abort
+double_bracket.default <- function (x, i) abort(sprintf("`[[` operator not defined for class %s", first(class(x))))

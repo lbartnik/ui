@@ -49,6 +49,11 @@ dollar_name.query <- function (x, n) {
 }
 
 
+#' @export
+double_bracket.query <- function (x, i) {
+  stop('implement this!')
+}
+
 
 #' @importFrom repository execute select top_n
 #' @importFrom stringi stri_paste
