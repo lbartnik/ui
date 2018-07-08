@@ -19,6 +19,11 @@ is_empty <- function (x) {
     is.null(x) || is.na(x) || !length(x) || (is.character(x) && !nchar(x))
 }
 
+is_index_of <- function (i, x) {
+  if (is.numeric(i)) return(i > 0 && i <= length(x))
+  i %in% names(x)
+}
+
 
 with_names <- function (lst, names) {
   stopifnot(identical(length(lst), length(names)))
@@ -38,12 +43,8 @@ last <- function (x) nth(x, length(x))
 first <- function(x) nth(x, 1)
 
 
-
-
-cat0 <- function (..., sep = '') cat(..., sep = sep)
-
 #' @importFrom stringi stri_paste
-ccat <- function (..., sep = ' ', default = 'default')
+cpaste <- function (..., sep = ' ', default = 'default')
 {
   cat_chunk <- function (color, chunk, sep) {
     if (identical(color, 'default') || identical(color, '')) {
@@ -51,18 +52,37 @@ ccat <- function (..., sep = ' ', default = 'default')
     } else {
       color <- get_color(color)
     }
-    cat0(color(chunk), sep)
+    stri_paste(color(chunk), sep, sep = '')
   }
-  get_color <- function (color) get(color, envir = asNamespace("crayon"), inherits = FALSE)
+
+  grey_style <- crayon::make_style(grDevices::grey(.6), grey = TRUE)
+  grey <- function(...) crayon::style(paste0(...), grey_style)
+
+  get_color <- function (color) {
+    if (identical(color, "grey")) return(grey)
+    get(color, envir = asNamespace("crayon"), inherits = FALSE)
+  }
 
   default <- if (identical(default, 'default')) as.character else get_color(default)
   chunks <- lapply(list(...), stri_paste, collapse = sep)
   if (!length(names(chunks))) names(chunks) <- rep("", length(chunks))
 
-  Map(cat_chunk, names(chunks), chunks, c(rep(sep, length(chunks)-1), ''))
+  chunks <- Map(cat_chunk, names(chunks), chunks, c(rep(sep, length(chunks)-1), ''))
+  stri_paste(chunks, collapse = '')
 }
 
-ccat0 <- function (...) ccat(..., sep = '')
+
+cat0 <- function (..., sep = '') cat(..., sep = sep)
+
+ccat <- function (..., sep = ' ', default = 'default') cat(cpaste(..., sep = sep, default = default))
+
+ccat0 <- function (..., default = 'default') ccat(..., sep = '', default = default)
+
+#' @importFrom rlang inform
+cinform <- function (..., sep = ' ', default = 'default') inform(cpaste(..., sep = sep, default = default))
+
+cinform0 <- function (..., default = 'default') cinform(..., sep = '', default = default)
+
 
 # --- evaluatee --------------------------------------------------------
 

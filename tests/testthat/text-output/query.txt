@@ -35,5 +35,5 @@ Class:   grouped_df tbl_df tbl data.frame
 Created: 2018-07-01 21:48:09
 Summary: data.frame[8760, 5]
 
-Showing first 3 object(s)
+... with 6 more object(s)
 You can still specify following tags: class id name time session

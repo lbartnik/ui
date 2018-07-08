@@ -49,9 +49,16 @@ dollar_name.query <- function (x, n) {
 }
 
 
-#' @export
+#' @importFrom rlang abort
 double_bracket.query <- function (x, i) {
-  stop('implement this!')
+  ids <- x %>% select(id, time) %>% arrange(desc(time)) %>% execute %>% nth("id")
+  if (!is_index_of(i, ids)) {
+    abort(sprintf("`%s` is not an index in this query", as.character(i)))
+  }
+
+  id <- nth(ids, i)
+  cinform0(silver = "Extracting element ", white = i, silver = " (", white = storage::shorten(id), silver = ")")
+  x$repository %>% filter(id == UQ(id)) %>% select(object) %>% execute %>% first %>% first
 }
 
 
@@ -66,14 +73,13 @@ print.query <- function (x, ..., n = 3) {
 
   # and a short summary of types of artifacts
   res <- x %>% unselect %>% select(-object, -parent_commit, -id, -parents) %>% execute(.warn = FALSE)
-  ccat0(silver = '\nMatched ', nrow(res),
-        silver = ' object(s), of that ', sum(res$class == "plot"),
-        silver = " plot(s)\n")
+  ccat0(grey = '\nMatched ', nrow(res),
+        grey = ' object(s), of that ', sum(res$class == "plot"),
+        grey = " plot(s)\n")
 
   # print the first n objects
   if (nrow(res)) {
-    ids <- x %>% filter(!('plot' %in% class)) %>% select(id, time) %>% top_n(n) %>%
-      arrange(desc(time)) %>% execute %>% nth("id")
+    ids <- x %>% select(id, time) %>% top_n(n) %>% arrange(desc(time)) %>% execute %>% nth("id")
 
     obj <- repository::repository_explain(x$repository, ids, 0)
 
@@ -84,7 +90,7 @@ print.query <- function (x, ..., n = 3) {
     cat('\n')
 
     if (n < nrow(res)) {
-      ccat(default = 'silver', 'Showing first', n, 'object(s)\n')
+      ccat(grey = '... with', nrow(res)-n, grey = 'more object(s)\n')
     }
   }
 
@@ -92,7 +98,7 @@ print.query <- function (x, ..., n = 3) {
   # TODO exclude tags that are already specified
   # inform what other tags are not yet specified
   all_tags <- dollar_names(x)
-  ccat(default = 'silver', 'You can still specify following tags:', all_tags)
+  ccat(grey = 'You can still specify following tags:', all_tags)
 
   invisible(x)
 }

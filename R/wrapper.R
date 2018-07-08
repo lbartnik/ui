@@ -27,7 +27,7 @@ wrap <- function (x) structure(list(x), class = 'wrapper')
 #' @rdname wrapper
 unwrap <- function (x) {
   stopifnot(is_wrapper(x))
-  first(x)
+  first(unclass(x))
 }
 
 
@@ -98,6 +98,7 @@ double_bracket.wrapper <- function (x, i) double_bracket(unwrap(x), i)
 dollar_names.default <- function (x, pattern = "") {
   grep(pattern, "unwrap", value = TRUE)
 }
+
 
 #' @rdname wrapper
 #' @importFrom rlang abort
