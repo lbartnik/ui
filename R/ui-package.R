@@ -20,8 +20,9 @@ artifacts <- NULL
 
     # here it's still possible to change contents of the namespace
     artifacts <<- wrap(repository::filter(state$repo, isTRUE(artifact)))
-    DollarNamesMapping <<- createDollarNamesMapping()
   }
+
+  DollarNamesMapping <<- createDollarNamesMapping()
 }
 
 .onUnload <- function (libpath)

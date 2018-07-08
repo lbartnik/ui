@@ -45,6 +45,16 @@ print.wrapper <- function (x) {
 }
 
 
+#' @description `str.wrapper` is required because RStudio calls str on
+#' objects from the global environment, whose `.default` version calls
+#' the `[[` operator, which produces a message. This is confusing to the
+#' end user because they haven't requested an explicit object extraction.
+#'
+#' @rdname wrapper
+#' @export
+str.wrapper <- function (x) str(unclass(unwrap(x)))
+
+
 #' @description the `.DollarNames` method and the `$` operator are the
 #' only user-facing entry points into the tab-completion mechanism.
 #'

@@ -26,12 +26,13 @@ test_that("print query", {
 })
 
 
-test_that("print artifacts by session", {
+test_that("print artifacts by tag", {
   q <- sample_query()
 
   verify_specifier <- function (key) {
     s <- unwrap(dollar_name(q, key))
     p <- file.path("text-output", paste0('specifier-', key, '.txt'))
+
     expect_true(is_specifier(s), label = key)
     expect_output_file(print_specifier(s), p, label = key)
   }

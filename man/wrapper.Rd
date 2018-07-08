@@ -6,6 +6,7 @@
 \alias{unwrap}
 \alias{is_wrapper}
 \alias{print.wrapper}
+\alias{str.wrapper}
 \alias{.DollarNames.wrapper}
 \alias{$.wrapper}
 \alias{[[.wrapper}
@@ -26,6 +27,8 @@ unwrap(x)
 is_wrapper(x)
 
 \method{print}{wrapper}(x)
+
+\method{str}{wrapper}(x)
 
 \method{.DollarNames}{wrapper}(x, pattern = "")
 
@@ -67,6 +70,11 @@ to \code{"wrapper"}.
 
 \code{print.wrapper} calls the actual \code{print} method for the
 unwrapped object.
+
+\code{str.wrapper} is required because RStudio calls str on
+objects from the global environment, whose \code{.default} version calls
+the \code{[[} operator, which produces a message. This is confusing to the
+end user because they haven't requested an explicit object extraction.
 
 the \code{.DollarNames} method and the \code{$} operator are the
 only user-facing entry points into the tab-completion mechanism.

@@ -6,10 +6,10 @@ Matched 9 object(s), of that 0 plot(s)
 
 *
 Artifact: b418c062
-Expression: 
-x <- input %>%
-  dplyr::mutate(hour = lubridate::hour(timestamp), dow = lubridate::wday(timestamp)) %>%
-  dplyr::mutate_at(dplyr::vars(hour, dow), dplyr::funs(as.factor))
+Expression:
+  x <- input %>%
+    dplyr::mutate(hour = lubridate::hour(timestamp), dow = lubridate::wday(timestamp)) %>%
+    dplyr::mutate_at(dplyr::vars(hour, dow), dplyr::funs(as.factor))
 Name:    x
 Class:   grouped_df tbl_df tbl data.frame
 Created: 2018-07-01 21:48:14
@@ -17,8 +17,8 @@ Summary: data.frame[8760, 5]
 
 *
 Artifact: 6ee2aaba
-Expression: 
-input %<>% dplyr::filter(meter == "MAC004391")
+Expression:
+  input %<>% dplyr::filter(meter == "MAC004391")
 Name:    input
 Class:   grouped_df tbl_df tbl data.frame
 Created: 2018-07-01 21:48:13
@@ -26,10 +26,10 @@ Summary: data.frame[8760, 3]
 
 *
 Artifact: 866190fb
-Expression: 
-x <- input %>%
-  dplyr::mutate(hour = lubridate::hour(timestamp), dow = lubridate::wday(timestamp)) %>%
-  dplyr::mutate_at(dplyr::vars(hour, dow), dplyr::funs(as.factor))
+Expression:
+  x <- input %>%
+    dplyr::mutate(hour = lubridate::hour(timestamp), dow = lubridate::wday(timestamp)) %>%
+    dplyr::mutate_at(dplyr::vars(hour, dow), dplyr::funs(as.factor))
 Name:    x
 Class:   grouped_df tbl_df tbl data.frame
 Created: 2018-07-01 21:48:09

@@ -24,13 +24,14 @@ table_to_labels <- function (table) {
   paste0(names(table), ' (', as.integer(table), ')')
 }
 
-#' @importFrom stringi stri_pad_right stri_replace_all_fixed stri_wrap
+#' @importFrom stringi stri_length stri_pad_right stri_replace_all_fixed stri_trim_right stri_wrap
 format_labels <- function (labels) {
   labels <- stri_replace_all_fixed(labels, ' ', '*')
-  labels <- stri_pad_right(labels, max(nchar(labels))+2)
+  labels <- stri_pad_right(labels, max(stri_length(labels), na.rm = TRUE) + 2)
   text <- join(labels, '  ')
   lns <- stri_wrap(text, normalize = FALSE, indent = 2, exdent = 2)
   lns <- stri_replace_all_fixed(lns, '*', ' ')
+  lns <- stri_trim_right(lns)
   cat(paste(lns, collapse = '\n'))
 }
 
