@@ -163,7 +163,7 @@ print_specifier <- function (x) UseMethod("print_specifier")
 #' @importFrom rlang UQ
 print_specifier.specifier <- function (x) {
   format_specifier_header(x$key)
-  format_tag_values(table_tag_values(x$query, x$key))
+  format_labels(table_to_labels(table_tag_values(x$query, x$key)))
   invisible(x)
 }
 
@@ -201,7 +201,7 @@ dollar_name.name <- function (x, i) {
 
 print_specifier.name <- function (x) {
   format_specifier_header("names")
-  format_tag_values(table_tag_values(x$query, "names"))
+  format_labels(table_to_labels(table_tag_values(x$query, "names")))
 }
 
 
@@ -234,7 +234,7 @@ dollar_name.time <- function (x, i) {
 
 print_specifier.time <- function (x) {
   format_specifier_header("time")
-  format_tag_values(names(DollarNamesMapping$time))
+  format_labels(names(DollarNamesMapping$time))
 }
 
 
@@ -246,7 +246,7 @@ print_specifier.session <- function (x) {
     mutate(label = sprintf("%s: %s %s:%s", session, as_date(time), hour(time), minute(time)))
 
   format_specifier_header("session")
-  format_tag_values(with_names(vls$n, vls$label))
+  format_labels(table_to_labels(with_names(vls$n, vls$label)))
 }
 
 

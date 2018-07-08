@@ -20,9 +20,12 @@ table_tag_values <- function (qry, tag) {
   table(unlist(vls))
 }
 
+table_to_labels <- function (table) {
+  paste0(names(table), '*(', as.integer(table), ')')
+}
+
 #' @importFrom stringi stri_pad_right stri_replace_all_fixed stri_wrap
-format_tag_values <- function (values) {
-  values <- paste0(names(values), '*(', as.integer(values), ')')
+format_labels <- function (values) {
   values <- stri_pad_right(values, max(nchar(values)))
   text <- join(values, '  ')
   lns <- stri_wrap(text, prefix = '  ', normalize = FALSE)
