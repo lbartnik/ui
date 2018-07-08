@@ -257,14 +257,10 @@ single_result <- function (id, repo) {
 }
 
 #' @importFrom rlang UQ
+#' @importFrom storage shorten
 print.single_result <- function (x, ...) {
-  res <- x$repo %>% filter(id == UQ(x$id)) %>% select(-object) %>% execute
-  cat('<Object>\n\n')
-  cat0('  id:    ', x$id, '\n')
-  cat0('  time:  ', as.character(res$time), '\n')
-  cat0('  name:  ', res$names, '\n')
-  cat0('  class: ', res$class, '\n')
-  cat('\n')
+  ccat0(grey = 'Query points to a single object\n')
+  print(first(repository::repository_explain(x$repo, x$id, ancestors = 0)))
 }
 
 dollar_names.single_result <- function (x, pattern = "") {

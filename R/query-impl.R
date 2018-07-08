@@ -21,14 +21,15 @@ table_tag_values <- function (qry, tag) {
 }
 
 table_to_labels <- function (table) {
-  paste0(names(table), '*(', as.integer(table), ')')
+  paste0(names(table), ' (', as.integer(table), ')')
 }
 
 #' @importFrom stringi stri_pad_right stri_replace_all_fixed stri_wrap
-format_labels <- function (values) {
-  values <- stri_pad_right(values, max(nchar(values)))
-  text <- join(values, '  ')
-  lns <- stri_wrap(text, prefix = '  ', normalize = FALSE)
+format_labels <- function (labels) {
+  labels <- stri_replace_all_fixed(labels, ' ', '*')
+  labels <- stri_pad_right(labels, max(nchar(labels))+2)
+  text <- join(labels, '  ')
+  lns <- stri_wrap(text, normalize = FALSE, indent = 2, exdent = 2)
   lns <- stri_replace_all_fixed(lns, '*', ' ')
   cat(paste(lns, collapse = '\n'))
 }

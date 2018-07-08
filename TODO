@@ -1,7 +1,6 @@
 0) various small fixes
-  * limit the number of tag values presented, e.g. objects$time
   * add legend to each tag help screen, e.g. ccat("silver", "Example: objects$time$...")
-  * rename "objects" to "artifacts"
+  * defer: extract object from "artifacts$class$lm$value"
 
 1) describe objects in line, repo::describe
 
