@@ -63,7 +63,7 @@ print.query <- function (x, ..., n = 3) {
   res <- x %>% unselect %>% select(-object, -parent_commit, -id, -parents) %>% execute(.warn = FALSE)
   ccat0(silver = '\nMatched ', nrow(res),
         silver = ' object(s), of that ', sum(res$class == "plot"),
-        silver = " plot(s)\n\n")
+        silver = " plot(s)\n")
 
   # print the first n objects
   if (nrow(res)) {
@@ -73,10 +73,10 @@ print.query <- function (x, ..., n = 3) {
     obj <- repository::repository_explain(x$repository, ids, 0)
 
     z <- lapply(obj, function (x) {
-      ccat(green = '*\n')
+      ccat(green = '\n*\n')
       print(x)
-      cat('\n\n')
     })
+    cat('\n')
 
     if (n < nrow(res)) {
       ccat(default = 'silver', 'Showing first', n, 'object(s)\n')
