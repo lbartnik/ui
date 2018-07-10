@@ -6,6 +6,8 @@ dollar_names.query <- function (x, pattern = "") {
 
 #' @importFrom rlang abort UQ
 #' @importFrom lubridate as_date ymd
+#' @importFrom storage enlongate
+#'
 dollar_name.query <- function (x, n) {
   # TODO
   # 1. if `i` is an action key (browse, etc.) run that action
@@ -44,8 +46,19 @@ dollar_name.query <- function (x, n) {
     return(wrap(repository::filter(x, as_date(time) == UQ(as.character(d)))))
   }
 
-  # if it doesn't look like anything else, it must be an attempt at name
-  handle_result(repository::filter(x, UQ(n) %in% names))
+  # if it doesn't look like anything else, it must be an attempt at name or id
+  res <- x  %>% select(id) %>% repository::filter(UQ(n) %in% names) %>% summarise(n = n()) %>% execute %>% first
+  if (is.numeric(res) && res > 0) {
+    res <- repository::filter(x, UQ(n) %in% names)
+  }
+  else {
+    id <- tryCatch(enlongate(n, x$repository$store), error = function (e) {
+      abort(sprintf("`%s` does not identify an artifact", n))
+    })
+    res <- repository::filter(x$repository, UQ(id) == id)
+  }
+
+  handle_result(res)
 }
 
 
