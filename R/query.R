@@ -264,14 +264,40 @@ print.single_result <- function (x, ...) {
 }
 
 dollar_names.single_result <- function (x, pattern = "") {
-  grep(pattern, "value", value = TRUE)
+  keys <- c("explain", "inspect", "value")
+  grep(pattern, keys, value = TRUE)
 }
 
 #' @importFrom rlang abort UQ
 dollar_name.single_result <- function (x, i) {
+
+  if (identical(i, "explain")) {
+    # TODO turn this result into a function that takes an extra parameter
+    #      (the number of ancestors) or handle an extra number at the
+    #      end of this key
+    exp <- repository::repository_explain(x$repo, x$id, ancestors = 7)
+    return(structure(exp, class = 'explanation'))
+  }
+
+  if (identical(i, "inspect")) {
+    abort("inspect not implemented yet")
+  }
+
   if (identical(i, "value")) {
     res <- x$repo %>% filter(id == UQ(x$id)) %>% select(object) %>% execute
     return(with_id(res[[1]][[1]], x$id))
   }
+
   abort("unknown key: ", i)
+}
+
+
+#' @importFrom storage shorten
+#' @export
+print.explanation <- function (x, ...) {
+  i <- order(map_dbl(x, repository::expl_get, "time"), decreasing = FALSE)
+  lapply(x[i], function (obj) {
+    ccat0(green = shorten(obj$id), '\n')
+    ccat0(repository::format_expr(obj$expr), '\n\n')
+  })
 }

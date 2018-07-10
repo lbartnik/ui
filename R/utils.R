@@ -10,6 +10,11 @@ map_chr <- function (x, f, ...) {
   as.character(unlist(ans))
 }
 
+map_dbl <- function (x, f, ...) {
+  ans <- lapply(x, f, ...)
+  as.numeric(unlist(ans))
+}
+
 join <- function (x, sep = ', ') {
   paste(x, collapse = sep)
 }
