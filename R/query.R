@@ -275,8 +275,7 @@ dollar_name.single_result <- function (x, i) {
     # TODO turn this result into a function that takes an extra parameter
     #      (the number of ancestors) or handle an extra number at the
     #      end of this key
-    exp <- repository::repository_explain(x$repo, x$id, ancestors = 7)
-    return(structure(exp, class = 'explanation'))
+    return(repository::repository_explain(x$repo, x$id, ancestors = 7))
   }
 
   if (identical(i, "inspect")) {
@@ -289,15 +288,4 @@ dollar_name.single_result <- function (x, i) {
   }
 
   abort("unknown key: ", i)
-}
-
-
-#' @importFrom storage shorten
-#' @export
-print.explanation <- function (x, ...) {
-  i <- order(map_dbl(x, repository::expl_get, "time"), decreasing = FALSE)
-  lapply(x[i], function (obj) {
-    ccat0(green = shorten(obj$id), '\n')
-    ccat0(repository::format_expr(obj$expr), '\n\n')
-  })
 }
