@@ -2,7 +2,7 @@
   * add legend to each tag help screen, e.g. ccat("silver", "Example: objects$time$...")
   * defer: extract object from "artifacts$class$lm$value"
 
-1) describe objects in line, repo::describe
+1) re-plot a stored plot
 
 2) return a tibble with objects from a query under $value
 
