@@ -265,6 +265,15 @@ print_specifier.session <- function (x) {
 
 # --- query result -----------------------------------------------------
 
+is_artifact_a <- function (repo, id, what) {
+  stopifnot(what %in% 'plot')
+
+  if (identical(what, 'plot')) {
+    class <- repo %>% filter(id == UQ(id)) %>% select(class) %>% execute %>% first %>% unlist
+    return('plot' %in% class)
+  }
+}
+
 single_result <- function (id, repo) {
   structure(list(id = id, repo = repo), class = 'single_result')
 }
@@ -278,6 +287,10 @@ print.single_result <- function (x, ...) {
 
 dollar_names.single_result <- function (x, pattern = "") {
   keys <- c("explain", "inspect", "value")
+  if (is_artifact_a(x$repo, x$id, 'plot')) {
+    keys <- sort(c(keys, 'plot'))
+  }
+
   grep(pattern, keys, value = TRUE)
 }
 
@@ -295,9 +308,15 @@ dollar_name.single_result <- function (x, i) {
     abort("inspect not implemented yet")
   }
 
+  if (is_artifact_a(x$repo, x$id, 'plot') && identical(i, 'plot')) {
+    res <- x$repo %>% filter(id == UQ(x$id)) %>% select(object) %>% execute %>% first %>% first
+    plot(res)
+    return(invisible(res))
+  }
+
   if (identical(i, "value")) {
     res <- x$repo %>% filter(id == UQ(x$id)) %>% select(object) %>% execute
-    return(with_id(res[[1]][[1]], x$id))
+    return(with_id(res, x$id))
   }
 
   abort("unknown key: ", i)
