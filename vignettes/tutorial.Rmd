@@ -15,6 +15,17 @@ library(knitr)
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>", prompt = FALSE, echo = TRUE)
 ```
 
+Plan (TODO):
+
+  * Browse (general)
+  * Find object/artifact
+  * Search for artifact (lm, plot, etc.), then browse session from that point
+  * Name an object (give a new name to an object)
+  * Put an artifact in a collection
+  * Export (explanation, history) to Rmd
+  * Explain an object
+
+
 
 # Produce objects - sample research project
 
