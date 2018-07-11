@@ -1,0 +1,39 @@
+Query:
+  <repository:/home/lukasz/R/x86_64-pc-linux-gnu-library/3.5/repository/sample-repository> %>%
+    filter(isTRUE(artifact), "data.frame" %in% class)
+
+Matched 9 object(s), of that 0 plot(s)
+
+*
+Artifact: b418c062
+Expression:
+  x <- input %>%
+    dplyr::mutate(hour = lubridate::hour(timestamp), dow = lubridate::wday(timestamp)) %>%
+    dplyr::mutate_at(dplyr::vars(hour, dow), dplyr::funs(as.factor))
+Name:    x
+Class:   grouped_df tbl_df tbl data.frame
+Created: 2018-07-01 21:48:14
+Summary: data.frame[8760, 5]
+
+*
+Artifact: 6ee2aaba
+Expression:
+  input %<>% dplyr::filter(meter == "MAC004391")
+Name:    input
+Class:   grouped_df tbl_df tbl data.frame
+Created: 2018-07-01 21:48:13
+Summary: data.frame[8760, 3]
+
+*
+Artifact: 866190fb
+Expression:
+  x <- input %>%
+    dplyr::mutate(hour = lubridate::hour(timestamp), dow = lubridate::wday(timestamp)) %>%
+    dplyr::mutate_at(dplyr::vars(hour, dow), dplyr::funs(as.factor))
+Name:    x
+Class:   grouped_df tbl_df tbl data.frame
+Created: 2018-07-01 21:48:09
+Summary: data.frame[8760, 5]
+
+... with 6 more object(s)
+You can still specify following tags: class id name time session

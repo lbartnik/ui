@@ -4,7 +4,7 @@
 \name{DollarNamesMapping}
 \alias{DollarNamesMapping}
 \title{Assigned in .onLoad}
-\format{An object of class \code{NULL} of length 0.}
+\format{An object of class \code{list} of length 1.}
 \usage{
 DollarNamesMapping
 }

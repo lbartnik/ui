@@ -4,24 +4,24 @@
 \name{state}
 \alias{state}
 \alias{initiate_state}
+\alias{open_default_repo}
+\alias{pick_branch}
 \alias{start_tracking}
 \alias{stop_tracking}
-\alias{open_repo}
-\alias{pick_branch}
 \title{Global state of the tracker.}
 \format{An object of class \code{environment} of length 0.}
 \usage{
 state
 
-initiate_state()
+initiate_state(state)
 
-start_tracking()
+open_default_repo(state, env, create = FALSE)
 
-stop_tracking()
+pick_branch(repo, env)
 
-open_repo(create = FALSE)
+start_tracking(state)
 
-pick_branch(repo)
+stop_tracking(state)
 }
 \description{
 \describe{

@@ -1,0 +1,4 @@
+Tag:  class 
+Possible values:
+  data.frame (9)    grouped_df (8)    lm (1)            plot (6)
+  tbl (9)           tbl_df (9)

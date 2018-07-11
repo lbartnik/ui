@@ -1,0 +1,8 @@
+Tag:  time 
+Possible values:
+  today              yesterday          thisweek
+  last_24hrs         last_3days         last_7days
+  last_day           last_week          since_yesterday
+  since_Monday       since_Tuesday      since_Wednesay
+  since_Thursday     since_Friday       since_Saturday
+  since_Sunday

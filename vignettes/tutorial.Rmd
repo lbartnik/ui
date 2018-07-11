@@ -28,54 +28,54 @@ Run a sample project generation.
 We can look at R sessions recorded so far:
 
 ```{r}
-objects$session
+artifacts$session
 ```
 
 We can also see objects recorded in the repository:
 
 ```{r}
-objects$name
+artifacts$name
 ```
 
 Other keys are: `class`, `id` and `time`. Let's look at `time`:
 
 ```{r}
-objects$time
+artifacts$time
 ```
 
 
-## Limiting the selection
+## Searching for artifacts
 
 We can limit the object selection by session identifier:
 
 ```{r}
-objects$session$eba8e78f
+artifacts$session$eba8e78f
 ```
 
 Similarily, we can look at specific object creation time:
 
 ```{r}
-objects$time$since_yesterday
+artifacts$time$since_yesterday
 ```
 
 In both cases, we see a `filter()` expression added to the selection
 query and at most the first three objects matching this query.
 
 
-## Selecting an object
+## Selecting an artifact
 
 We can retrieve a specific object from the repository:
 
 ```{r}
-objects$name$x$value
-objects$id$`daf87ac4`$value
+artifacts$name$x$value
+artifacts$id$`daf87ac4`$value
 ```
 
 A shortcut version of these expressions is:
 
 ```{r}
-objects$x$value
-objects$`daf87ac4`$value
+artifacts$x$value
+artifacts$`daf87ac4`$value
 ```
 
 The name or identifier have to uniquely identify a single object. If
@@ -83,20 +83,20 @@ there is more than one object matching the condition, you can keep
 narrowing the query:
 
 ```{r}
-objects$y$class$lm$value
+artifacts$y$class$lm$value
 ```
 
 Similarly, you can construct a query where name or id is not specified
 at all.
 
 ```{r}
-objects$time$yesterday$class$lm
+artifacts$time$yesterday$class$lm
 ```
 
 Finally, you can use the bracket operator to access an arbitrary
 object within a query result:
 
 ```{r}
-objects$time$yesterday$class$lm[[1]]
-objects$time$yesterday$class$lm[[2]]
+artifacts$time$yesterday$class$lm[[1]]
+artifacts$time$yesterday$class$lm[[2]]
 ```

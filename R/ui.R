@@ -39,14 +39,14 @@ tracker <- session_tracker()
 #' @export
 print.history <- function (x, ...) {
   mapply(rev(seq_along(x)), x, FUN = function (no, commit) {
-    ccat0('green', no, ': ')
-    ccat0('yellow', deparse(commit$expr), '\n')
-    ccat0('silver', '  new:   ')
+    ccat0(default = 'green', no, ': ')
+    ccat0(yellow = deparse(commit$expr), '\n')
+    ccat0(silver = '  new:   ')
     lapply(commit$new, function (name) {
       cat0(name, ' [', description(commit$data[[name]]), '] ')
     })
     cat('\n')
-    ccat0('silver', '  other: ')
+    ccat0(silver = '  other: ')
     cat(paste(setdiff(names(commit$objects), commit$new), collapse = ' '), '\n')
   })
 }
@@ -57,9 +57,9 @@ print.branches <- function (x, ...) {
   cat0('Found ', length(x), ' branch', if (length(x)>1) 'es', ':\n\n')
 
   lapply(x, function (ct) {
-    ccat0('yellow', toString(ct$time), '\n')
-    ccat_(list('  ', silver = 'id:   ', storage::shorten(ct$id), '\n'))
-    ccat_(list('  ', silver = 'expr: ', deparse(ct$expr), '\n'))
-    ccat_(list('  ', silver = 'vars: ', paste(names(ct$objects), collapse = ' '), '\n'))
+    ccat0(yellow = toString(ct$time), '\n')
+    ccat('  ', silver = 'id:   ', storage::shorten(ct$id), '\n')
+    ccat('  ', silver = 'expr: ', deparse(ct$expr), '\n')
+    ccat('  ', silver = 'vars: ', paste(names(ct$objects), collapse = ' '), '\n')
   })
 }

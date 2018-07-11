@@ -1,88 +1,3 @@
-#' Dollar-name interceptors. Wrappers.
-#'
-#' In the process of building a query, a number of objects of different
-#' classes are involved. In order to avoid defining multiple `$` operator
-#' methods and multiple `.DollarName` methods, we define and export only
-#' the pair of methods for the `wrapper` class. These methods pass the
-#' control to `dollar_name` and `dollar_names` generics, respectively.
-#' These, in turn, `unwrap` the actual object `o` and pass control to the
-#' `dollar_name` or `dollar_names` method for that object `o`.
-#'
-#' This way we:
-#'   * avoid the risk of defining and injecting the `$` operator method
-#'     into unexpected places, especially other packages
-#'   * expose explicit testing API
-#'
-#' @rdname wrapper
-dollar_names <- function (x, pattern = "") UseMethod("dollar_names")
-
-#' @rdname wrapper
-dollar_name <- function (x, n) UseMethod("dollar_name")
-
-
-#' @description `wrap` puts `x` in a list and sets that list's class
-#' to `"wrapper"`.
-#'
-#' @rdname wrapper
-wrap <- function (x) structure(list(x), class = 'wrapper')
-
-
-#' @description `unwrap` returns the original wrapped object.
-#'
-#' @rdname wrapper
-unwrap <- function (x) {
-  stopifnot(is_wrapper(x))
-  first(x)
-}
-
-
-#' @rdname wrapper
-is_wrapper <- function (x) inherits(x, 'wrapper')
-
-
-
-#' @rdname wrapper
-#' @export
-print.wrapper <- function (x) {
-  invisible(wrap(print(unwrap(x))))
-}
-
-#' @rdname wrapper
-#' @export
-`.DollarNames.wrapper` <- function (x, pattern = "") dollar_names(x, pattern)
-
-
-#' @rdname wrapper
-#' @export
-`$.wrapper` <- function (x, i) dollar_name(x, i)
-
-
-# --- generic dollar_name(s) -------------------------------------------
-
-#' @rdname wrapper
-dollar_names.wrapper <- function (x, pattern = "") {
-  grep(pattern, dollar_names(unwrap(x), pattern), value = TRUE)
-}
-
-#' @rdname wrapper
-dollar_name.wrapper <- function (x, i) dollar_name(unwrap(x), i)
-
-
-#' @rdname wrapper
-dollar_names.default <- function (x, pattern = "") {
-  grep(pattern, "unwrap", value = TRUE)
-}
-
-#' @rdname wrapper
-#' @importFrom rlang abort
-dollar_name.default <- function (x, i) {
-  if (identical(i, "unwrap")) return(x)
-  abort("unknown key: ", i)
-}
-
-# --- the actual implementation ---------------------------------------
-
-
 
 dollar_names.query <- function (x, pattern = "") {
   grep(pattern, c("class", "id", "name", "time", "session"), value = TRUE)
@@ -91,6 +6,8 @@ dollar_names.query <- function (x, pattern = "") {
 
 #' @importFrom rlang abort UQ
 #' @importFrom lubridate as_date ymd
+#' @importFrom storage enlongate
+#'
 dollar_name.query <- function (x, n) {
   # TODO
   # 1. if `i` is an action key (browse, etc.) run that action
@@ -129,75 +46,74 @@ dollar_name.query <- function (x, n) {
     return(wrap(repository::filter(x, as_date(time) == UQ(as.character(d)))))
   }
 
-  # if it doesn't look like anything else, it must be an attempt at name
-  handle_result(repository::filter(x, UQ(n) %in% names))
+  # if it doesn't look like anything else, it must be an attempt at name or id
+  res <- x  %>% select(id) %>% repository::filter(UQ(n) %in% names) %>% summarise(n = n()) %>% execute %>% first
+  if (is.numeric(res) && res > 0) {
+    res <- repository::filter(x, UQ(n) %in% names)
+  }
+  else {
+    id <- tryCatch(enlongate(n, x$repository$store), error = function (e) {
+      abort(sprintf("`%s` does not identify an artifact", n))
+    })
+    res <- repository::filter(x$repository, UQ(id) == id)
+  }
+
+  handle_result(res)
 }
 
+
+#' @importFrom rlang abort
+double_bracket.query <- function (x, i) {
+  ids <- x %>% select(id, time) %>% arrange(desc(time)) %>% execute %>% nth("id")
+  if (!is_index_of(i, ids)) {
+    abort(sprintf("`%s` is not an index in this query", as.character(i)))
+  }
+
+  id <- nth(ids, i)
+  cinform0(silver = "Extracting element ", white = i, silver = " (", white = storage::shorten(id), silver = ")")
+  x$repository %>% filter(id == UQ(id)) %>% select(object) %>% execute %>% first %>% first
+}
 
 
 #' @importFrom repository execute select top_n
+#' @importFrom stringi stri_paste
 #' @export
-print.query <- function (x, ...) {
-  cat('Query:\n\n')
+print.query <- function (x, ..., n = 3) {
 
+  # print the query itself
+  ccat(silver = 'Query:\n')
   repository:::print.query(x)
 
-  # lapply(x$filter)
+  # and a short summary of types of artifacts
+  res <- x %>% unselect %>% select(-object, -parent_commit, -id, -parents) %>% execute(.warn = FALSE)
+  ccat0(grey = '\nMatched ', nrow(res),
+        grey = ' object(s), of that ', sum(res$class == "plot"),
+        grey = " plot(s)\n")
 
-  res <- x %>% select(-object, -parent_commit, -id, -parents, .force = TRUE) %>% execute(.warn = FALSE)
-  cat('\nMatched ', nrow(res), ' object(s), of that ', sum(res$class == "plot"), " plot(s)",
-      sep = "")
-  cat('\n\n')
-
-  # TODO
-  # 1. exclude tags that are already specified
-  Map(names(res), res, f = function (name, values) {
-    cat('   ', name, ': ', paste(unique(as.character(values)), collapse = ', '), '\n', sep = '')
-  })
-
+  # print the first n objects
   if (nrow(res)) {
-    cat('\nFirst three object(s):\n\n')
-    # 2. print the first three objects
-    res <- x %>% select(object, .force = TRUE) %>% top_n(3) %>% execute
-    lapply(res$object, function (obj) {
-      cat0('  ', repository:::description(obj), '\n')
-    })
+    ids <- x %>% select(id, time) %>% top_n(n) %>% arrange(desc(time)) %>% execute %>% nth("id")
 
+    obj <- repository::repository_explain(x$repository, ids, 0)
+
+    z <- lapply(obj, function (x) {
+      ccat(green = '\n*\n')
+      print(x)
+    })
     cat('\n')
+
+    if (n < nrow(res)) {
+      ccat(grey = '... with', nrow(res)-n, grey = 'more object(s)\n')
+    }
   }
+
+
+  # TODO exclude tags that are already specified
+  # inform what other tags are not yet specified
+  all_tags <- dollar_names(x)
+  ccat(grey = 'You can still specify following tags:', all_tags)
 
   invisible(x)
-}
-
-
-# --- query result -----------------------------------------------------
-
-single_result <- function (id, repo) {
-  structure(list(id = id, repo = repo), class = 'single_result')
-}
-
-#' @importFrom rlang UQ
-print.single_result <- function (x, ...) {
-  res <- x$repo %>% filter(id == UQ(x$id)) %>% select(-object) %>% execute
-  cat('<Object>\n\n')
-  cat0('  id:    ', x$id, '\n')
-  cat0('  time:  ', as.character(res$time), '\n')
-  cat0('  name:  ', res$names, '\n')
-  cat0('  class: ', res$class, '\n')
-  cat('\n')
-}
-
-dollar_names.single_result <- function (x, pattern = "") {
-  grep(pattern, "value", value = TRUE)
-}
-
-#' @importFrom rlang abort UQ
-dollar_name.single_result <- function (x, i) {
-  if (identical(i, "value")) {
-    res <- x$repo %>% filter(id == UQ(x$id)) %>% select(object) %>% execute
-    return(with_id(res[[1]][[1]], x$id))
-  }
-  abort("unknown key: ", i)
 }
 
 
@@ -259,7 +175,8 @@ print_specifier <- function (x) UseMethod("print_specifier")
 #' @rdname specifier
 #' @importFrom rlang UQ
 print_specifier.specifier <- function (x) {
-  format_tag_values(x$key, table_tag_values(x$query, x$key))
+  format_specifier_header(x$key)
+  format_labels(table_to_labels(table_tag_values(x$query, x$key)))
   invisible(x)
 }
 
@@ -296,7 +213,8 @@ dollar_name.name <- function (x, i) {
 
 
 print_specifier.name <- function (x) {
-  format_tag_values("names", table_tag_values(x$query, "names"))
+  format_specifier_header("names")
+  format_labels(table_to_labels(table_tag_values(x$query, "names")))
 }
 
 
@@ -328,7 +246,8 @@ dollar_name.time <- function (x, i) {
 }
 
 print_specifier.time <- function (x) {
-  format_tag_values("time", names(DollarNamesMapping$time))
+  format_specifier_header("time")
+  format_labels(names(DollarNamesMapping$time))
 }
 
 
@@ -337,7 +256,68 @@ print_specifier.time <- function (x) {
 print_specifier.session <- function (x) {
   raw <- x$query %>% select(session, time) %>% execute
   vls <- raw %>% group_by(session) %>% summarise(time = min(time), n = n()) %>%
-    mutate(label = sprintf("%s: %s %s:%s (%s)", session, as_date(time), hour(time), minute(time), n))
-  format_tag_values("session", vls$label)
+    mutate(label = sprintf("%s: %s %s:%s", session, as_date(time), hour(time), minute(time)))
+
+  format_specifier_header("session")
+  format_labels(table_to_labels(with_names(vls$n, vls$label)))
 }
 
+
+# --- query result -----------------------------------------------------
+
+is_artifact_a <- function (repo, id, what) {
+  stopifnot(what %in% 'plot')
+
+  if (identical(what, 'plot')) {
+    class <- repo %>% filter(id == UQ(id)) %>% select(class) %>% execute %>% first %>% unlist
+    return('plot' %in% class)
+  }
+}
+
+single_result <- function (id, repo) {
+  structure(list(id = id, repo = repo), class = 'single_result')
+}
+
+#' @importFrom rlang UQ
+#' @importFrom storage shorten
+print.single_result <- function (x, ...) {
+  ccat0(grey = 'Query points to a single object\n')
+  print(first(repository::repository_explain(x$repo, x$id, ancestors = 0)))
+}
+
+dollar_names.single_result <- function (x, pattern = "") {
+  keys <- c("explain", "inspect", "value")
+  if (is_artifact_a(x$repo, x$id, 'plot')) {
+    keys <- sort(c(keys, 'plot'))
+  }
+
+  grep(pattern, keys, value = TRUE)
+}
+
+#' @importFrom rlang abort UQ
+dollar_name.single_result <- function (x, i) {
+
+  if (identical(i, "explain")) {
+    # TODO turn this result into a function that takes an extra parameter
+    #      (the number of ancestors) or handle an extra number at the
+    #      end of this key
+    return(repository::repository_explain(x$repo, x$id, ancestors = 7))
+  }
+
+  if (identical(i, "inspect")) {
+    abort("inspect not implemented yet")
+  }
+
+  if (is_artifact_a(x$repo, x$id, 'plot') && identical(i, 'plot')) {
+    res <- x$repo %>% filter(id == UQ(x$id)) %>% select(object) %>% execute %>% first %>% first
+    plot(res)
+    return(invisible(res))
+  }
+
+  if (identical(i, "value")) {
+    res <- x$repo %>% filter(id == UQ(x$id)) %>% select(object) %>% execute
+    return(with_id(res, x$id))
+  }
+
+  abort("unknown key: ", i)
+}

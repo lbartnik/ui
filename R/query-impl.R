@@ -11,21 +11,27 @@ mark_single <- function (x) {
 is_single <- function (x) isTRUE(attr(x, 'ui::single'))
 
 
-
-
-table_tag_values <- function (qry, tag) {
-  vls <- qry %>% select(UQ(as.symbol(tag))) %>% execute
-  vls <- table(vls)
-  paste0(names(vls), ' (', as.integer(vls), ')')
+format_specifier_header <- function (tag_name) {
+  ccat(silver = 'Tag: ', tag_name, silver = '\nPossible values:\n')
 }
 
-#' @importFrom stringi stri_wrap
-format_tag_values <- function (tag, values) {
-  cat0('Tag: ', tag, '\n\nAllowed values:\n')
+table_tag_values <- function (qry, tag) {
+  vls <- qry %>% select(UQ(as.symbol(tag))) %>% execute %>% first
+  table(unlist(vls))
+}
 
-  fmt <- paste0("%-", max(nchar(values)) + 2, "s")
-  pad <- map_chr(values, function (v) sprintf(fmt, v))
-  lns <- stri_wrap(paste(pad, collapse = ''), prefix = '  ', normalize = FALSE)
+table_to_labels <- function (table) {
+  paste0(names(table), ' (', as.integer(table), ')')
+}
+
+#' @importFrom stringi stri_length stri_pad_right stri_replace_all_fixed stri_trim_right stri_wrap
+format_labels <- function (labels) {
+  labels <- stri_replace_all_fixed(labels, ' ', '*')
+  labels <- stri_pad_right(labels, max(stri_length(labels), na.rm = TRUE) + 2)
+  text <- join(labels, '  ')
+  lns <- stri_wrap(text, normalize = FALSE, indent = 2, exdent = 2)
+  lns <- stri_replace_all_fixed(lns, '*', ' ')
+  lns <- stri_trim_right(lns)
   cat(paste(lns, collapse = '\n'))
 }
 
@@ -35,7 +41,7 @@ DollarNamesMapping <- NULL
 
 
 #' @importFrom rlang quo
-#' @importFrom lubridate as_date ddays dhours floor_date today
+#' @importFrom lubridate as_date ddays dhours floor_date today wday
 #'
 createDollarNamesMapping <- function () {
   last_wday <- function (which) {

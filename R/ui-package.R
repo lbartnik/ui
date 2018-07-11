@@ -5,24 +5,31 @@ NULL
 
 
 #' @export
-objects <- NULL
+artifacts <- NULL
 
 
 .onLoad <- function (libname, pkgname)
 {
   if (interactive()) {
-    initiate_state()
-    start_tracking()
+    initiate_state(state)
+    open_default_repo(state, globalenv())
+
+    if (is_tracking_allowed()) {
+      start_tracking(state)
+    }
 
     # here it's still possible to change contents of the namespace
-    objects <<- wrap(repository::filter(state$repo, isTRUE(artifact)))
-    DollarNamesMapping <<- createDollarNamesMapping()
+    artifacts <<- wrap(repository::filter(state$repo, isTRUE(artifact)))
   }
+
+  DollarNamesMapping <<- createDollarNamesMapping()
 }
 
 .onUnload <- function (libpath)
 {
-  if (interactive()) {
-    stop_tracking()
+  if (interactive() && is_tracking_allowed()) {
+    stop_tracking(state)
   }
 }
+
+is_tracking_allowed <- function () isTRUE(getOption("ui.track", FALSE))
