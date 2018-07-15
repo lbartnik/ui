@@ -1,5 +1,5 @@
 Query:
-  <repository:/tmp/RtmppwjGJh/sample-repository> %>%
+  <repository> %>%
     filter(isTRUE(artifact), "data.frame" %in% class)
 
 Matched 10 object(s), of that 0 plot(s)

@@ -88,7 +88,7 @@ print.query <- function (x, ..., n = 3) {
 
   # print the query itself
   ccat(silver = 'Query:\n')
-  repository:::print.query(x)
+  repository:::print.query(x, ...)
 
   # and a short summary of types of artifacts
   res <- x %>% unselect %>% select(-object, -parent_commit, -id, -parents) %>% execute(.warn = FALSE)

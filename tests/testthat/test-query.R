@@ -22,7 +22,7 @@ test_that("tag values", {
 
 test_that("print query", {
   q <- sample_query()
-  expect_output_file(print(q$class$data.frame), 'text-output/query.txt')
+  expect_output_file(print(q$class$data.frame, simplify = TRUE), 'text-output/query.txt')
 })
 
 
