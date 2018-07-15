@@ -11,10 +11,10 @@ test_that("tag values", {
   }
 
   expect_tag_values("class",
-                    c("data.frame", "grouped_df", "lm", "plot", "tbl", "tbl_df"),
-                    c(9, 8, 1, 6, 9, 9))
+                    c("data.frame", "grouped_df", "lm", "plot", "rawplot", "tbl", "tbl_df"),
+                    c(10, 9, 1, 6, 6, 10, 10))
 
-  expect_tag_values("names", c("input", "m", "x"), c(5, 1, 4))
+  expect_tag_values("names", c("input", "m", "x"), c(5, 1, 5))
 })
 
 

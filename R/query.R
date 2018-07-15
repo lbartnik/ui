@@ -242,7 +242,8 @@ dollar_names.time <- function (x, pattern = "") {
 }
 
 
-#' @importFrom rlang UQ has_name
+#' @importFrom rlang UQ
+#' @import utilities
 #'
 dollar_name.time <- function (x, i) {
   stopifnot(has_name(DollarNamesMapping$time, i))

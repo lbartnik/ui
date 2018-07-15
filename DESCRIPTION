@@ -16,7 +16,7 @@ Imports:
   rlang,
   storage,
   stringi,
-  utils
+  utilities
 Suggests:
   devtools,
   mockery,
