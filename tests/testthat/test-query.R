@@ -11,10 +11,10 @@ test_that("tag values", {
   }
 
   expect_tag_values("class",
-                    c("data.frame", "grouped_df", "lm", "plot", "tbl", "tbl_df"),
-                    c(9, 8, 1, 6, 9, 9))
+                    c("data.frame", "grouped_df", "lm", "plot", "rawplot", "tbl", "tbl_df"),
+                    c(10, 9, 1, 6, 6, 10, 10))
 
-  expect_tag_values("names", c("input", "m", "x"), c(5, 1, 4))
+  expect_tag_values("names", c("input", "m", "x"), c(5, 1, 5))
 })
 
 
@@ -22,7 +22,7 @@ test_that("tag values", {
 
 test_that("print query", {
   q <- sample_query()
-  expect_output_file(print(q$class$data.frame), 'text-output/query.txt')
+  expect_output_file(print(q$class$data.frame, simplify = TRUE), 'text-output/query.txt')
 })
 
 

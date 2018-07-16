@@ -15,7 +15,8 @@ Imports:
   repository,
   rlang,
   storage,
-  stringi
+  stringi,
+  utilities
 Suggests:
   devtools,
   mockery,
@@ -28,11 +29,11 @@ Collate:
   'ui.R'
   'ui-impl.R'
   'ui-package.R'
-  'utils.R'
   'wrapper.R'
 Remotes:
-  lbartnik/repository
-  lbartnik/storage
+  lbartnik/repository,
+  lbartnik/storage,
+  lbartnik/utils
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1
 Roxygen: list(markdown = TRUE)

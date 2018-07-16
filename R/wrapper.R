@@ -40,8 +40,8 @@ is_wrapper <- function (x) inherits(x, 'wrapper')
 #'
 #' @rdname wrapper
 #' @export
-print.wrapper <- function (x) {
-  invisible(wrap(print(unwrap(x))))
+print.wrapper <- function (x, ...) {
+  invisible(wrap(print(unwrap(x), ...)))
 }
 
 

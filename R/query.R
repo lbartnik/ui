@@ -1,6 +1,11 @@
 
+# TODO expose search tags so that they can be checked against in
+#      is_query_key() inside dollar_name.query
 dollar_names.query <- function (x, pattern = "") {
-  grep(pattern, c("class", "id", "name", "time", "session"), value = TRUE)
+  search_tags <- c("class", "id", "name", "time", "session")
+  action_keys <- c("history")
+
+  grep(pattern, sort(c(search_tags, action_keys)), value = TRUE)
 }
 
 
@@ -16,12 +21,13 @@ dollar_name.query <- function (x, n) {
   # 4. else treat `i` as a name specifier
 
   is_query_key <- function (k) identical(k, dollar_names(x, k))
-  is_action_key <- function (k) FALSE
 
-  if (is_action_key(n)) {
-    # TODO run the action
+  if (identical(n, "history")) {
+    ids <- x %>% select(id) %>% execute %>% first
+    return(repository::repository_explain(x$repository, ids, ancestors = 0))
   }
 
+  # TODO check only actual search tags
   if (is_query_key(n)) {
     return(wrap(new_specifier(x, n)))
   }
@@ -82,7 +88,7 @@ print.query <- function (x, ..., n = 3) {
 
   # print the query itself
   ccat(silver = 'Query:\n')
-  repository:::print.query(x)
+  repository:::print.query(x, ...)
 
   # and a short summary of types of artifacts
   res <- x %>% unselect %>% select(-object, -parent_commit, -id, -parents) %>% execute(.warn = FALSE)
@@ -236,7 +242,8 @@ dollar_names.time <- function (x, pattern = "") {
 }
 
 
-#' @importFrom rlang UQ has_name
+#' @importFrom rlang UQ
+#' @import utilities
 #'
 dollar_name.time <- function (x, i) {
   stopifnot(has_name(DollarNamesMapping$time, i))

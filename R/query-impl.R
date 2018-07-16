@@ -15,6 +15,7 @@ format_specifier_header <- function (tag_name) {
   ccat(silver = 'Tag: ', tag_name, silver = '\nPossible values:\n')
 }
 
+#' @import utilities
 table_tag_values <- function (qry, tag) {
   vls <- qry %>% select(UQ(as.symbol(tag))) %>% execute %>% first
   table(unlist(vls))

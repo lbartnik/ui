@@ -20,3 +20,12 @@ x <-
 
 debug(repository:::all_tag_names)
 tag_names(state$repo)
+
+
+
+
+> y=artifacts$name$x[[5]]
+Extracting element 5 (f59403b5)
+> x=artifacts$name$x[[4]]
+Extracting element 4 (64228d01)
+
