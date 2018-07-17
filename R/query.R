@@ -3,7 +3,7 @@
 #      is_query_key() inside dollar_name.query
 dollar_names.query <- function (x, pattern = "") {
   search_tags <- c("class", "id", "name", "time", "session")
-  action_keys <- c("history")
+  action_keys <- c("history", "tree")
 
   grep(pattern, sort(c(search_tags, action_keys)), value = TRUE)
 }
@@ -12,6 +12,7 @@ dollar_names.query <- function (x, pattern = "") {
 #' @importFrom rlang abort UQ
 #' @importFrom lubridate as_date ymd
 #' @importFrom storage enlongate
+#' @import utilities
 #'
 dollar_name.query <- function (x, n) {
   # TODO
@@ -22,9 +23,14 @@ dollar_name.query <- function (x, n) {
 
   is_query_key <- function (k) identical(k, dollar_names(x, k))
 
-  if (identical(n, "history")) {
+  is_history <- identical(n, "history")
+  is_tree <- identical(n, "tree")
+
+  if (is_history || is_tree) {
     ids <- x %>% select(id) %>% execute %>% first
-    return(repository::repository_explain(x$repository, ids, ancestors = 0))
+    expl <- repository::repository_explain(x$repository, ids, ancestors = 0)
+    if (is_tree) expl <- set_defaults(expl, style = "tree")
+    return(expl)
   }
 
   # TODO check only actual search tags
