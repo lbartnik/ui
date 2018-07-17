@@ -22,7 +22,6 @@ Suggests:
   mockery,
   testthat
 Collate:
-  'generation.R'
   'query.R'
   'query-impl.R'
   'tracking.R'
