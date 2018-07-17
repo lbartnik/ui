@@ -26,7 +26,7 @@ unwrap(x)
 
 is_wrapper(x)
 
-\method{print}{wrapper}(x)
+\method{print}{wrapper}(x, ...)
 
 \method{str}{wrapper}(x)
 
