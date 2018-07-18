@@ -12,7 +12,7 @@ is_single <- function (x) isTRUE(attr(x, 'ui::single'))
 
 
 format_specifier_header <- function (tag_name) {
-  ccat(silver = 'Tag: ', tag_name, silver = '\nPossible values:\n')
+  ccat(silver = 'Tag: ', tag_name, silver = '\nValues (#artifacts):\n')
 }
 
 #' @import utilities

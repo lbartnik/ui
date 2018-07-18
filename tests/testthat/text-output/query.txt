@@ -2,7 +2,7 @@ Query:
   <repository> %>%
     filter(isTRUE(artifact), "data.frame" %in% class)
 
-Matched 10 object(s), of that 0 plot(s)
+Matched 10 artifact(s), of that 0 plot(s)
 
 *
 Artifact: b418c062
@@ -35,5 +35,5 @@ Class:   grouped_df tbl_df tbl data.frame
 Created: 2018-07-16 17:05:58
 Summary: data.frame[8760, 5]
 
-... with 7 more object(s)
-You can still specify following tags: class history id name session time tree
+... with 7 more artifact(s)
+You can still specify following tags: class id name session time

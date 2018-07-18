@@ -36,19 +36,19 @@ is_wrapper(x)
 
 \method{[[}{wrapper}(x, i)
 
-dollar_names(x, pattern = "")
+dollar_names(x, pattern = "", ...)
 
 dollar_name(x, n)
 
 double_bracket(x, i)
 
-\method{dollar_names}{wrapper}(x, pattern = "")
+\method{dollar_names}{wrapper}(x, pattern = "", ...)
 
 \method{dollar_name}{wrapper}(x, i)
 
 \method{double_bracket}{wrapper}(x, i)
 
-\method{dollar_names}{default}(x, pattern = "")
+\method{dollar_names}{default}(x, pattern = "", ...)
 
 \method{dollar_name}{default}(x, i)
 }

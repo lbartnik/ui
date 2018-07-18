@@ -1,5 +1,5 @@
 Tag:  time 
-Possible values:
+Values (#artifacts):
   today              yesterday          thisweek
   last_24hrs         last_3days         last_7days
   last_day           last_week          since_yesterday

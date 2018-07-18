@@ -1,5 +1,5 @@
 Tag:  id 
-Possible values:
+Values (#artifacts):
   091c4253a793d0903b13e101b5708e5fb44a1d02 (1)
   2b67f4934da0aa3baecfdd3001008539217d5719 (1)
   2c6ca64f991d829094c9f894218a03e114bb1b7e (1)

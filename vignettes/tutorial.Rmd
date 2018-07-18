@@ -12,7 +12,45 @@ vignette: >
 ```{r setup, include=FALSE}
 library(knitr)
 
-knitr::opts_chunk$set(collapse = TRUE, comment = "#>", prompt = FALSE, echo = TRUE)
+knitr::opts_chunk$set(collapse = TRUE, comment = NA, prompt = FALSE, echo = TRUE)
+```
+
+```{r color, echo = FALSE}
+options(crayon.enabled = TRUE)
+knitr::knit_hooks$set(output = function(x, options){
+  paste0(
+    "<pre class=\"r-output\"><code>",
+    fansi::sgr_to_html(htmltools::htmlEscape(x)),
+    "</code></pre>"
+  )
+})
+
+# https://stackoverflow.com/questions/23114654/knitr-output-hook-with-an-output-lines-option-that-works-like-echo-26
+hook_output <- knit_hooks$get("output")
+knit_hooks$set(output = function(x, options) {
+   lines <- options$output.lines
+   if (is.null(lines)) {
+     return(hook_output(x, options))  # pass to default hook
+   }
+   x <- unlist(strsplit(x, "\n"))
+   more <- function (x) utilities::cpaste(grey = paste("# ... with", x, "more line(s)"))
+   if (length(lines)==1) {        # first n lines
+     if (length(x) > lines) {
+       # truncate the output, but add ...
+       x <- c(head(x, lines), more(length(x)-lines))
+     }
+   } else {
+     before <- abs(lines[1])
+     after  <- abs(lines[length(lines)])
+     x <- c(if (before>1) more(before) else NULL, 
+            x[lines], 
+            if (length(x)>after) more(after) else NULL
+           )
+   }
+   # paste these lines together
+   x <- paste(c(x, ""), collapse = "\n")
+   hook_output(x, options)
+ })
 ```
 
 Plan (TODO):
@@ -94,7 +132,7 @@ artifacts$session$`3abe4d2`
 
 Similarily, we can look at specific object creation time:
 
-```{r}
+```{r eval=FALSE}
 artifacts$time$since_yesterday
 ```
 
@@ -104,38 +142,42 @@ query and at most the first three objects matching this query.
 
 ## Selecting an artifact
 
-We can retrieve a specific object from the repository. Let's search for
-objects whose name is `x`:
+We can retrieve a specific artifact from the repository. Let's search for
+artifacts whose name is `m`:
 
 ```{r}
-artifacts$name$x
+artifacts$name$m
 ```
 
+Since there is only one such artifact we can access it by adding `$value`
+to the last query.
 
-There is more than one such object. Let's select only of them by its
-unique identifier.
-
-```{r}
-artifacts$id$`b418c062`$value
+```{r, output.lines=8}
+artifacts$name$m$value
 ```
 
+If the name is not unique we can use artifact id.
 
-A shortcut version of these expressions is:
+```{r eval=FALSE}
+artifacts$id$`57fbe755`$value
+```
+
+Unlike other tag names, `name` and `id` do not need to be used explicitly.
+Thus, a shortcut version of these queries is:
 
 ```{r eval=FALSE}
 artifacts$x$value
-artifacts$`b418c062`$value
+artifacts$`57fbe755`$value
 ```
 
-The name or identifier have to uniquely identify a single object. If
-there is more than one object matching the condition, you can keep
-narrowing the query:
+If there is more than one object matching the query we can keep
+narrowing the selection:
 
 ```{r eval=FALSE}
-artifacts$y$class$lm$value
+artifacts$name$y$class$lm$value
 ```
 
-Similarly, you can construct a query where name or id is not specified
+Similarly, we can construct a query where name or id is not specified
 at all.
 
 ```{r eval=FALSE}

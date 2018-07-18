@@ -19,6 +19,8 @@ Imports:
   utilities
 Suggests:
   devtools,
+  fansi,
+  htmltools,
   mockery,
   testthat
 Collate:

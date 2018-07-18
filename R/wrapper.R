@@ -81,7 +81,7 @@ str.wrapper <- function (x) str(unclass(unwrap(x)))
 #' their own version of these two methods to enable tab completion.
 #'
 #' @rdname wrapper
-dollar_names <- function (x, pattern = "") UseMethod("dollar_names")
+dollar_names <- function (x, pattern = "", ...) UseMethod("dollar_names")
 
 
 #' @rdname wrapper
@@ -93,8 +93,8 @@ double_bracket <- function (x, i) UseMethod("double_bracket")
 
 
 #' @rdname wrapper
-dollar_names.wrapper <- function (x, pattern = "") {
-  grep(pattern, dollar_names(unwrap(x), pattern), value = TRUE)
+dollar_names.wrapper <- function (x, pattern = "", ...) {
+  grep(pattern, dollar_names(unwrap(x), pattern, ...), value = TRUE)
 }
 
 #' @rdname wrapper
@@ -105,7 +105,7 @@ double_bracket.wrapper <- function (x, i) double_bracket(unwrap(x), i)
 
 
 #' @rdname wrapper
-dollar_names.default <- function (x, pattern = "") {
+dollar_names.default <- function (x, pattern = "", ...) {
   grep(pattern, "unwrap", value = TRUE)
 }
 

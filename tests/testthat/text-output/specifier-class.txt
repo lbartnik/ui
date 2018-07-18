@@ -1,5 +1,5 @@
 Tag:  class 
-Possible values:
+Values (#artifacts):
   data.frame (10)    grouped_df (9)     lm (1)
   plot (6)           rawplot (6)        tbl (10)
   tbl_df (10)

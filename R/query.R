@@ -1,11 +1,12 @@
 
 # TODO expose search tags so that they can be checked against in
 #      is_query_key() inside dollar_name.query
-dollar_names.query <- function (x, pattern = "") {
+dollar_names.query <- function (x, pattern = "", action = TRUE) {
   search_tags <- c("class", "id", "name", "time", "session")
   action_keys <- c("history", "tree")
 
-  grep(pattern, sort(c(search_tags, action_keys)), value = TRUE)
+  tags <- if (isTRUE(action)) c(search_tags, action_keys) else search_tags
+  grep(pattern, sort(tags), value = TRUE)
 }
 
 
@@ -99,7 +100,7 @@ print.query <- function (x, ..., n = 3) {
   # and a short summary of types of artifacts
   res <- x %>% unselect %>% select(-object, -parent_commit, -id, -parents) %>% execute(.warn = FALSE)
   ccat0(grey = '\nMatched ', nrow(res),
-        grey = ' object(s), of that ', sum(res$class == "plot"),
+        grey = ' artifact(s), of that ', sum(vapply(res$class, function(x) "plot" %in% x, logical(1))),
         grey = " plot(s)\n")
 
   # print the first n objects
@@ -115,14 +116,14 @@ print.query <- function (x, ..., n = 3) {
     cat('\n')
 
     if (n < nrow(res)) {
-      ccat(grey = '... with', nrow(res)-n, grey = 'more object(s)\n')
+      ccat(grey = '... with', nrow(res)-n, grey = 'more artifact(s)\n')
     }
   }
 
 
   # TODO exclude tags that are already specified
   # inform what other tags are not yet specified
-  all_tags <- dollar_names(x)
+  all_tags <- dollar_names(x, action = FALSE)
   ccat(grey = 'You can still specify following tags:', all_tags)
 
   invisible(x)
