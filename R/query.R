@@ -230,6 +230,13 @@ print_specifier.name <- function (x) {
 }
 
 
+dollar_name.id <- function (x, i) {
+  i <- storage::enlongate(i, x$query$repository$store)
+  stopifnot(length(i) > 0)
+  handle_result(x$query$repository %>% repository::filter(UQ(i) == id))
+}
+
+
 dollar_names.time <- function (x, pattern = "") {
   top_keys <- c("last", "since", "today", "yesterday", "thisweek")
 
@@ -328,7 +335,7 @@ dollar_name.single_result <- function (x, i) {
   }
 
   if (identical(i, "value")) {
-    res <- x$repo %>% filter(id == UQ(x$id)) %>% select(object) %>% execute
+    res <- x$repo %>% filter(id == UQ(x$id)) %>% select(object) %>% execute %>% first %>% first
     return(with_id(res, x$id))
   }
 

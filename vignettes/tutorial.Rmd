@@ -32,6 +32,10 @@ Plan (TODO):
 Run a sample project generation.
 
 
+```{r include=FALSE}
+artifacts <- ui:::wrap(repository::filter(repository::sample_repository(), isTRUE(artifact)))
+```
+
 # Basic operations
 
 ## Project overview
@@ -54,13 +58,38 @@ Other keys are: `class`, `id` and `time`. Let's look at `time`:
 artifacts$time
 ```
 
+## Exploring a recorded session
+
+Specifying the session id queries for all artifacts created during
+that R session.
+
+```{r}
+artifacts$session$`3abe4d2`
+```
+
+
+We can look at the history of evaluated commands:
+
+```{r}
+artifacts$session$`3abe4d2`$history
+```
+
+
+We can also look at the tree view of the artifacts, where edges of the
+tree connect artifacts originating from one another.
+
+
+```{r}
+artifacts$session$`3abe4d2`$tree
+```
+
 
 ## Searching for artifacts
 
 We can limit the object selection by session identifier:
 
 ```{r}
-artifacts$session$eba8e78f
+artifacts$session$`3abe4d2`
 ```
 
 Similarily, we can look at specific object creation time:
@@ -75,39 +104,48 @@ query and at most the first three objects matching this query.
 
 ## Selecting an artifact
 
-We can retrieve a specific object from the repository:
+We can retrieve a specific object from the repository. Let's search for
+objects whose name is `x`:
 
 ```{r}
-artifacts$name$x$value
-artifacts$id$`daf87ac4`$value
+artifacts$name$x
 ```
+
+
+There is more than one such object. Let's select only of them by its
+unique identifier.
+
+```{r}
+artifacts$id$`b418c062`$value
+```
+
 
 A shortcut version of these expressions is:
 
-```{r}
+```{r eval=FALSE}
 artifacts$x$value
-artifacts$`daf87ac4`$value
+artifacts$`b418c062`$value
 ```
 
 The name or identifier have to uniquely identify a single object. If
 there is more than one object matching the condition, you can keep
 narrowing the query:
 
-```{r}
+```{r eval=FALSE}
 artifacts$y$class$lm$value
 ```
 
 Similarly, you can construct a query where name or id is not specified
 at all.
 
-```{r}
+```{r eval=FALSE}
 artifacts$time$yesterday$class$lm
 ```
 
 Finally, you can use the bracket operator to access an arbitrary
 object within a query result:
 
-```{r}
+```{r eval=FALSE}
 artifacts$time$yesterday$class$lm[[1]]
 artifacts$time$yesterday$class$lm[[2]]
 ```
