@@ -12,7 +12,7 @@
 
 <meta name="author" content="Lukasz A. Bartnik" />
 
-<meta name="date" content="2018-07-18" />
+<meta name="date" content="2018-07-25" />
 
 <title>Tutorial: Artifact Repository</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Tutorial: Artifact Repository</h1>
 <h4 class="author"><em>Lukasz A. Bartnik</em></h4>
-<h4 class="date"><em>2018-07-18</em></h4>
+<h4 class="date"><em>2018-07-25</em></h4>
 
 
 
@@ -84,27 +84,36 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li>Export (explanation, history) to Rmd</li>
 <li>Explain an object</li>
 </ul>
+<div id="problem-description" class="section level1">
+<h1>Problem description</h1>
+<p>Data exploration projects can span multiple weeks or months and result in multiple artifacts (plots, models, data sets, code) being produced. These artifacts serve as evidence for a narrative about the data, as it is developed and later reported back to its consumer: fellow researchers, general public, business stakeholders. Thus, a need to organize, categorize and prioritize these artifacts: categories and priorities, however, are never ultimately settled, or known, as the narrative is in its nature open-ended. Therefore, the need to organize and reorganize artifacts as their number expands, or as the narrative is adjusted, become the most important of the three.</p>
+<p>In general, there is a multitude of ways to keep track of the evolution of data research. The following summary aims at underlining certain aspects of keeping record that will help us explain the goal of the approach proposed in this document.</p>
+<p>When considering means of organizing research artifacts in R, we can identify a number of general approaches to the problem. The most basic one is to store artifacts in the filesystem and use the directory structure and the file and directory names as the tools of keeping track of the research and its important findings. Data, plots, models and code are therefore kept as separate files and the burden of maintaining order and consistency among them (that is, that code can actually produce plots, models and data) is on the researcher. The commentary, which explains the meaning and relationships of artifacts, is kept along artifacts themselves or in a separate notebook or notebooks, electronic or physical.</p>
+<p>Another approach is to use literate programming: mix commentary, code and the results of code execution (plots, models, data) in a single document. One example of that approach is the <code>knit</code> package: a document contains free text and code excerpts; during “compilation” the code is run and the results are embedded in the document as they would appear in R console. Because the only input is the code (and the occasional source data) the document is always consistent and each artifact embedded in that final document can be recreated and its origin proven.</p>
+<p>Yet another approach is to create an R package or a Shiny application and allow the consumers of the narrative interact with it. This takes the longest time and the most significant effort, and thus is only the means of choice when the narrative is stabilized.</p>
+<p>TODO time and effort spectrum: which methods are more adequate in early research, which in later; the risks of loosing the consistency; the important dimensions: consistency, completeness, selectiveness; time and effort required to maintain the (living) record</p>
+</div>
 <div id="produce-objects---sample-research-project" class="section level1">
 <h1>Produce objects - sample research project</h1>
 <p>Run a sample project generation.</p>
 </div>
 <div id="basic-operations" class="section level1">
 <h1>Basic operations</h1>
-<div id="project-overview" class="section level2">
-<h2>Project overview</h2>
-<p>We can look at R sessions recorded so far:</p>
+<div id="exploring-the-repository-of-artifacts" class="section level2">
+<h2>Exploring the repository of artifacts</h2>
+<p>We can look at R sessions recorded so far. Below is the list of all R sessions present in the repository. Each session is represented by an unique identifier, followed by the timestamp when it was started, and finally the number of artifacts recorded during that session.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">artifacts<span class="op">$</span>session</code></pre></div>
 <pre class="r-output"><code><span style="color: #555555;">Tag: </span><span> session </span><span style="color: #555555;">
 Values (#artifacts):
-</span><span>  3abe4d2: 2018-07-16 17:5 (17)
+</span><span>  3abe4d2: 2018-07-16 17:05 (17)
 </span></code></pre>
-<p>We can also see objects recorded in the repository:</p>
+<p>We can also see names of objects recorded in the repository. Each name is followed by the number of artifacts assigned that name.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">artifacts<span class="op">$</span>name</code></pre></div>
 <pre class="r-output"><code><span style="color: #555555;">Tag: </span><span> names </span><span style="color: #555555;">
 Values (#artifacts):
 </span><span>  input (5)    m (1)        x (5)
 </span></code></pre>
-<p>Other keys are: <code>class</code>, <code>id</code> and <code>time</code>. Let’s look at <code>time</code>:</p>
+<p>Similarly, we can look at the breakdown of artifacts by: <code>class</code>, <code>id</code> and <code>time</code>. The <code>time</code> breakdown does not show the number of artifacts but allows for a number of more elaborate searches:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">artifacts<span class="op">$</span>time</code></pre></div>
 <pre class="r-output"><code><span style="color: #555555;">Tag: </span><span> time </span><span style="color: #555555;">
 Values (#artifacts):
@@ -116,12 +125,12 @@ Values (#artifacts):
   since_Sunday
 </span></code></pre>
 </div>
-<div id="exploring-a-recorded-session" class="section level2">
-<h2>Exploring a recorded session</h2>
-<p>Specifying the session id queries for all artifacts created during that R session.</p>
+<div id="exploring-a-recorded-r-session" class="section level2">
+<h2>Exploring a recorded R session</h2>
+<p>In order to see artifacts recorded during a given R session, we need to specify the session identifier as a part of the query line. When the result is printed on the console, it first shows the actual query used to retrieve artifacts, followed by the descriptions of the first three artifacts, which is finally followed by a simple footer with the number of artifacts not shown and other tags which can be used to further narrow the set of artifacts.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">artifacts<span class="op">$</span>session<span class="op">$</span><span class="st">`</span><span class="dt">3abe4d2</span><span class="st">`</span></code></pre></div>
 <pre class="r-output"><code><span style="color: #555555;">Query:
-</span><span>  &lt;repository:/tmp/RtmpPR3zwI/sample-repository&gt; %&gt;%
+</span><span>  &lt;repository:/tmp/Rtmpf9DxRO/sample-repository&gt; %&gt;%
     filter(isTRUE(artifact), &quot;3abe4d2&quot; %in% session)
 </span><span style="color: #949494;">
 Matched </span><span>17</span><span style="color: #949494;"> artifact(s), of that </span><span>6</span><span style="color: #949494;"> plot(s)
@@ -252,7 +261,7 @@ You can still specify following tags:</span><span> class id name session time
 <p>We can limit the object selection by session identifier:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">artifacts<span class="op">$</span>session<span class="op">$</span><span class="st">`</span><span class="dt">3abe4d2</span><span class="st">`</span></code></pre></div>
 <pre class="r-output"><code><span style="color: #555555;">Query:
-</span><span>  &lt;repository:/tmp/RtmpPR3zwI/sample-repository&gt; %&gt;%
+</span><span>  &lt;repository:/tmp/Rtmpf9DxRO/sample-repository&gt; %&gt;%
     filter(isTRUE(artifact), &quot;3abe4d2&quot; %in% session)
 </span><span style="color: #949494;">
 Matched </span><span>17</span><span style="color: #949494;"> artifact(s), of that </span><span>6</span><span style="color: #949494;"> plot(s)

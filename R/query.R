@@ -277,7 +277,7 @@ print_specifier.time <- function (x) {
 print_specifier.session <- function (x) {
   raw <- x$query %>% select(session, time) %>% execute
   vls <- raw %>% group_by(session) %>% summarise(time = min(time), n = n()) %>%
-    mutate(label = sprintf("%s: %s %s:%s", session, as_date(time), hour(time), minute(time)))
+    mutate(label = sprintf("%s: %s %s:%02d", session, as_date(time), hour(time), minute(time)))
 
   format_specifier_header("session")
   format_labels(table_to_labels(with_names(vls$n, vls$label)))
