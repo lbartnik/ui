@@ -166,32 +166,40 @@ of artifacts not shown and other tags which can be used to further narrow
 the set of artifacts.
 
 ```{r}
-artifacts$session$`3abe4d2`
+artifacts$session$`7a6f44b0`
 ```
 
 
 We can look at the history of evaluated commands:
 
 ```{r}
-artifacts$session$`3abe4d2`$history
+artifacts$session$`7a6f44b0`$history
 ```
 
 
 We can also look at the tree view of the artifacts, where edges of the
 tree connect artifacts originating from one another.
 
-
 ```{r}
-artifacts$session$`3abe4d2`$tree
+artifacts$session$`7a6f44b0`$tree
 ```
 
 
-## Searching for artifacts
+Finally, let's limit the displayed artifacts to `data.frame`s and
+investigate their structure of origin.
+
+```{r}
+artifacts$session$`7a6f44b0`$class$data.frame$tree
+```
+
+
+
+## Searching for a specific artifact
 
 We can limit the object selection by session identifier:
 
 ```{r}
-artifacts$session$`3abe4d2`
+artifacts$session$`7a6f44b0`
 ```
 
 Similarily, we can look at specific object creation time:

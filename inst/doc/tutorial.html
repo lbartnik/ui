@@ -105,7 +105,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">artifacts<span class="op">$</span>session</code></pre></div>
 <pre class="r-output"><code><span style="color: #555555;">Tag: </span><span> session </span><span style="color: #555555;">
 Values (#artifacts):
-</span><span>  3abe4d2: 2018-07-16 17:05 (17)
+</span><span>  7a6f44b0: 2018-07-25 22:11 (11)    8360f12b: 2018-07-26 0:11 (6)
 </span></code></pre>
 <p>We can also see names of objects recorded in the repository. Each name is followed by the number of artifacts assigned that name.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">artifacts<span class="op">$</span>name</code></pre></div>
@@ -128,46 +128,46 @@ Values (#artifacts):
 <div id="exploring-a-recorded-r-session" class="section level2">
 <h2>Exploring a recorded R session</h2>
 <p>In order to see artifacts recorded during a given R session, we need to specify the session identifier as a part of the query line. When the result is printed on the console, it first shows the actual query used to retrieve artifacts, followed by the descriptions of the first three artifacts, which is finally followed by a simple footer with the number of artifacts not shown and other tags which can be used to further narrow the set of artifacts.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">artifacts<span class="op">$</span>session<span class="op">$</span><span class="st">`</span><span class="dt">3abe4d2</span><span class="st">`</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">artifacts<span class="op">$</span>session<span class="op">$</span><span class="st">`</span><span class="dt">7a6f44b0</span><span class="st">`</span></code></pre></div>
 <pre class="r-output"><code><span style="color: #555555;">Query:
-</span><span>  &lt;repository:/tmp/Rtmpf9DxRO/sample-repository&gt; %&gt;%
-    filter(isTRUE(artifact), &quot;3abe4d2&quot; %in% session)
+</span><span>  &lt;repository:/tmp/RtmpxAXeUm/sample-repository&gt; %&gt;%
+    filter(isTRUE(artifact), &quot;7a6f44b0&quot; %in% session)
 </span><span style="color: #949494;">
-Matched </span><span>17</span><span style="color: #949494;"> artifact(s), of that </span><span>6</span><span style="color: #949494;"> plot(s)
+Matched </span><span>11</span><span style="color: #949494;"> artifact(s), of that </span><span>4</span><span style="color: #949494;"> plot(s)
 </span><span style="color: #00BB00;">
 *
-</span><span style="color: #555555;">Artifact: </span><span style="color: #00BB00;">091c4253</span><span style="color: #555555;"> (plot)</span><span>
+</span><span style="color: #555555;">Artifact: </span><span style="color: #00BB00;">57fbe755</span><span>
+</span><span style="color: #555555;">Expression:
+</span><span>  m &lt;- stats::lm(usage ~ hour:dow, x)</span><span style="color: #555555;">
+Name:   </span><span> m</span><span style="color: #555555;">
+Class:  </span><span> lm</span><span style="color: #555555;">
+Created:</span><span> 2018-07-25 22:19:32</span><span style="color: #555555;">
+Summary:</span><span> lm adjR2:0.33 AIC:7164 df:168
+</span><span style="color: #00BB00;">
+*
+</span><span style="color: #555555;">Artifact: </span><span style="color: #00BB00;">9f51d793</span><span style="color: #555555;"> (plot)</span><span>
 </span><span style="color: #555555;">Expression:
 </span><span>  ggplot2::ggplot(x) + ggplot2::geom_boxplot(ggplot2::aes(x = hour, y = usage)) + ggplot2::facet_wrap(~dow)</span><span style="color: #555555;">
 Class:  </span><span> rawplot plot</span><span style="color: #555555;">
-Created:</span><span> 2018-07-16 17:06:08</span><span style="color: #555555;">
+Created:</span><span> 2018-07-25 22:18:30</span><span style="color: #555555;">
 Summary:</span><span> 
 </span><span style="color: #00BB00;">
 *
-</span><span style="color: #555555;">Artifact: </span><span style="color: #00BB00;">b418c062</span><span>
+</span><span style="color: #555555;">Artifact: </span><span style="color: #00BB00;">b83ee352</span><span>
 </span><span style="color: #555555;">Expression:
 </span><span>  x &lt;- input %&gt;%
     dplyr::mutate(hour = lubridate::hour(timestamp), dow = lubridate::wday(timestamp)) %&gt;%
     dplyr::mutate_at(dplyr::vars(hour, dow), dplyr::funs(as.factor))</span><span style="color: #555555;">
 Name:   </span><span> x</span><span style="color: #555555;">
 Class:  </span><span> grouped_df tbl_df tbl data.frame</span><span style="color: #555555;">
-Created:</span><span> 2018-07-16 17:06:03</span><span style="color: #555555;">
+Created:</span><span> 2018-07-25 22:17:27</span><span style="color: #555555;">
 Summary:</span><span> data.frame[8760, 5]
-</span><span style="color: #00BB00;">
-*
-</span><span style="color: #555555;">Artifact: </span><span style="color: #00BB00;">6ee2aaba</span><span>
-</span><span style="color: #555555;">Expression:
-</span><span>  input %&lt;&gt;% dplyr::filter(meter == &quot;MAC004391&quot;)</span><span style="color: #555555;">
-Name:   </span><span> input</span><span style="color: #555555;">
-Class:  </span><span> grouped_df tbl_df tbl data.frame</span><span style="color: #555555;">
-Created:</span><span> 2018-07-16 17:06:03</span><span style="color: #555555;">
-Summary:</span><span> data.frame[8760, 3]
 
-</span><span style="color: #949494;">... with</span><span> 14 </span><span style="color: #949494;">more artifact(s)
+</span><span style="color: #949494;">... with</span><span> 8 </span><span style="color: #949494;">more artifact(s)
 You can still specify following tags:</span><span> class id name session time
 </span></code></pre>
 <p>We can look at the history of evaluated commands:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">artifacts<span class="op">$</span>session<span class="op">$</span><span class="st">`</span><span class="dt">3abe4d2</span><span class="st">`</span><span class="op">$</span>history</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">artifacts<span class="op">$</span>session<span class="op">$</span><span class="st">`</span><span class="dt">7a6f44b0</span><span class="st">`</span><span class="op">$</span>history</code></pre></div>
 <pre class="r-output"><code><span style="color: #00BB00;">89c78e89</span><span style="color: #555555;">  no parents</span><span>
   input &lt;- system.file(&quot;extdata/block_62.csv&quot;, package = &quot;repository&quot;) %&gt;%
     readr::read_csv(na = &quot;Null&quot;) %&gt;%
@@ -182,7 +182,7 @@ You can still specify following tags:</span><span> class id name session time
 </span><span style="color: #00BB00;">af206c42</span><span style="color: #555555;">  parents:</span><span> input</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">2b67f493</span><span style="color: #555555;">)</span><span>
   input %&lt;&gt;% dplyr::filter(meter == &quot;MAC004929&quot;)
 
-</span><span style="color: #00BB00;">e85dba92</span><span style="color: #555555;">  parents:</span><span> input</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">af206c42</span><span style="color: #555555;">)</span><span>
+</span><span style="color: #00BB00;">a06e8fe4</span><span style="color: #555555;">  parents:</span><span> input</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">af206c42</span><span style="color: #555555;">)</span><span>
   with(input, plot(timestamp, usage, type = &quot;p&quot;, pch = &quot;.&quot;))
 
 </span><span style="color: #00BB00;">f59403b5</span><span style="color: #555555;">  parents:</span><span> input</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">af206c42</span><span style="color: #555555;">)</span><span>
@@ -192,13 +192,13 @@ You can still specify following tags:</span><span> class id name session time
     dplyr::group_by(hour, dow) %&gt;%
     dplyr::summarise(usage = mean(usage, na.rm = TRUE))
 
-</span><span style="color: #00BB00;">ac9e485a</span><span style="color: #555555;">  parents:</span><span> x</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">f59403b5</span><span style="color: #555555;">)</span><span>
+</span><span style="color: #00BB00;">3539b7ba</span><span style="color: #555555;">  parents:</span><span> x</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">f59403b5</span><span style="color: #555555;">)</span><span>
   with(x, plot(hour, usage))
 
 </span><span style="color: #00BB00;">64228d01</span><span style="color: #555555;">  parents:</span><span> x</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">f59403b5</span><span style="color: #555555;">)</span><span>
   ggplot2::ggplot(x) + ggplot2::geom_point(ggplot2::aes(x = hour, y = usage)) + ggplot2::facet_wrap(~dow)
 
-</span><span style="color: #00BB00;">2c6ca64f</span><span style="color: #555555;">  parents:</span><span> x</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">f59403b5</span><span style="color: #555555;">)</span><span>
+</span><span style="color: #00BB00;">4cd2aeda</span><span style="color: #555555;">  parents:</span><span> x</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">f59403b5</span><span style="color: #555555;">)</span><span>
   ggplot2::ggplot(x) + ggplot2::geom_point(ggplot2::aes(x = hour, y = usage)) + ggplot2::facet_wrap(~dow)
 
 </span><span style="color: #00BB00;">b83ee352</span><span style="color: #555555;">  parents:</span><span> input</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">af206c42</span><span style="color: #555555;">)</span><span>
@@ -206,95 +206,75 @@ You can still specify following tags:</span><span> class id name session time
     dplyr::mutate(hour = lubridate::hour(timestamp), dow = lubridate::wday(timestamp)) %&gt;%
     dplyr::mutate_at(dplyr::vars(hour, dow), dplyr::funs(as.factor))
 
-</span><span style="color: #00BB00;">fbcffea9</span><span style="color: #555555;">  parents:</span><span> x</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">b83ee352</span><span style="color: #555555;">)</span><span>
+</span><span style="color: #00BB00;">9f51d793</span><span style="color: #555555;">  parents:</span><span> x</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">b83ee352</span><span style="color: #555555;">)</span><span>
   ggplot2::ggplot(x) + ggplot2::geom_boxplot(ggplot2::aes(x = hour, y = usage)) + ggplot2::facet_wrap(~dow)
 
 </span><span style="color: #00BB00;">57fbe755</span><span style="color: #555555;">  parents:</span><span> x</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">b83ee352</span><span style="color: #555555;">)</span><span>
   m &lt;- stats::lm(usage ~ hour:dow, x)
-
-</span><span style="color: #00BB00;">f2d8e929</span><span style="color: #555555;">  parents:</span><span> input</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">af206c42</span><span style="color: #555555;">)</span><span>
-  input %&lt;&gt;% dplyr::filter(meter == &quot;MAC000010&quot;)
-
-</span><span style="color: #00BB00;">866190fb</span><span style="color: #555555;">  parents:</span><span> input</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">f2d8e929</span><span style="color: #555555;">)</span><span>
-  x &lt;- input %&gt;%
-    dplyr::mutate(hour = lubridate::hour(timestamp), dow = lubridate::wday(timestamp)) %&gt;%
-    dplyr::mutate_at(dplyr::vars(hour, dow), dplyr::funs(as.factor))
-
-</span><span style="color: #00BB00;">d42340cd</span><span style="color: #555555;">  parents:</span><span> x</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">866190fb</span><span style="color: #555555;">)</span><span>
-  ggplot2::ggplot(x) + ggplot2::geom_boxplot(ggplot2::aes(x = hour, y = usage)) + ggplot2::facet_wrap(~dow)
-
-</span><span style="color: #00BB00;">6ee2aaba</span><span style="color: #555555;">  parents:</span><span> input</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">f2d8e929</span><span style="color: #555555;">)</span><span>
-  input %&lt;&gt;% dplyr::filter(meter == &quot;MAC004391&quot;)
-
-</span><span style="color: #00BB00;">b418c062</span><span style="color: #555555;">  parents:</span><span> input</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">6ee2aaba</span><span style="color: #555555;">)</span><span>
-  x &lt;- input %&gt;%
-    dplyr::mutate(hour = lubridate::hour(timestamp), dow = lubridate::wday(timestamp)) %&gt;%
-    dplyr::mutate_at(dplyr::vars(hour, dow), dplyr::funs(as.factor))
-
-</span><span style="color: #00BB00;">091c4253</span><span style="color: #555555;">  parents:</span><span> x</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">b418c062</span><span style="color: #555555;">)</span><span>
-  ggplot2::ggplot(x) + ggplot2::geom_boxplot(ggplot2::aes(x = hour, y = usage)) + ggplot2::facet_wrap(~dow)
 </span></code></pre>
 <p>We can also look at the tree view of the artifacts, where edges of the tree connect artifacts originating from one another.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">artifacts<span class="op">$</span>session<span class="op">$</span><span class="st">`</span><span class="dt">3abe4d2</span><span class="st">`</span><span class="op">$</span>tree</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">artifacts<span class="op">$</span>session<span class="op">$</span><span class="st">`</span><span class="dt">7a6f44b0</span><span class="st">`</span><span class="op">$</span>tree</code></pre></div>
 <pre class="r-output"><code><span style="color: #00BB00;">input</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">89c78e89</span><span style="color: #555555;">) </span><span>data.frame[52560, 3]
 </span><span style="color: #555555;">└── </span><span style="color: #00BB00;">input</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">2b67f493</span><span style="color: #555555;">) </span><span>data.frame[26280, 3]
 </span><span style="color: #555555;">    └── </span><span style="color: #00BB00;">input</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">af206c42</span><span style="color: #555555;">) </span><span>data.frame[8760, 3]
-</span><span style="color: #555555;">        ├── </span><span style="color: #949494;">&lt;plot&gt; </span><span style="color: #555555;">(</span><span style="color: #BBBB00;">e85dba92</span><span style="color: #555555;">)
+</span><span style="color: #555555;">        ├── </span><span style="color: #949494;">&lt;plot&gt; </span><span style="color: #555555;">(</span><span style="color: #BBBB00;">a06e8fe4</span><span style="color: #555555;">)
         ├── </span><span style="color: #00BB00;">x</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">f59403b5</span><span style="color: #555555;">) </span><span>data.frame[168, 3]
-</span><span style="color: #555555;">        │   ├── </span><span style="color: #949494;">&lt;plot&gt; </span><span style="color: #555555;">(</span><span style="color: #BBBB00;">ac9e485a</span><span style="color: #555555;">)
+</span><span style="color: #555555;">        │   ├── </span><span style="color: #949494;">&lt;plot&gt; </span><span style="color: #555555;">(</span><span style="color: #BBBB00;">3539b7ba</span><span style="color: #555555;">)
         │   ├── </span><span style="color: #00BB00;">x</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">64228d01</span><span style="color: #555555;">) </span><span>data.frame[168, 3]
-</span><span style="color: #555555;">        │   └── </span><span style="color: #949494;">&lt;plot&gt; </span><span style="color: #555555;">(</span><span style="color: #BBBB00;">2c6ca64f</span><span style="color: #555555;">)
-        ├── </span><span style="color: #00BB00;">x</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">b83ee352</span><span style="color: #555555;">) </span><span>data.frame[8760, 5]
-</span><span style="color: #555555;">        │   ├── </span><span style="color: #949494;">&lt;plot&gt; </span><span style="color: #555555;">(</span><span style="color: #BBBB00;">fbcffea9</span><span style="color: #555555;">)
-        │   └── </span><span style="color: #00BB00;">m</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">57fbe755</span><span style="color: #555555;">) </span><span>lm adjR2:0.33 AIC:7164 df:168
-</span><span style="color: #555555;">        └── </span><span style="color: #00BB00;">input</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">f2d8e929</span><span style="color: #555555;">) </span><span>data.frame[8760, 3]
-</span><span style="color: #555555;">            ├── </span><span style="color: #00BB00;">x</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">866190fb</span><span style="color: #555555;">) </span><span>data.frame[8760, 5]
-</span><span style="color: #555555;">            │   └── </span><span style="color: #949494;">&lt;plot&gt; </span><span style="color: #555555;">(</span><span style="color: #BBBB00;">d42340cd</span><span style="color: #555555;">)
-            └── </span><span style="color: #00BB00;">input</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">6ee2aaba</span><span style="color: #555555;">) </span><span>data.frame[8760, 3]
-</span><span style="color: #555555;">                └── </span><span style="color: #00BB00;">x</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">b418c062</span><span style="color: #555555;">) </span><span>data.frame[8760, 5]
-</span><span style="color: #555555;">                    └── </span><span style="color: #949494;">&lt;plot&gt; </span><span style="color: #555555;">(</span><span style="color: #BBBB00;">091c4253</span><span style="color: #555555;">)
-</span><span>
+</span><span style="color: #555555;">        │   └── </span><span style="color: #949494;">&lt;plot&gt; </span><span style="color: #555555;">(</span><span style="color: #BBBB00;">4cd2aeda</span><span style="color: #555555;">)
+        └── </span><span style="color: #00BB00;">x</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">b83ee352</span><span style="color: #555555;">) </span><span>data.frame[8760, 5]
+</span><span style="color: #555555;">            ├── </span><span style="color: #949494;">&lt;plot&gt; </span><span style="color: #555555;">(</span><span style="color: #BBBB00;">9f51d793</span><span style="color: #555555;">)
+            └── </span><span style="color: #00BB00;">m</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">57fbe755</span><span style="color: #555555;">) </span><span>lm adjR2:0.33 AIC:7164 df:168
+</span></code></pre>
+<p>Finally, let’s limit the displayed artifacts to <code>data.frame</code>s and investigate their structure of origin.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">artifacts<span class="op">$</span>session<span class="op">$</span><span class="st">`</span><span class="dt">7a6f44b0</span><span class="st">`</span><span class="op">$</span>class<span class="op">$</span>data.frame<span class="op">$</span>tree</code></pre></div>
+<pre class="r-output"><code><span style="color: #00BB00;">input</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">89c78e89</span><span style="color: #555555;">) </span><span>data.frame[52560, 3]
+</span><span style="color: #555555;">└── </span><span style="color: #00BB00;">input</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">2b67f493</span><span style="color: #555555;">) </span><span>data.frame[26280, 3]
+</span><span style="color: #555555;">    └── </span><span style="color: #00BB00;">input</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">af206c42</span><span style="color: #555555;">) </span><span>data.frame[8760, 3]
+</span><span style="color: #555555;">        ├── </span><span style="color: #00BB00;">x</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">f59403b5</span><span style="color: #555555;">) </span><span>data.frame[168, 3]
+</span><span style="color: #555555;">        │   └── </span><span style="color: #00BB00;">x</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">64228d01</span><span style="color: #555555;">) </span><span>data.frame[168, 3]
+</span><span style="color: #555555;">        └── </span><span style="color: #00BB00;">x</span><span style="color: #555555;"> (</span><span style="color: #BBBB00;">b83ee352</span><span style="color: #555555;">) </span><span>data.frame[8760, 5]
 </span></code></pre>
 </div>
-<div id="searching-for-artifacts" class="section level2">
-<h2>Searching for artifacts</h2>
+<div id="searching-for-a-specific-artifact" class="section level2">
+<h2>Searching for a specific artifact</h2>
 <p>We can limit the object selection by session identifier:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">artifacts<span class="op">$</span>session<span class="op">$</span><span class="st">`</span><span class="dt">3abe4d2</span><span class="st">`</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">artifacts<span class="op">$</span>session<span class="op">$</span><span class="st">`</span><span class="dt">7a6f44b0</span><span class="st">`</span></code></pre></div>
 <pre class="r-output"><code><span style="color: #555555;">Query:
-</span><span>  &lt;repository:/tmp/Rtmpf9DxRO/sample-repository&gt; %&gt;%
-    filter(isTRUE(artifact), &quot;3abe4d2&quot; %in% session)
+</span><span>  &lt;repository:/tmp/RtmpxAXeUm/sample-repository&gt; %&gt;%
+    filter(isTRUE(artifact), &quot;7a6f44b0&quot; %in% session)
 </span><span style="color: #949494;">
-Matched </span><span>17</span><span style="color: #949494;"> artifact(s), of that </span><span>6</span><span style="color: #949494;"> plot(s)
+Matched </span><span>11</span><span style="color: #949494;"> artifact(s), of that </span><span>4</span><span style="color: #949494;"> plot(s)
 </span><span style="color: #00BB00;">
 *
-</span><span style="color: #555555;">Artifact: </span><span style="color: #00BB00;">091c4253</span><span style="color: #555555;"> (plot)</span><span>
+</span><span style="color: #555555;">Artifact: </span><span style="color: #00BB00;">57fbe755</span><span>
+</span><span style="color: #555555;">Expression:
+</span><span>  m &lt;- stats::lm(usage ~ hour:dow, x)</span><span style="color: #555555;">
+Name:   </span><span> m</span><span style="color: #555555;">
+Class:  </span><span> lm</span><span style="color: #555555;">
+Created:</span><span> 2018-07-25 22:19:32</span><span style="color: #555555;">
+Summary:</span><span> lm adjR2:0.33 AIC:7164 df:168
+</span><span style="color: #00BB00;">
+*
+</span><span style="color: #555555;">Artifact: </span><span style="color: #00BB00;">9f51d793</span><span style="color: #555555;"> (plot)</span><span>
 </span><span style="color: #555555;">Expression:
 </span><span>  ggplot2::ggplot(x) + ggplot2::geom_boxplot(ggplot2::aes(x = hour, y = usage)) + ggplot2::facet_wrap(~dow)</span><span style="color: #555555;">
 Class:  </span><span> rawplot plot</span><span style="color: #555555;">
-Created:</span><span> 2018-07-16 17:06:08</span><span style="color: #555555;">
+Created:</span><span> 2018-07-25 22:18:30</span><span style="color: #555555;">
 Summary:</span><span> 
 </span><span style="color: #00BB00;">
 *
-</span><span style="color: #555555;">Artifact: </span><span style="color: #00BB00;">b418c062</span><span>
+</span><span style="color: #555555;">Artifact: </span><span style="color: #00BB00;">b83ee352</span><span>
 </span><span style="color: #555555;">Expression:
 </span><span>  x &lt;- input %&gt;%
     dplyr::mutate(hour = lubridate::hour(timestamp), dow = lubridate::wday(timestamp)) %&gt;%
     dplyr::mutate_at(dplyr::vars(hour, dow), dplyr::funs(as.factor))</span><span style="color: #555555;">
 Name:   </span><span> x</span><span style="color: #555555;">
 Class:  </span><span> grouped_df tbl_df tbl data.frame</span><span style="color: #555555;">
-Created:</span><span> 2018-07-16 17:06:03</span><span style="color: #555555;">
+Created:</span><span> 2018-07-25 22:17:27</span><span style="color: #555555;">
 Summary:</span><span> data.frame[8760, 5]
-</span><span style="color: #00BB00;">
-*
-</span><span style="color: #555555;">Artifact: </span><span style="color: #00BB00;">6ee2aaba</span><span>
-</span><span style="color: #555555;">Expression:
-</span><span>  input %&lt;&gt;% dplyr::filter(meter == &quot;MAC004391&quot;)</span><span style="color: #555555;">
-Name:   </span><span> input</span><span style="color: #555555;">
-Class:  </span><span> grouped_df tbl_df tbl data.frame</span><span style="color: #555555;">
-Created:</span><span> 2018-07-16 17:06:03</span><span style="color: #555555;">
-Summary:</span><span> data.frame[8760, 3]
 
-</span><span style="color: #949494;">... with</span><span> 14 </span><span style="color: #949494;">more artifact(s)
+</span><span style="color: #949494;">... with</span><span> 8 </span><span style="color: #949494;">more artifact(s)
 You can still specify following tags:</span><span> class id name session time
 </span></code></pre>
 <p>Similarily, we can look at specific object creation time:</p>
@@ -311,7 +291,7 @@ You can still specify following tags:</span><span> class id name session time
 </span><span>  m &lt;- stats::lm(usage ~ hour:dow, x)</span><span style="color: #555555;">
 Name:   </span><span> m</span><span style="color: #555555;">
 Class:  </span><span> lm</span><span style="color: #555555;">
-Created:</span><span> 2018-07-16 17:05:57</span><span style="color: #555555;">
+Created:</span><span> 2018-07-25 22:19:32</span><span style="color: #555555;">
 Summary:</span><span> lm adjR2:0.33 AIC:7164 df:168
 </span></code></pre>
 <p>Since there is only one such artifact we can access it by adding <code>$value</code> to the last query.</p>
