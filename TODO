@@ -2,6 +2,17 @@
   - add legend to each tag help screen, e.g. ccat("silver", "Example: objects$time$...")
   - defer: extract object from "artifacts$class$lm$value"
 
+* the initial way to go is to support the regural (arbitrary)
+  research process each user might have, and only use repository
+  when lineage or a past state are required
+
+* describe the model: what matters in the end are the results (models
+  and the facts about the data set that they reveal or confirm);
+  a model has its ETL (the sequence of data.frames and accompanying
+  plots), the model itself (which can be plotted in numeours ways,
+  e.g. residuals, R^2, etc.), and finally optional downstream
+  artifacts (further data sets and/or plots)
+
 * go back in history by expressions: search historical commands and
   choose the one whose context (commit) is to be restored
 

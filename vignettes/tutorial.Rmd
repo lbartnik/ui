@@ -63,6 +63,15 @@ Plan (TODO):
   * Export (explanation, history) to Rmd
   * Explain an object
 
+# The Point
+
+Keep the research process intact. User stores their artifact however they
+choose. We collect artifacts and their lineage. The repository is handy
+when a need arises to verify the origin (lineage) of an artifact or
+browse the artifacts to restore a certain past state of research.
+
+Minimal running overhead, help when the current R tools are not sufficient,
+that is, working with the past states of the whole R session.
 
 
 # Problem description
