@@ -1,3 +1,3 @@
 Tag:  session 
-Possible values:
-  7ab8299c: 2018-07-14 16:34 (17)
+Values (#artifacts):
+  3abe4d2: 2018-07-16 17:5 (17)

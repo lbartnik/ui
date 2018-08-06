@@ -19,10 +19,11 @@ Imports:
   utilities
 Suggests:
   devtools,
+  fansi,
+  htmltools,
   mockery,
   testthat
 Collate:
-  'generation.R'
   'query.R'
   'query-impl.R'
   'tracking.R'
@@ -33,7 +34,7 @@ Collate:
 Remotes:
   lbartnik/repository,
   lbartnik/storage,
-  lbartnik/utils
+  lbartnik/utilities
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1
 Roxygen: list(markdown = TRUE)

@@ -1,17 +1,19 @@
 
 # TODO expose search tags so that they can be checked against in
 #      is_query_key() inside dollar_name.query
-dollar_names.query <- function (x, pattern = "") {
+dollar_names.query <- function (x, pattern = "", action = TRUE) {
   search_tags <- c("class", "id", "name", "time", "session")
-  action_keys <- c("history")
+  action_keys <- c("history", "tree")
 
-  grep(pattern, sort(c(search_tags, action_keys)), value = TRUE)
+  tags <- if (isTRUE(action)) c(search_tags, action_keys) else search_tags
+  grep(pattern, sort(tags), value = TRUE)
 }
 
 
 #' @importFrom rlang abort UQ
 #' @importFrom lubridate as_date ymd
 #' @importFrom storage enlongate
+#' @import utilities
 #'
 dollar_name.query <- function (x, n) {
   # TODO
@@ -22,9 +24,14 @@ dollar_name.query <- function (x, n) {
 
   is_query_key <- function (k) identical(k, dollar_names(x, k))
 
-  if (identical(n, "history")) {
+  is_history <- identical(n, "history")
+  is_tree <- identical(n, "tree")
+
+  if (is_history || is_tree) {
     ids <- x %>% select(id) %>% execute %>% first
-    return(repository::repository_explain(x$repository, ids, ancestors = 0))
+    expl <- repository::repository_explain(x$repository, ids, ancestors = 0)
+    if (is_tree) expl <- set_defaults(expl, style = "tree")
+    return(expl)
   }
 
   # TODO check only actual search tags
@@ -93,7 +100,7 @@ print.query <- function (x, ..., n = 3) {
   # and a short summary of types of artifacts
   res <- x %>% unselect %>% select(-object, -parent_commit, -id, -parents) %>% execute(.warn = FALSE)
   ccat0(grey = '\nMatched ', nrow(res),
-        grey = ' object(s), of that ', sum(res$class == "plot"),
+        grey = ' artifact(s), of that ', sum(vapply(res$class, function(x) "plot" %in% x, logical(1))),
         grey = " plot(s)\n")
 
   # print the first n objects
@@ -109,14 +116,14 @@ print.query <- function (x, ..., n = 3) {
     cat('\n')
 
     if (n < nrow(res)) {
-      ccat(grey = '... with', nrow(res)-n, grey = 'more object(s)\n')
+      ccat(grey = '... with', nrow(res)-n, grey = 'more artifact(s)\n')
     }
   }
 
 
   # TODO exclude tags that are already specified
   # inform what other tags are not yet specified
-  all_tags <- dollar_names(x)
+  all_tags <- dollar_names(x, action = FALSE)
   ccat(grey = 'You can still specify following tags:', all_tags)
 
   invisible(x)
@@ -224,6 +231,13 @@ print_specifier.name <- function (x) {
 }
 
 
+dollar_name.id <- function (x, i) {
+  i <- storage::enlongate(i, x$query$repository$store)
+  stopifnot(length(i) > 0)
+  handle_result(x$query$repository %>% repository::filter(UQ(i) == id))
+}
+
+
 dollar_names.time <- function (x, pattern = "") {
   top_keys <- c("last", "since", "today", "yesterday", "thisweek")
 
@@ -263,7 +277,7 @@ print_specifier.time <- function (x) {
 print_specifier.session <- function (x) {
   raw <- x$query %>% select(session, time) %>% execute
   vls <- raw %>% group_by(session) %>% summarise(time = min(time), n = n()) %>%
-    mutate(label = sprintf("%s: %s %s:%s", session, as_date(time), hour(time), minute(time)))
+    mutate(label = sprintf("%s: %s %s:%02d", session, as_date(time), hour(time), minute(time)))
 
   format_specifier_header("session")
   format_labels(table_to_labels(with_names(vls$n, vls$label)))
@@ -322,7 +336,7 @@ dollar_name.single_result <- function (x, i) {
   }
 
   if (identical(i, "value")) {
-    res <- x$repo %>% filter(id == UQ(x$id)) %>% select(object) %>% execute
+    res <- x$repo %>% filter(id == UQ(x$id)) %>% select(object) %>% execute %>% first %>% first
     return(with_id(res, x$id))
   }
 

@@ -8,6 +8,10 @@ NULL
 artifacts <- NULL
 
 
+set_artifacts <- function (value) {
+  artifacts <<- value
+}
+
 .onLoad <- function (libname, pkgname)
 {
   if (interactive()) {
