@@ -4,6 +4,9 @@
 NULL
 
 
+message_prefix <- 'Repository: '
+
+
 #' @export
 artifacts <- NULL
 
@@ -16,7 +19,7 @@ set_artifacts <- function (value) {
 {
   if (interactive()) {
     initiate_state(state)
-    open_default_repo(state, globalenv())
+    open_default_repo(state, globalenv(), create = TRUE)
 
     if (is_tracking_allowed()) {
       start_tracking(state)
@@ -36,4 +39,4 @@ set_artifacts <- function (value) {
   }
 }
 
-is_tracking_allowed <- function () isTRUE(getOption("ui.track", FALSE))
+is_tracking_allowed <- function () isTRUE(getOption("ui.track", TRUE))

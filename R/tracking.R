@@ -27,12 +27,20 @@ initiate_state <- function (state)
 
 
 #' @rdname internal_state
+#' @importFrom rlang inform
 #' @import repository
 #' @import storage
 #'
 open_default_repo <- function (state, env, create = FALSE)
 {
   path  <- file.path(getwd(), 'repository')
+  if (!file.exists(path) && isTRUE(create)) {
+    inform(sprintf("%sno repository found, creating one under '%s'", message_prefix, path))
+  }
+  if (file.exists(path)) {
+    inform(sprintf("%sattaching to repository '%s'", message_prefix, path))
+  }
+
   store <- storage::filesystem(path, create = create)
   repo  <- repository::repository(store)
 

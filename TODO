@@ -3,6 +3,7 @@
 * various small fixes
   - add legend to each tag help screen, e.g. ccat("silver", "Example: objects$time$...")
   - defer: extract object from "artifacts$class$lm$value"
+  - fix the default single-line printout
 
 * the initial way to go is to support the regural (arbitrary)
   research process each user might have, and only use repository
