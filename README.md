@@ -19,6 +19,22 @@ Other packages implementing the *repository of artifacts*:
   * [repository](https://github.com/lbartnik/repository) - middle layer with "business logic"
   * [storage](https://github.com/lbartnik/storage) - store of R objects
   * [defer](https://github.com/lbartnik/defer) - building and processing closures of R functions and data
+  * [utilities](https://github.com/lbartnik/utilities) - a set of shared utility functions
+
+
+# Installation
+
+```r
+install_github("lbartnik/defer")
+install_github("lbartnik/storage")
+install_github("lbartnik/utilities")
+install_github("lbartnik/repository")
+install_github("lbartnik/ui")
+```
+
+```r
+library(ui)
+```
 
 
 # Documentation
