@@ -143,9 +143,12 @@ stop_tracking <- function (state)
 #'         the list of active callbacks.
 #'
 #' @import grDevices
+#' @import utilities
 #'
 task_callback <- function (expr, result, successful, printed)
 {
+  guard()
+
   if (!isTRUE(successful))
     return(TRUE)
 

@@ -1,7 +1,5 @@
-options(repository.debug = TRUE)
-options(repository.debug = FALSE)
-options(ui.debug = FALSE)
-options(ui.debug = TRUE)
+options(utilities.debug = TRUE)
+options(utilities.debug = FALSE)
 
 
 
