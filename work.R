@@ -1,5 +1,7 @@
-options(repository.debug = TRUE)
-options(repository.debug = FALSE)
+options(utilities.debug = TRUE)
+options(utilities.debug = FALSE)
+
+
 
 options(ui.track = FALSE)
 options(ui.pick_branch = FALSE)
