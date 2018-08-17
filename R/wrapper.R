@@ -18,6 +18,9 @@ NULL
 #' @description `wrap` puts `x` in a list and sets that list's class
 #' to `"wrapper"`.
 #'
+#' @param x object to be wrapped, a `wrapper` object to be unwrapped
+#'          or printed, or any other object to be tested.
+#'
 #' @rdname wrapper
 wrap <- function (x) structure(list(x), class = 'wrapper')
 
@@ -38,6 +41,8 @@ is_wrapper <- function (x) inherits(x, 'wrapper')
 #' @description `print.wrapper` calls the actual `print` method for the
 #' unwrapped object.
 #'
+#' @param ... further arguments passed to or from other methods.
+#'
 #' @rdname wrapper
 #' @export
 print.wrapper <- function (x, ...) {
@@ -50,14 +55,18 @@ print.wrapper <- function (x, ...) {
 #' the `[[` operator, which produces a message. This is confusing to the
 #' end user because they haven't requested an explicit object extraction.
 #'
+#' @param object `wrapper` object.
+#'
+#' @importFrom utils str
 #' @rdname wrapper
 #' @export
-str.wrapper <- function (x) str(unclass(unwrap(x)))
+str.wrapper <- function (object, ...) str(unclass(unwrap(object)))
 
 
 #' @description the `.DollarNames` method and the `$` operator are the
 #' only user-facing entry points into the tab-completion mechanism.
 #'
+#' @param pattern regular expression; only matching names are returned.
 #' @importFrom utils .DollarNames
 #'
 #' @rdname wrapper
@@ -65,6 +74,7 @@ str.wrapper <- function (x) str(unclass(unwrap(x)))
 `.DollarNames.wrapper` <- function (x, pattern = "") dollar_names(x, pattern)
 
 
+#' @param i key name, index value.
 #' @rdname wrapper
 #' @export
 `$.wrapper` <- function (x, i) dollar_name(x, i)
@@ -85,7 +95,7 @@ dollar_names <- function (x, pattern = "", ...) UseMethod("dollar_names")
 
 
 #' @rdname wrapper
-dollar_name <- function (x, n) UseMethod("dollar_name")
+dollar_name <- function (x, i) UseMethod("dollar_name")
 
 
 #' @rdname wrapper

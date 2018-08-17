@@ -23,9 +23,18 @@ start_tracking(state)
 
 stop_tracking(state)
 }
+\arguments{
+\item{state}{state object (environment).}
+
+\item{env}{\code{environment} used to find the branch to attach to.}
+
+\item{create}{if \code{TRUE}, create the repository if it does not exist.}
+
+\item{repo}{a \code{\link[repository:repository]{repository::repository()}} object.}
+}
 \description{
 \describe{
-\item{repo}{a \link[repository:repositort]{repository::repositort} object}
+\item{repo}{a \code{\link[repository:repository]{repository::repository()}} object}
 \item{task_callback_id}{id of the callback passed to \link{addTaskCallback}}
 }
 

@@ -6,7 +6,11 @@ NULL
 
 message_prefix <- 'Repository: '
 
-
+#' Search for artifacts.
+#'
+#' An entry point for artifact search. Exposes an interactive query
+#' mechanism with tab-completion via the `$` (dollar) operator.
+#'
 #' @export
 artifacts <- NULL
 

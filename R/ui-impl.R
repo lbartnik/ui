@@ -19,7 +19,6 @@ reporter <- function (repo) {
 #' @export
 `$.reporter` <- function (x, i) {
   # TODO maybe return the requested data subset instead
-  evaluatee(print(x, mode = i))
 }
 
 

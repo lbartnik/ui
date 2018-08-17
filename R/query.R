@@ -76,6 +76,7 @@ dollar_name.query <- function (x, n) {
 
 
 #' @importFrom rlang abort
+#' @importFrom dplyr desc
 double_bracket.query <- function (x, i) {
   ids <- x %>% select(id, time) %>% arrange(desc(time)) %>% execute %>% nth("id")
   if (!is_index_of(i, ids)) {
@@ -143,6 +144,9 @@ print.query <- function (x, ..., n = 3) {
 #' object. However, if there is only one object in the repository that
 #' matches user query, return a wrapped single result.
 #'
+#' @param query `query` object.
+#' @param key Tag name as appears in the search UI.
+#'
 #' @rdname specifier
 #' @importFrom rlang UQ
 #'
@@ -150,15 +154,20 @@ new_specifier <- function (query, key) {
   structure(list(query = query, key = key), class = c(key, 'specifier'))
 }
 
+
 #' @rdname specifier
 is_specifier <- function (x) inherits(x, 'specifier')
 
+#' @param x `specifier` object or an object to be tested.
+#' @param pattern regular expression; only matching names are returned.
+#'
 #' @rdname specifier
 dollar_names.specifier <- function (x, pattern = "") {
   vls <- tag_values(x$query)[[x$key]]
   grep(pattern, vls, value = TRUE)
 }
 
+#' @param i key name.
 #' @rdname specifier
 #'
 #' @importFrom rlang UQ
@@ -169,6 +178,7 @@ dollar_name.specifier <- function (x, i) {
 }
 
 
+#' @param ... further arguments passed to or from other methods.
 #' @rdname specifier
 #' @export
 print.specifier <- function (x, ...) {
@@ -199,6 +209,9 @@ print_specifier.specifier <- function (x) {
 #' a `single_result` object which wraps a single object retrieved
 #' from the [repository::repository].
 #'
+#' @param q a `query` object.
+#'
+#' @importFrom dplyr n
 #' @rdname specifier
 handle_result <- function (q) {
   stopifnot(repository::is_query(q))
@@ -244,7 +257,7 @@ dollar_names.time <- function (x, pattern = "") {
   # RStudio intercepts the pattern and calls .DollarNames with pattern
   # set to ""; see below for details
   # https://github.com/rstudio/rstudio/commit/c25739a15ca49fda68c10f6fd2d25266065cb80b
-  if (rstudioapi::isAvailable()) {
+  if (is_running_in_rstudio()) {
     return(names(DollarNamesMapping$time))
   }
 
@@ -331,7 +344,7 @@ dollar_name.single_result <- function (x, i) {
 
   if (is_artifact_a(x$repo, x$id, 'plot') && identical(i, 'plot')) {
     res <- x$repo %>% filter(id == UQ(x$id)) %>% select(object) %>% execute %>% first %>% first
-    plot(res)
+    graphics::plot(res)
     return(invisible(res))
   }
 

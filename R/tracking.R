@@ -3,7 +3,7 @@
 #' Global state of the tracker.
 #'
 #' \describe{
-#'   \item{repo}{a [repository::repositort] object}
+#'   \item{repo}{a [repository::repository()] object}
 #'   \item{task_callback_id}{id of the callback passed to [addTaskCallback]}
 #' }
 #'
@@ -17,6 +17,8 @@ state <- new.env()
 #' * creates or open a file-system-based [repository::repository]
 #' * turns tracking on
 #'
+#' @param state state object (environment).
+#'
 #' @rdname internal_state
 #'
 initiate_state <- function (state)
@@ -26,6 +28,9 @@ initiate_state <- function (state)
 }
 
 
+#' @param env `environment` used to find the branch to attach to.
+#' @param create if `TRUE`, create the repository if it does not exist.
+#'
 #' @rdname internal_state
 #' @importFrom rlang inform
 #' @import repository
@@ -51,7 +56,8 @@ open_default_repo <- function (state, env, create = FALSE)
   state$repo <- repo
 }
 
-
+#' @param repo a [repository::repository()] object.
+#'
 #' @rdname internal_state
 #' @import repository
 #'
