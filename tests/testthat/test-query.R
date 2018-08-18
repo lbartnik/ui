@@ -22,7 +22,8 @@ test_that("tag values", {
 
 test_that("print query", {
   q <- sample_query()
-  expect_output_file(print(q$class$data.frame, simplify = TRUE), 'text-output/query.txt')
+  expect_output_file(print(q$class$data.frame), 'text-output/query.txt',
+                     wildcard = '%')
 })
 
 
@@ -34,7 +35,8 @@ test_that("print artifacts by tag", {
     p <- file.path("text-output", paste0('specifier-', key, '.txt'))
 
     expect_true(is_specifier(s), label = key)
-    expect_output_file(print_specifier(s), p, label = key)
+    # TODO requires wildcard implemented in lbartnik/testthat; PR pending in official testthat
+    expect_output_file(print_specifier(s), p, label = key, wildcard = '%')
   }
 
   verify_specifier("class")
