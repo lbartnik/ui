@@ -2,7 +2,7 @@ session_tracker <- function () {
   structure(list(), class = 'tracker')
 }
 
-#' @export
+# @export hidden for now
 tracker <- session_tracker()
 
 #' @export

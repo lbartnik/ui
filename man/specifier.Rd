@@ -27,6 +27,21 @@ print_specifier(x)
 
 handle_result(q)
 }
+\arguments{
+\item{query}{\code{query} object.}
+
+\item{key}{Tag name as appears in the search UI.}
+
+\item{x}{\code{specifier} object or an object to be tested.}
+
+\item{pattern}{regular expression; only matching names are returned.}
+
+\item{i}{key name.}
+
+\item{...}{further arguments passed to or from other methods.}
+
+\item{q}{a \code{query} object.}
+}
 \description{
 Key specifier serves in the process of building an object query. It
 provides an interface to define the \code{tag} and its value that will be

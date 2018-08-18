@@ -11,6 +11,8 @@ BugReports: https://github.com/lbartnik/ui/issues
 Depends:
   R (>= 3.4.0)
 Imports:
+  dplyr,
+  graphics,
   lubridate,
   repository,
   rlang,
@@ -21,7 +23,9 @@ Suggests:
   devtools,
   fansi,
   htmltools,
+  knitr,
   mockery,
+  rstudioapi,
   testthat
 Collate:
   'query.R'
@@ -30,11 +34,13 @@ Collate:
   'ui.R'
   'ui-impl.R'
   'ui-package.R'
+  'utils.R'
   'wrapper.R'
 Remotes:
   lbartnik/repository,
   lbartnik/storage,
-  lbartnik/utilities
+  lbartnik/utilities,
+  lbartnik/testthat
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1
 Roxygen: list(markdown = TRUE)

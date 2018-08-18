@@ -28,7 +28,7 @@ is_wrapper(x)
 
 \method{print}{wrapper}(x, ...)
 
-\method{str}{wrapper}(x)
+\method{str}{wrapper}(object, ...)
 
 \method{.DollarNames}{wrapper}(x, pattern = "")
 
@@ -38,7 +38,7 @@ is_wrapper(x)
 
 dollar_names(x, pattern = "", ...)
 
-dollar_name(x, n)
+dollar_name(x, i)
 
 double_bracket(x, i)
 
@@ -51,6 +51,18 @@ double_bracket(x, i)
 \method{dollar_names}{default}(x, pattern = "", ...)
 
 \method{dollar_name}{default}(x, i)
+}
+\arguments{
+\item{x}{object to be wrapped, a \code{wrapper} object to be unwrapped
+or printed, or any other object to be tested.}
+
+\item{...}{further arguments passed to or from other methods.}
+
+\item{object}{\code{wrapper} object.}
+
+\item{pattern}{regular expression; only matching names are returned.}
+
+\item{i}{key name, index value.}
 }
 \description{
 In order to separate the user-facing API from the testable code that
