@@ -1,6 +1,11 @@
-* show plots in the tutorial vignette
+* document concepts: commit, origin, artifact, etc.
 
-* attach to the most recent commit when loading ui
+* organize manual pages according to topics; fix overlapping argument
+  names
+
+* attach to repository interactively
+
+* show plots in the tutorial vignette
 
 * various small fixes
   - add legend to each tag help screen, e.g. ccat("silver", "Example: objects$time$...")

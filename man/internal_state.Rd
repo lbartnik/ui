@@ -17,7 +17,7 @@ initiate_state(state)
 
 open_default_repo(state, env, create = FALSE)
 
-pick_branch(repo, env)
+pick_branch(state, env)
 
 start_tracking(state)
 
