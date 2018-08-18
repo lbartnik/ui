@@ -12,7 +12,7 @@ Expression:
     dplyr::mutate_at(dplyr::vars(hour, dow), dplyr::funs(as.factor))
 Name:    x
 Class:   grouped_df tbl_df tbl data.frame
-Created: 2018-07-26 00:15:37
+Created: %
 Summary: data.frame[8760, 5]
 
 *
@@ -21,7 +21,7 @@ Expression:
   input %<>% dplyr::filter(meter == "MAC004391")
 Name:    input
 Class:   grouped_df tbl_df tbl data.frame
-Created: 2018-07-26 00:14:37
+Created: %
 Summary: data.frame[8760, 3]
 
 *
@@ -32,7 +32,7 @@ Expression:
     dplyr::mutate_at(dplyr::vars(hour, dow), dplyr::funs(as.factor))
 Name:    x
 Class:   grouped_df tbl_df tbl data.frame
-Created: 2018-07-26 00:12:33
+Created: %
 Summary: data.frame[8760, 5]
 
 ... with 7 more artifact(s)
