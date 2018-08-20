@@ -1,9 +1,19 @@
-* show plots in the tutorial vignette
+* document concepts: commit, origin, artifact, etc.
+
+* organize manual pages according to topics; fix overlapping argument
+  names
+
+* attach to repository interactively
 
 * various small fixes
   - add legend to each tag help screen, e.g. ccat("silver", "Example: objects$time$...")
   - defer: extract object from "artifacts$class$lm$value"
-  - fix the default single-line printout
+
+* what if multiple plots are created in a single R command? e.g. in a
+  loop? there needs to either be an API that can be called after a
+  plot is generated (explicitly) or each possible plotting entry
+  point (like plot(), print.ggplot() etc.) needs to be `trace()`d
+
 
 * the initial way to go is to support the regural (arbitrary)
   research process each user might have, and only use repository

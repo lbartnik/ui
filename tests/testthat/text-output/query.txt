@@ -8,8 +8,8 @@ Matched 10 artifact(s), of that 0 plot(s)
 Artifact: b418c062
 Expression:
   x <- input %>%
-    dplyr::mutate(hour = lubridate::hour(timestamp), dow = lubridate::wday(timestamp)) %>%
-    dplyr::mutate_at(dplyr::vars(hour, dow), dplyr::funs(as.factor))
+    mutate(hour = hour(timestamp), dow = wday(timestamp)) %>%
+    mutate_at(vars(hour, dow), funs(as.factor))
 Name:    x
 Class:   grouped_df tbl_df tbl data.frame
 Created: %
@@ -18,7 +18,7 @@ Summary: data.frame[8760, 5]
 *
 Artifact: 6ee2aaba
 Expression:
-  input %<>% dplyr::filter(meter == "MAC004391")
+  input %<>% filter(meter == "MAC004391")
 Name:    input
 Class:   grouped_df tbl_df tbl data.frame
 Created: %
@@ -28,8 +28,8 @@ Summary: data.frame[8760, 3]
 Artifact: 866190fb
 Expression:
   x <- input %>%
-    dplyr::mutate(hour = lubridate::hour(timestamp), dow = lubridate::wday(timestamp)) %>%
-    dplyr::mutate_at(dplyr::vars(hour, dow), dplyr::funs(as.factor))
+    mutate(hour = hour(timestamp), dow = wday(timestamp)) %>%
+    mutate_at(vars(hour, dow), funs(as.factor))
 Name:    x
 Class:   grouped_df tbl_df tbl data.frame
 Created: %

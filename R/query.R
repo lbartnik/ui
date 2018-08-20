@@ -84,8 +84,7 @@ double_bracket.query <- function (x, i) {
   }
 
   id <- nth(ids, i)
-  cinform0(silver = "Extracting element ", white = i, silver = " (", white = storage::shorten(id), silver = ")")
-  x$repository %>% filter(id == UQ(id)) %>% select(object) %>% execute %>% first %>% first
+  x$repository %>% filter(id == UQ(id)) %>% handle_result
 }
 
 
@@ -349,6 +348,7 @@ dollar_name.single_result <- function (x, i) {
   }
 
   if (identical(i, "value")) {
+    cinform0(silver = "Extracting element ", white = storage::shorten(x$id))
     res <- x$repo %>% filter(id == UQ(x$id)) %>% select(object) %>% execute %>% first %>% first
     return(with_id(res, x$id))
   }

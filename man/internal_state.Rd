@@ -17,7 +17,7 @@ initiate_state(state)
 
 open_default_repo(state, env, create = FALSE)
 
-pick_branch(repo, env)
+pick_branch(state, env)
 
 start_tracking(state)
 
@@ -29,8 +29,6 @@ stop_tracking(state)
 \item{env}{\code{environment} used to find the branch to attach to.}
 
 \item{create}{if \code{TRUE}, create the repository if it does not exist.}
-
-\item{repo}{a \code{\link[repository:repository]{repository::repository()}} object.}
 }
 \description{
 \describe{
