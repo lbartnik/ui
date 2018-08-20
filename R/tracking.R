@@ -52,8 +52,6 @@ open_default_repo <- function (state, env, create = FALSE)
   state$repo <- repo
 }
 
-#' @param repo a [repository::repository()] object.
-#'
 #' @rdname internal_state
 #' @import repository
 #' @importFrom rlang abort inform

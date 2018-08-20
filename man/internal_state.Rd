@@ -29,8 +29,6 @@ stop_tracking(state)
 \item{env}{\code{environment} used to find the branch to attach to.}
 
 \item{create}{if \code{TRUE}, create the repository if it does not exist.}
-
-\item{repo}{a \code{\link[repository:repository]{repository::repository()}} object.}
 }
 \description{
 \describe{
