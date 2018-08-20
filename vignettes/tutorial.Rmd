@@ -16,14 +16,19 @@ knitr::opts_chunk$set(collapse = TRUE, comment = NA, prompt = FALSE, echo = TRUE
 ```
 
 ```{r color, echo = FALSE}
-options(crayon.enabled = TRUE)
-knitr::knit_hooks$set(output = function(x, options){
+ansi_handler <- function(x, options){
   paste0(
     "<pre class=\"r-output\"><code>",
     fansi::sgr_to_html(htmltools::htmlEscape(x)),
     "</code></pre>"
   )
-})
+}
+
+options(crayon.enabled = TRUE)
+knitr::knit_hooks$set(output = ansi_handler)
+knitr::knit_hooks$set(message = ansi_handler)
+
+
 
 # https://stackoverflow.com/questions/23114654/knitr-output-hook-with-an-output-lines-option-that-works-like-echo-26
 hook_output <- knit_hooks$get("output")
@@ -125,14 +130,21 @@ and effort required to maintain the (living) record
 
 
 
-# Produce objects - sample research project
+# Sample research project
 
-Run a sample project generation.
+A sample artifact repository comes in the `repository` package. For
+further details see `?ui::use_sample_repository` and
+`?repository::sample_repository`.
 
+```{r comment='#>'}
+library(ui)
+use_sample_repository()
+```
 
 ```{r include=FALSE}
-artifacts <- ui:::wrap(repository::filter(repository::sample_repository(), isTRUE(artifact)))
+artifacts <- ui::artifacts
 ```
+
 
 # Basic operations
 
@@ -175,14 +187,14 @@ of artifacts not shown and other tags which can be used to further narrow
 the set of artifacts.
 
 ```{r}
-artifacts$session$`7a6f44b0`
+artifacts$session$d75d3d72
 ```
 
 
 We can look at the history of evaluated commands:
 
 ```{r}
-artifacts$session$`7a6f44b0`$history
+artifacts$session$d75d3d72$history
 ```
 
 
@@ -190,7 +202,7 @@ We can also look at the tree view of the artifacts, where edges of the
 tree connect artifacts originating from one another.
 
 ```{r}
-artifacts$session$`7a6f44b0`$tree
+artifacts$session$d75d3d72$tree
 ```
 
 
@@ -198,7 +210,7 @@ Finally, let's limit the displayed artifacts to `data.frame`s and
 investigate their structure of origin.
 
 ```{r}
-artifacts$session$`7a6f44b0`$class$data.frame$tree
+artifacts$session$d75d3d72$class$data.frame$tree
 ```
 
 
@@ -208,7 +220,7 @@ artifacts$session$`7a6f44b0`$class$data.frame$tree
 We can limit the object selection by session identifier:
 
 ```{r}
-artifacts$session$`7a6f44b0`
+artifacts$session$d75d3d72
 ```
 
 Similarily, we can look at specific object creation time:
@@ -269,6 +281,39 @@ Finally, you can use the bracket operator to access an arbitrary
 object within a query result:
 
 ```{r eval=FALSE}
-artifacts$time$yesterday$class$lm[[1]]
-artifacts$time$yesterday$class$lm[[2]]
+artifacts$class$data.frame[[1]]
+artifacts$class$data.frame[[2]]
 ```
+
+## Retrieving a plot
+
+Plots are going to be a big part of every data analysis. There is no need
+to replot them, which is potentially a time-consuming operation. In order
+to retrieve all plots from the repository, run the following code.
+
+```{r}
+artifacts$class$plot
+```
+
+There is also a shortcut for that operation:
+
+```{r eval=FALSE}
+artifacts$plots
+```
+
+In order to see the actual plot use the `plot` accessor on one of the
+artifacts in the result set:
+
+```{r}
+artifacts$class$plot[[1]]$plot
+```
+
+You can do the same using the `id` of the plot:
+
+```{r eval=FALSE}
+artifacts$ba5bb305$plot
+```
+
+
+
+

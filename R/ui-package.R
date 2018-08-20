@@ -47,9 +47,12 @@ NULL
 artifacts <- NULL
 
 
-set_artifacts <- function (value) {
-  artifacts <<- value
+init_artifacts <- function () {
+  unlockBinding('artifacts', asNamespace('ui'))
+  artifacts <<- wrap(repository::filter(state$repo, isTRUE(artifact)))
+  lockBinding('artifacts', asNamespace('ui'))
 }
+
 
 .onLoad <- function (libname, pkgname)
 {
@@ -66,7 +69,7 @@ set_artifacts <- function (value) {
     }
 
     # here it's still possible to change contents of the namespace
-    artifacts <<- wrap(repository::filter(state$repo, isTRUE(artifact)))
+    init_artifacts()
   }
 
   DollarNamesMapping <<- createDollarNamesMapping()

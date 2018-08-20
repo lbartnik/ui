@@ -63,19 +63,26 @@ pick_branch <- function (state, env)
   repo <- state$repo
   hs <- repository::repository_history(repo)
 
+  most_recent <- function (commits) {
+    nth(commits, last(order(map_int(commits, `[[`, i = 'time'))))
+  }
+
   if (length(ls(env))) {
     m <- repository::filter(hs, data_matches(data = as.list(env)))
     if (!length(m)) {
       abort(msg("global environment is not empty but its contents cannot be matched against history, will not attach"))
+      # TODO show a warning and implement an API call to attach manually
     }
 
     if (length(m) > 1) {
-      abort(msg("global environment matched more than once against history, will not attach"))
+      inform(msg("global environment matched more than once against history, attaching to the most recent one"))
+      m <- most_recent(m)
+    } else {
+      inform(msg("global environment matches history, attaching to repository"))
+      m <- first(m)
     }
 
-    inform(msg("global environment matches history, attaching to repository"))
-    repository::repository_rewind(repo, first(m)$id)
-
+    repository::repository_rewind(repo, m$id)
     return()
   }
 
@@ -88,15 +95,15 @@ pick_branch <- function (state, env)
     lv <- first(lv)
   } else {
     inform(msg("repository contains more than one branch, choosing the most recent one"))
-    lv <- nth(lv, last(order(map_int(lv, `[[`, i = 'time'))))
+    lv <- most_recent(lv)
   }
 
-  inform(msg("attaching to repository, commit ", lv$id))
+  inform(msg("attaching to repository, commit ", storage::shorten(lv$id)))
 
   repository::repository_rewind(repo, lv$id)
-  mapply(names(lv$data), lv$data, FUN = function (name, value) {
-    assign(name, value, envir = env)
-  })
+  repository::commit_checkout(lv, env)
+
+  invisible()
 }
 
 

@@ -5,11 +5,15 @@
 
 * attach to repository interactively
 
-* show plots in the tutorial vignette
-
 * various small fixes
   - add legend to each tag help screen, e.g. ccat("silver", "Example: objects$time$...")
   - defer: extract object from "artifacts$class$lm$value"
+
+* what if multiple plots are created in a single R command? e.g. in a
+  loop? there needs to either be an API that can be called after a
+  plot is generated (explicitly) or each possible plotting entry
+  point (like plot(), print.ggplot() etc.) needs to be `trace()`d
+
 
 * the initial way to go is to support the regural (arbitrary)
   research process each user might have, and only use repository
