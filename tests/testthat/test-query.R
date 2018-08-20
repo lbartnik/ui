@@ -50,9 +50,13 @@ test_that("print artifacts by tag", {
 test_that("double bracket", {
   q <- sample_query()
 
-  x <- expect_message(double_bracket(q, 2), ".*Extracting element.*2.*")
-  expect_s3_class(x, "data.frame")
+  x <- expect_output(print(double_bracket(q, 2)), "Query points to a single object")
+  expect_s3_class(x, "wrapper")
+  x <- unwrap(x)
+  expect_true("data.frame" %in% x$class)
 
-  y <- expect_message(q[[2]], ".*Extracting element.*2.*")
+  y <- expect_output(print(q[[2]]), "Query points to a single object")
+  expect_s3_class(y, "wrapper")
+  y <- unwrap(y)
   expect_equal(x, y)
 })
