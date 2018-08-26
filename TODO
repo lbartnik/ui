@@ -1,5 +1,11 @@
 * document concepts: commit, origin, artifact, etc.
 
+* send code (functions) to repository, track them as parents
+
+* do not store (task_callback): query, query result, repository;
+  ignore attributes assigned by the repository and ui packages
+
+
 * organize manual pages according to topics; fix overlapping argument
   names
 
@@ -34,9 +40,6 @@
   history/explanation to Rmd)
 
 * return a tibble with objects from a query under $value
-
-* do not store (task_callback): query, query result, repository;
-  ignore attributes assigned by the repository and ui packages
 
 * there could be a state of search, initiated by the "objects" keyword
   and later stored as "search"; every subsequent query would further
