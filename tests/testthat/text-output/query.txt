@@ -1,7 +1,7 @@
 Query:
   <repository:%/sample-repository> %>%
-    filter(isTRUE(artifact), "data.frame" %in% class)
-default
+    filter(artifact, "data.frame" %in% class)
+
 Matched 10 artifact(s), of that 0 plot(s)
 
 *

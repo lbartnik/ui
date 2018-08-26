@@ -8,5 +8,5 @@ sample_state <- function () {
 
 sample_query <- function (state = sample_state()) {
   expect_true(requireNamespace("repository", quietly = TRUE))
-  wrap(repository::filter(state$repo, isTRUE(artifact)))
+  wrap(repository::as_artifacts(state$repo))
 }

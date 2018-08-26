@@ -12,6 +12,7 @@ Depends:
   R (>= 3.4.0)
 Imports:
   dplyr,
+  glue,
   graphics,
   lubridate,
   repository,
@@ -35,8 +36,10 @@ Collate:
   'ui-impl.R'
   'ui-package.R'
   'utils.R'
+  'widget.R'
   'wrapper.R'
 Remotes:
+  lbartnik/browser,
   lbartnik/repository,
   lbartnik/storage,
   lbartnik/utilities,

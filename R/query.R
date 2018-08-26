@@ -84,7 +84,7 @@ double_bracket.query <- function (x, i) {
   }
 
   id <- nth(ids, i)
-  x$repository %>% filter(id == UQ(id)) %>% handle_result
+  as_query(x$repository) %>% filter(id == UQ(id)) %>% handle_result
 }
 
 
@@ -95,10 +95,11 @@ print.query <- function (x, ..., n = 3) {
 
   # print the query itself
   ccat(silver = 'Query:\n')
+  # TODO rename to format.query
   repository:::print.query(x, ...)
 
   # and a short summary of types of artifacts
-  res <- x %>% unselect %>% select(-object, -parent_commit, -id, -parents) %>% execute(.warn = FALSE)
+  res <- x %>% unselect %>% select(-object, -parent_commit, -id, -parents) %>% execute()
   ccat0(grey = '\nMatched ', nrow(res),
         grey = ' artifact(s), of that ', sum(vapply(res$class, function(x) "plot" %in% x, logical(1))),
         grey = " plot(s)\n")
