@@ -100,7 +100,7 @@ double_bracket.query <- function (x, i) {
   }
 
   id <- nth(ids, i)
-  as_query(x$repository) %>% filter(id == UQ(id)) %>% handle_result
+  wrap(single_result(id, x$repository))
 }
 
 
