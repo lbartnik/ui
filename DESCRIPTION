@@ -29,6 +29,7 @@ Suggests:
   rstudioapi,
   testthat
 Collate:
+  'print.R'
   'query.R'
   'query-impl.R'
   'query-keys.R'

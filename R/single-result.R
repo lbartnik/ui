@@ -1,3 +1,10 @@
+#' Wrapper for a result that contains a single artifact.
+#'
+#' @param id artifact identifier
+single_result <- function (id, repo) {
+  structure(list(id = id, repo = repo), class = 'single_result')
+}
+
 
 #' @description `handle_result` makes the decision whether to return
 #' a wrapped `query` object for further narrowing of the query, or
@@ -20,15 +27,13 @@ handle_result <- function (q) {
 }
 
 
-single_result <- function (id, repo) {
-  structure(list(id = id, repo = repo), class = 'single_result')
-}
 
 #' @importFrom rlang UQ
 #' @importFrom storage shorten
 print.single_result <- function (x, ...) {
   ccat0(grey = 'Query points to a single object\n')
-  print(first(repository::repository_explain(x$repo, x$id, ancestors = 0)))
+  res <- as_artifacts(x$repo) %>% filter(id == UQ(x$id)) %>% read_artifacts %>% first
+  print(res)
 }
 
 dollar_names.single_result <- function (x, pattern = "") {

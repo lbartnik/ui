@@ -10,6 +10,7 @@
 #' @docType package
 #'
 #' @import repository
+#' @import utilities
 #' @importFrom glue glue
 #'
 #' @name ui

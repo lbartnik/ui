@@ -1,20 +1,24 @@
-
-# TODO expose search tags so that they can be checked against in
-#      is_query_key() inside dollar_name.query
-dollar_names.query <- function (x, pattern = "", action = TRUE) {
-  search_tags <- c("class", "id", "name", "time", "session")
-  action_keys <- c("history", "tree")
-
-  tags <- if (isTRUE(action)) c(search_tags, action_keys) else search_tags
-  grep(pattern, sort(tags), value = TRUE)
-}
-
-
+#' Interactive UI for queries.
+#'
+#' UI for the [repository::query] object. It employs R's dollar operator
+#' `$` to provide an interactive access to the repository of artifacts.
+#' The `key` of the `$` operator denotes an action. Supported actions
+#' are:
+#'
+#'   * `history`
+#'   * `tree`
+#'   * `value`
+#'   * query specifier: `name`, `id`, `class`, `time`, `session`
+#'   * artifact name or identifier
+#'
+#' @param x [repository::query] object.
+#' @param n action name.
+#'
 #' @importFrom rlang abort UQ
 #' @importFrom lubridate as_date ymd
 #' @importFrom storage enlongate
-#' @import utilities
 #'
+#' @rdname ui-query
 dollar_name.query <- function (x, n) {
   # TODO
   # 1. if `i` is an action key (browse, etc.) run that action
@@ -28,10 +32,9 @@ dollar_name.query <- function (x, n) {
   is_tree <- identical(n, "tree")
 
   if (is_history || is_tree) {
-    ids <- x %>% select(id) %>% execute %>% first
-    expl <- repository::repository_explain(x$repository, ids, ancestors = 0)
-    if (is_tree) expl <- set_defaults(expl, style = "tree")
-    return(expl)
+    a <- read_artifacts(x)
+    g <- connect_artifacts(a)
+    if (is_tree) return(new_tree(g)) else return(new_history(g))
   }
 
   # TODO check only actual search tags
@@ -75,6 +78,19 @@ dollar_name.query <- function (x, n) {
 }
 
 
+# TODO expose search tags so that they can be checked against in
+#      is_query_key() inside dollar_name.query
+dollar_names.query <- function (x, pattern = "", action = TRUE) {
+  search_tags <- c("class", "id", "name", "time", "session")
+  action_keys <- c("history", "tree")
+
+  tags <- if (isTRUE(action)) c(search_tags, action_keys) else search_tags
+  grep(pattern, sort(tags), value = TRUE)
+}
+
+
+
+
 #' @importFrom rlang abort
 #' @importFrom dplyr desc
 double_bracket.query <- function (x, i) {
@@ -108,7 +124,7 @@ print.query <- function (x, ..., n = 3) {
   if (nrow(res)) {
     ids <- x %>% select(id, time) %>% top_n(n) %>% arrange(desc(time)) %>% execute %>% nth("id")
 
-    obj <- repository::repository_explain(x$repository, ids, 0)
+    obj <- read_artifacts(as_artifacts(x$repository))
 
     z <- lapply(obj, function (x) {
       ccat(green = '\n*\n')

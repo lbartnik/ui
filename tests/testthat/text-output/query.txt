@@ -1,39 +1,170 @@
 Query:
-  <repository:%/sample-repository> %>%
+  <repository:/tmp/RtmpkpSsRo/sample-repository> %>%
     filter(artifact, "data.frame" %in% class)
 
 Matched 10 artifact(s), of that 0 plot(s)
 
 *
-Artifact: b418c062
+Artifact: 14e3598b (plot)
 Expression:
-  x <- input %>%
-    mutate(hour = hour(timestamp), dow = wday(timestamp)) %>%
-    mutate_at(vars(hour, dow), funs(as.factor))
+with(x, plot(hour, usage))
+Class:   rawplot plot
+Created: 2018-08-19 20:53:42
+Summary: 
+
+*
+Artifact: 2b67f493
+Expression:
+input %<>% dplyr::mutate(timestamp = lubridate::floor_date(timestamp, "hours")) %>%
+  dplyr::group_by(meter, timestamp) %>%
+  dplyr::summarise(usage = sum(usage))
+Name:    input
+Class:   grouped_df tbl_df tbl data.frame
+Created: 2018-08-19 20:48:41
+Summary: data.frame[26280, 3]
+
+*
+Artifact: 539d7b91 (plot)
+Expression:
+ggplot(x) + geom_boxplot(aes(x = hour, y = usage)) + facet_wrap(~dow)
+Class:   rawplot plot
+Created: 2018-08-19 23:07:59
+Summary: 
+
+*
+Artifact: 57fbe755
+Expression:
+m <- stats::lm(usage ~ hour:dow, x)
+Name:    m
+Class:   lm
+Created: 2018-08-19 20:57:49
+Summary: lm adjR2:0.33 AIC:7164 df:168
+
+*
+Artifact: 64228d01
+Expression:
+ggplot2::ggplot(x) + ggplot2::geom_point(ggplot2::aes(x = hour, y = usage)) + ggplot2::facet_wrap(~dow)
 Name:    x
 Class:   grouped_df tbl_df tbl data.frame
-Created: %
-Summary: data.frame[8760, 5]
+Created: 2018-08-19 20:54:43
+Summary: data.frame[168, 3]
 
 *
 Artifact: 6ee2aaba
 Expression:
-  input %<>% filter(meter == "MAC004391")
+input %<>% filter(meter == "MAC004391")
 Name:    input
 Class:   grouped_df tbl_df tbl data.frame
-Created: %
+Created: 2018-08-19 23:05:54
 Summary: data.frame[8760, 3]
+
+*
+Artifact: 70f3c0a4 (plot)
+Expression:
+with(input, plot(timestamp, usage, type = "p", pch = "."))
+Class:   rawplot plot
+Created: 2018-08-19 20:51:42
+Summary: 
 
 *
 Artifact: 866190fb
 Expression:
-  x <- input %>%
-    mutate(hour = hour(timestamp), dow = wday(timestamp)) %>%
-    mutate_at(vars(hour, dow), funs(as.factor))
+x <- input %>%
+  mutate(hour = hour(timestamp), dow = wday(timestamp)) %>%
+  mutate_at(vars(hour, dow), funs(as.factor))
 Name:    x
 Class:   grouped_df tbl_df tbl data.frame
-Created: %
+Created: 2018-08-19 23:02:50
 Summary: data.frame[8760, 5]
+
+*
+Artifact: 89c78e89
+Expression:
+input <- system.file("extdata/block_62.csv", package = "repository") %>%
+  readr::read_csv(na = "Null") %>%
+  dplyr::rename(meter = LCLid, timestamp = tstp, usage = energy_kWh) %>%
+  dplyr::filter(meter %in% c("MAC004929", "MAC000010", "MAC004391"), lubridate::year(timestamp) == 2013)
+Name:    input
+Class:   tbl_df tbl data.frame
+Created: 2018-08-19 20:47:41
+Summary: data.frame[52560, 3]
+
+*
+Artifact: af206c42
+Expression:
+input %<>% dplyr::filter(meter == "MAC004929")
+Name:    input
+Class:   grouped_df tbl_df tbl data.frame
+Created: 2018-08-19 20:50:41
+Summary: data.frame[8760, 3]
+
+*
+Artifact: b418c062
+Expression:
+x <- input %>%
+  mutate(hour = hour(timestamp), dow = wday(timestamp)) %>%
+  mutate_at(vars(hour, dow), funs(as.factor))
+Name:    x
+Class:   grouped_df tbl_df tbl data.frame
+Created: 2018-08-19 23:06:55
+Summary: data.frame[8760, 5]
+
+*
+Artifact: b83ee352
+Expression:
+x <- input %>%
+  dplyr::mutate(hour = lubridate::hour(timestamp), dow = lubridate::wday(timestamp)) %>%
+  dplyr::mutate_at(dplyr::vars(hour, dow), dplyr::funs(as.factor))
+Name:    x
+Class:   grouped_df tbl_df tbl data.frame
+Created: 2018-08-19 20:55:44
+Summary: data.frame[8760, 5]
+
+*
+Artifact: ba5bb305 (plot)
+Expression:
+ggplot(x) + geom_boxplot(aes(x = hour, y = usage)) + facet_wrap(~dow)
+Class:   rawplot plot
+Created: 2018-08-19 23:03:54
+Summary: 
+
+*
+Artifact: d0fe8d94 (plot)
+Expression:
+ggplot2::ggplot(x) + ggplot2::geom_boxplot(ggplot2::aes(x = hour, y = usage)) + ggplot2::facet_wrap(~dow)
+Class:   rawplot plot
+Created: 2018-08-19 20:56:48
+Summary: 
+
+*
+Artifact: f2d8e929
+Expression:
+input %<>% filter(meter == "MAC000010")
+Name:    input
+Class:   grouped_df tbl_df tbl data.frame
+Created: 2018-08-19 23:01:49
+Summary: data.frame[8760, 3]
+
+*
+Artifact: f59403b5
+Expression:
+x <- input %>%
+  dplyr::mutate(hour = lubridate::hour(timestamp), dow = lubridate::wday(timestamp, label = TRUE)) %>%
+  dplyr::mutate_at(dplyr::vars(hour, dow), dplyr::funs(as.factor)) %>%
+  dplyr::group_by(hour, dow) %>%
+  dplyr::summarise(usage = mean(usage, na.rm = TRUE))
+Name:    x
+Class:   grouped_df tbl_df tbl data.frame
+Created: 2018-08-19 20:52:42
+Summary: data.frame[168, 3]
+
+*
+Artifact: fb79a008 (plot)
+Expression:
+ggplot2::ggplot(x) + ggplot2::geom_point(ggplot2::aes(x = hour, y = usage)) + ggplot2::facet_wrap(~dow)
+Class:   rawplot plot
+Created: 2018-08-19 20:54:43
+Summary: 
 
 ... with 7 more artifact(s)
 You can still specify following tags: class id name session time
