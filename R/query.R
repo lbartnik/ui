@@ -122,11 +122,8 @@ print.query <- function (x, ..., n = 3) {
 
   # print the first n objects
   if (nrow(res)) {
-    ids <- x %>% select(id, time) %>% top_n(n) %>% arrange(desc(time)) %>% execute %>% nth("id")
-
-    obj <- read_artifacts(as_artifacts(x$repository))
-
-    z <- lapply(obj, function (x) {
+    obj <- as_artifacts(x$repository) %>% top_n(n) %>% read_artifacts
+    lapply(obj, function (x) {
       ccat(green = '\n*\n')
       print(x)
     })
