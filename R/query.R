@@ -115,7 +115,7 @@ print.query <- function (x, ..., n = 3) {
   repository:::print.query(x, ...)
 
   # and a short summary of types of artifacts
-  res <- x %>% unselect %>% select(-object, -parent_commit, -id, -parents) %>% execute()
+  res <- as_tags(x) %>% read_tags(-object, -parent_commit, -id, -parents)
   ccat0(grey = '\nMatched ', nrow(res),
         grey = ' artifact(s), of that ', sum(vapply(res$class, function(x) "plot" %in% x, logical(1))),
         grey = " plot(s)\n")

@@ -17,15 +17,11 @@ test_that("tag values", {
   expect_tag_values("names", c("input", "m", "x"), c(5, 1, 5))
 })
 
-
-# --- query ------------------------------------------------------------
-
 test_that("print query", {
   q <- sample_query()
   expect_output_file(print(q$class$data.frame), 'text-output/query.txt',
                      wildcard = '%')
 })
-
 
 test_that("print artifacts by tag", {
   q <- sample_query()
@@ -45,7 +41,6 @@ test_that("print artifacts by tag", {
   verify_specifier("time")
   verify_specifier("session")
 })
-
 
 test_that("double bracket", {
   q <- sample_query()

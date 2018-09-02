@@ -15,9 +15,8 @@ format_specifier_header <- function (tag_name) {
   ccat(silver = 'Tag: ', tag_name, silver = '\nValues (#artifacts):\n')
 }
 
-#' @import utilities
 table_tag_values <- function (qry, tag) {
-  vls <- qry %>% select(UQ(as.symbol(tag))) %>% execute %>% first
+  vls <- as_tags(qry) %>% read_tags(UQ(as.symbol(tag))) %>% first
   table(unlist(vls))
 }
 

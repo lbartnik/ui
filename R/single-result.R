@@ -18,8 +18,9 @@ single_result <- function (id, repo) {
 handle_result <- function (q) {
   stopifnot(repository::is_query(q))
 
-  res <- q %>% select(id) %>% summarise(n = n(), id = min(id)) %>% execute
+  res <- q %>% summarise(n = n())
   if (identical(res$n, 1L)) {
+    res <- read_tags(as_tags(q), id)
     return(wrap(single_result(first(res$id), q$repo)))
   }
 
