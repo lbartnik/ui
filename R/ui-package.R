@@ -11,6 +11,7 @@
 #'
 #' @import repository
 #' @import utilities
+#' @importFrom storage shorten enlongate
 #' @importFrom glue glue
 #'
 #' @name ui

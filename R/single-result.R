@@ -1,38 +1,51 @@
-#' Wrapper for a result that contains a single artifact.
+#' Access a single artifact.
 #'
-#' @param id artifact identifier
-single_result <- function (id, repo) {
-  structure(list(id = id, repo = repo), class = 'single_result')
-}
+#' @name single_result
+#' @rdname single_result
+NULL
 
 
 #' @description `dispatch_result` makes the decision whether to return
 #' a wrapped `query` object for further narrowing of the query, or
-#' a `single_result` object which wraps a single object retrieved
-#' from the [repository::repository].
+#' a `single_result` object which wraps a single artifact retrieved
+#' from a [repository::repository].
 #'
 #' @param q a `query` object.
+#' @return A [single_result] object or wrapped query `q`.
 #'
-#' @rdname specifier
+#' @rdname single_result
 dispatch_result <- function (q) {
   stopifnot(is_query(q))
 
   res <- q %>% summarise(n = n())
   if (identical(res$n, 1L)) {
-    res <- read_tags(as_tags(q), id)
-    return(wrap(single_result(first(res$id), q$repo)))
+    a <- as_artifacts(q) %>% read_artifacts %>% first
+    return(wrap(single_result(a)))
   }
 
   wrap(q)
 }
 
+#' @description `new_single_result` creates a simple wrapper around an
+#' artifact. It then dispatches calls to `print` and exposes additional
+#' operations via the dollar operator `$`.
+#'
+#' @param artifact retrieved from a repository with [repository::read_artifacts]
+#' @param repository origin of `artifact`.
+#'
+#' @rdname single_result
+new_single_result <- function (artifact, repository) {
+  stopifnot(is_artifact(artifact))
+  stopifnot(is_repository(repository))
+  structure(list(artifact = artifact, repository = repository),
+            class = 'single_result')
+}
 
 #' @importFrom rlang UQ
-#' @importFrom storage shorten
+#' @rdname single_result
 print.single_result <- function (x, ...) {
   ccat0(grey = 'Query points to a single object\n')
-  res <- as_artifacts(x$repo) %>% filter(id == UQ(x$id)) %>% read_artifacts %>% first
-  print(res)
+  print(x$artifact)
 }
 
 dollar_names.single_result <- function (x, pattern = "") {
@@ -44,30 +57,34 @@ dollar_names.single_result <- function (x, pattern = "") {
   grep(pattern, keys, value = TRUE)
 }
 
-#' @importFrom rlang abort UQ
+#' @importFrom rlang UQ
 dollar_name.single_result <- function (x, i) {
 
+  # print the tree
   if (identical(i, "explain")) {
-    # TODO turn this result into a function that takes an extra parameter
-    #      (the number of ancestors) or handle an extra number at the
-    #      end of this key
-    return(repository::repository_explain(x$repo, x$id, ancestors = 7))
+    ans <- as_artifacts(x$repository) %>% filter(ancestor_of(x$artifact$id)) %>% read_artifacts
+    return(wrap(ans, 'explanation'))
   }
 
+  # TODO ???
   if (identical(i, "inspect")) {
     abort("inspect not implemented yet")
   }
 
-  if (is_artifact_a(x$repo, x$id, 'plot') && identical(i, 'plot')) {
-    res <- x$repo %>% filter(id == UQ(x$id)) %>% select(object) %>% execute %>% first %>% first
-    graphics::plot(res)
-    return(invisible(res))
+  # re-plot a plot
+  if (identical(i, 'plot')) {
+    if (!artifact_is(x$artifact, 'plot')) {
+      abort('cannot plot a non-plot')
+    }
+
+    graphics::plot(artifact_data(x$artifact))
+    return(invisible(x))
   }
 
+  # return the raw value
   if (identical(i, "value")) {
-    cinform0(silver = "Extracting element ", white = storage::shorten(x$id))
-    res <- x$repo %>% filter(id == UQ(x$id)) %>% select(object) %>% execute %>% first %>% first
-    return(with_id(res, x$id))
+    cinform0(silver = "Extracting element ", white = shorten(x$artifact$id))
+    return(artifact_data(x$artifact))
   }
 
   abort("unknown key: ", i)

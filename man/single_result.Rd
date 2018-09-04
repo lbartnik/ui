@@ -2,13 +2,36 @@
 % Please edit documentation in R/single-result.R
 \name{single_result}
 \alias{single_result}
-\title{Wrapper for a result that contains a single artifact.}
+\alias{dispatch_result}
+\alias{new_single_result}
+\alias{print.single_result}
+\title{Access a single artifact.}
 \usage{
-single_result(id, repo)
+dispatch_result(q)
+
+new_single_result(artifact, repository)
+
+\method{print}{single_result}(x, ...)
 }
 \arguments{
-\item{id}{artifact identifier}
+\item{q}{a \code{query} object.}
+
+\item{artifact}{retrieved from a repository with \link[repository:read_artifacts]{repository::read_artifacts}}
+
+\item{repository}{origin of \code{artifact}.}
+}
+\value{
+A \link{single_result} object or wrapped query \code{q}.
 }
 \description{
-Wrapper for a result that contains a single artifact.
+Access a single artifact.
+
+\code{dispatch_result} makes the decision whether to return
+a wrapped \code{query} object for further narrowing of the query, or
+a \code{single_result} object which wraps a single artifact retrieved
+from a \link[repository:repository]{repository::repository}.
+
+\code{new_single_result} creates a simple wrapper around an
+artifact. It then dispatches calls to \code{print} and exposes additional
+operations via the dollar operator \code{$}.
 }
