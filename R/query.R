@@ -26,52 +26,57 @@ dollar_name.query <- function (x, n) {
   # 3. if `i` is a valid id check if it exists; if so, add to the query
   # 4. else treat `i` as a name specifier
 
-  is_query_key <- function (k) identical(k, dollar_names(x, k))
-
-  is_history <- identical(n, "history")
-  is_tree <- identical(n, "tree")
-
-  if (is_history || is_tree) {
-    a <- read_artifacts(x)
-    g <- connect_artifacts(a)
-    if (is_tree) return(new_tree(g)) else return(new_history(g))
+  # print as a tree
+  if (identical(n, "tree")) {
+    g <- connect_artifacts(read_artifacts(x))
+    return(wrap(g, 'tree'))
   }
 
+  # print as a history log
+  if (identical(n, "history")) {
+    g <- read_artifacts(x)
+    return(wrap(g, 'history'))
+  }
+
+  # key specifier
   # TODO check only actual search tags
+  is_query_key <- function (k) identical(k, dollar_names(x, k))
   if (is_query_key(n)) {
     return(wrap(new_specifier(x, n)))
   }
 
+  # shortcut to class$plot
   if (identical(n, "plots")) {
-    return(wrap(repository::filter(x, 'plot' %in% class)))
+    return(wrap(filter(x, 'plot' %in% class)))
   }
 
   # if there is only one element that matches
   if (identical(n, "value")) {
-    res <- x %>% select(id) %>% summarise(n = n()) %>% execute
-    if (res$n == 1) {
-      res <- x %>% select(object) %>% execute
-      return(first(res$object))
+    res <- x %>% summarise(n = n()) %>% nth("n")
+    if (res == 1) {
+      ans <- read_artifacts(as_artifacts(x)) %>% first
+      return(artifact_data(ans))
     }
-    stop('value for multiple objects')
+
+    abort('cannot extract value because query matches multiple artifacts')
   }
 
   # if it looks like a date specification...
   d <- ymd(n, quiet = TRUE)
   if (!is.na(d)) {
-    return(wrap(repository::filter(x, as_date(time) == UQ(as.character(d)))))
+    return(wrap(filter(x, as_date(time) == UQ(as.character(d)))))
   }
 
   # if it doesn't look like anything else, it must be an attempt at name or id
-  res <- x  %>% select(id) %>% repository::filter(UQ(n) %in% names) %>% summarise(n = n()) %>% execute %>% first
-  if (is.numeric(res) && res > 0) {
-    res <- repository::filter(x, UQ(n) %in% names)
+  num <- as_artifacts(x) %>% filter(UQ(n) %in% names) %>% summarise(n = n()) %>% first
+  if (is.numeric(num) && num > 0) {
+    res <- filter(x, UQ(n) %in% names)
   }
   else {
     id <- tryCatch(enlongate(n, x$repository$store), error = function (e) {
-      abort(sprintf("`%s` does not identify an artifact", n))
+      abort(glue("{n} is not an artifact name nor identifier"))
     })
-    res <- repository::filter(x$repository, UQ(id) == id)
+    res <- filter(x$repository, UQ(id) == id)
   }
 
   dispatch_result(res)
@@ -104,7 +109,7 @@ double_bracket.query <- function (x, i) {
 }
 
 
-#' @importFrom repository execute select top_n
+#' @importFrom repository top_n
 #' @importFrom stringi stri_paste
 #' @export
 print.query <- function (x, ..., n = 3) {
@@ -141,15 +146,4 @@ print.query <- function (x, ..., n = 3) {
   ccat(grey = 'You can still specify following tags:', all_tags)
 
   invisible(x)
-}
-
-
-
-is_artifact_a <- function (repo, id, what) {
-  stopifnot(what %in% 'plot')
-
-  if (identical(what, 'plot')) {
-    class <- repo %>% filter(id == UQ(id)) %>% select(class) %>% execute %>% first %>% unlist
-    return('plot' %in% class)
-  }
 }

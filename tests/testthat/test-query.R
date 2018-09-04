@@ -1,5 +1,9 @@
 context("query")
 
+test_that("dollar name", {
+  skip("TODO dollar_name.query")
+})
+
 
 test_that("tag values", {
   q <- unwrap(sample_query())
