@@ -38,7 +38,7 @@ dollar_names.specifier <- function (x, pattern = "") {
 #' @importFrom rlang UQ
 dollar_name.specifier <- function (x, i) {
   tag <- as.symbol(x$key)
-  handle_result(filter(x$query, UQ(i) %in% UQ(tag)))
+  dispatch_result(filter(x$query, UQ(i) %in% UQ(tag)))
 }
 
 

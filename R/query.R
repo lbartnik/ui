@@ -74,7 +74,7 @@ dollar_name.query <- function (x, n) {
     res <- repository::filter(x$repository, UQ(id) == id)
   }
 
-  handle_result(res)
+  dispatch_result(res)
 }
 
 

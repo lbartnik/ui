@@ -6,17 +6,16 @@ single_result <- function (id, repo) {
 }
 
 
-#' @description `handle_result` makes the decision whether to return
+#' @description `dispatch_result` makes the decision whether to return
 #' a wrapped `query` object for further narrowing of the query, or
 #' a `single_result` object which wraps a single object retrieved
 #' from the [repository::repository].
 #'
 #' @param q a `query` object.
 #'
-#' @importFrom dplyr n
 #' @rdname specifier
-handle_result <- function (q) {
-  stopifnot(repository::is_query(q))
+dispatch_result <- function (q) {
+  stopifnot(is_query(q))
 
   res <- q %>% summarise(n = n())
   if (identical(res$n, 1L)) {
@@ -26,7 +25,6 @@ handle_result <- function (q) {
 
   wrap(q)
 }
-
 
 
 #' @importFrom rlang UQ

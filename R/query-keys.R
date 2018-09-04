@@ -6,7 +6,7 @@ dollar_names.name <- function (x, pattern = "") {
 }
 
 dollar_name.name <- function (x, i) {
-  handle_result(repository::filter(x$query, UQ(i) %in% names))
+  dispatch_result(repository::filter(x$query, UQ(i) %in% names))
 }
 
 
@@ -19,7 +19,7 @@ print_specifier.name <- function (x) {
 dollar_name.id <- function (x, i) {
   i <- storage::enlongate(i, x$query$repository$store)
   stopifnot(length(i) > 0)
-  handle_result(x$query$repository %>% repository::filter(UQ(i) == id))
+  dispatch_result(x$query$repository %>% repository::filter(UQ(i) == id))
 }
 
 
@@ -48,7 +48,7 @@ dollar_name.time <- function (x, i) {
   stopifnot(has_name(DollarNamesMapping$time, i))
 
   expr <- DollarNamesMapping$time[[i]]
-  handle_result(repository::filter(x$query, UQ(expr)))
+  dispatch_result(repository::filter(x$query, UQ(expr)))
 }
 
 print_specifier.time <- function (x) {
