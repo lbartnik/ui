@@ -23,6 +23,7 @@ NULL
 #' @param class optional S3 class name assigned alongside the `"wrapper"`
 #'        class.
 #'
+#' @importFrom rlang is_character
 #' @rdname wrapper
 wrap <- function (x, class) {
   if (missing(class)) class <- character()

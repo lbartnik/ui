@@ -99,13 +99,13 @@ dollar_names.query <- function (x, pattern = "", action = TRUE) {
 #' @importFrom rlang abort
 #' @importFrom dplyr desc
 double_bracket.query <- function (x, i) {
-  ids <- x %>% select(id, time) %>% arrange(desc(time)) %>% execute %>% nth("id")
+  ids <- as_tags(x) %>% arrange(desc(time)) %>% read_tags(id) %>% nth("id")
   if (!is_index_of(i, ids)) {
-    abort(sprintf("`%s` is not an index in this query", as.character(i)))
+    abort(glue("{i} is not an index in this query"))
   }
 
-  id <- nth(ids, i)
-  wrap(single_result(id, x$repository))
+  ans <- as_artifacts(x) %>% filter(id == nth(ids, i)) %>% read_artifacts
+  wrap(new_single_result(ans, x$repository))
 }
 
 
@@ -116,13 +116,12 @@ print.query <- function (x, ..., n = 3) {
 
   # print the query itself
   ccat(silver = 'Query:\n')
-  # TODO rename to format.query
-  repository:::print.query(x, ...)
+  cat(format(x, ...), '\n')
 
   # and a short summary of types of artifacts
   res <- as_tags(x) %>% read_tags(-object, -parent_commit, -id, -parents)
   ccat0(grey = '\nMatched ', nrow(res),
-        grey = ' artifact(s), of that ', sum(vapply(res$class, function(x) "plot" %in% x, logical(1))),
+        grey = ' artifact(s), of that ', sum(map_lgl(res$class, function(x) "plot" %in% x)),
         grey = " plot(s)\n")
 
   # print the first n objects

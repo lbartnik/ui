@@ -15,9 +15,9 @@
 \arguments{
 \item{x}{artifacts, e.g. returned  \link[repository:read_artifacts]{repository::read_artifacts}.}
 
-\item{...}{Arguments passed on to \code{print}
+\item{...}{Arguments passed on to \code{base::print}
 \describe{
-  \item{}{}
+  \item{x}{an object used to select a method.}
 }}
 
 \item{style}{\code{"full"}, \code{"short"} or \code{"line"}.}

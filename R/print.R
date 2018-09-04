@@ -5,7 +5,7 @@ new_history <- function (x) structure(x, class = c('history', class(x)))
 #' Pretty-print sets of artifacts.
 #'
 #' @param x artifacts, e.g. returned  [repository::read_artifacts].
-#' @inheritDotParams print
+#' @inheritDotParams base::print
 #'
 #' @importFrom rlang warn
 #'
