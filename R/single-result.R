@@ -50,7 +50,7 @@ print.single_result <- function (x, ...) {
 
 dollar_names.single_result <- function (x, pattern = "") {
   keys <- c("explain", "inspect", "value")
-  if (is_artifact_a(x$repo, x$id, 'plot')) {
+  if (artifact_is(x$artifact, 'plot')) {
     keys <- sort(c(keys, 'plot'))
   }
 

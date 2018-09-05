@@ -8,10 +8,10 @@ test_that("dispatch result", {
 })
 
 test_that("dollar names", {
-  s <- new_single_result(fake_artifact())
+  s <- new_single_result(fake_artifact(), fake_repository())
   expect_setequal(dollar_names(s), c("explain", "inspect", "value"))
 
-  s <- new_single_result(fake_plot_artifact())
+  s <- new_single_result(fake_plot_artifact(), fake_repository())
   expect_setequal(dollar_names(s), c("explain", "inspect", "value", "plot"))
 })
 

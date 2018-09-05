@@ -105,7 +105,7 @@ double_bracket.query <- function (x, i) {
     abort(glue("{i} is not an index in this query"))
   }
 
-  ans <- as_artifacts(x) %>% filter(id == nth(ids, i)) %>% read_artifacts
+  ans <- as_artifacts(x) %>% filter(id == nth(ids, i)) %>% read_artifacts %>% first
   wrap(new_single_result(ans, x$repository))
 }
 

@@ -60,9 +60,11 @@ print_specifier.time <- function (x) {
 #' @importFrom dplyr mutate group_by
 #' @importFrom lubridate as_date hour minute
 print_specifier.session <- function (x) {
-  raw <- x$query %>% select(session, time) %>% execute
-  vls <- raw %>% group_by(session) %>% summarise(time = min(time), n = n()) %>%
-    mutate(label = sprintf("%s: %s %s:%02d", session, as_date(time), hour(time), minute(time)))
+  raw <- as_tags(x$query) %>% read_tags(session, time)
+  vls <- raw %>%
+    group_by(session) %>%
+    summarise(time = min(time), n = n()) %>%
+    mutate(label = glue("{session}: {as_date(time)} {hour(time)}:{formatC(minute(time), width = 2, flag = '0')}"))
 
   format_specifier_header("session")
   format_labels(table_to_labels(with_names(vls$n, vls$label)))
