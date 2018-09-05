@@ -35,8 +35,6 @@ Collate:
   'single-result.R'
   'specifier.R'
   'tracking.R'
-  'ui.R'
-  'ui-impl.R'
   'ui-package.R'
   'utils.R'
   'widget.R'
