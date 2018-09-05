@@ -136,7 +136,6 @@ print.query <- function (x, ..., n = 3) {
     }
   }
 
-
   # TODO exclude tags that are already specified
   # inform what other tags are not yet specified
   all_tags <- dollar_names(x, action = FALSE)
@@ -145,38 +144,14 @@ print.query <- function (x, ..., n = 3) {
   invisible(x)
 }
 
-
-
-# --- older code -------------------------------------------------------
-
-format_specifier_header <- function (tag_name) {
-  ccat(silver = 'Tag: ', tag_name, silver = '\nValues (#artifacts):\n')
-}
-
 table_tag_values <- function (qry, tag) {
   vls <- as_tags(qry) %>% read_tags(UQ(as.symbol(tag))) %>% first
   table(unlist(vls))
 }
 
-table_to_labels <- function (table) {
-  paste0(names(table), ' (', as.integer(table), ')')
-}
-
-#' @importFrom stringi stri_length stri_pad_right stri_replace_all_fixed stri_trim_right stri_wrap
-format_labels <- function (labels) {
-  labels <- stri_replace_all_fixed(labels, ' ', '*')
-  labels <- stri_pad_right(labels, max(stri_length(labels), na.rm = TRUE) + 2)
-  text <- join(labels, '  ')
-  lns <- stri_wrap(text, normalize = FALSE, indent = 2, exdent = 2)
-  lns <- stri_replace_all_fixed(lns, '*', ' ')
-  lns <- stri_trim_right(lns)
-  cat(paste(lns, collapse = '\n'))
-}
-
 #' Assigned in .onLoad
 #'
 DollarNamesMapping <- NULL
-
 
 #' @importFrom rlang quo
 #' @importFrom lubridate as_date ddays dhours floor_date today wday
@@ -209,4 +184,3 @@ createDollarNamesMapping <- function () {
     )
   )
 }
-

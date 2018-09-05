@@ -41,6 +41,11 @@ test_that("dollar name", {
   expect_s3_class(unwrap(x), 'single_result')
 })
 
+test_that("dollar names", {
+  q <- as_query(london_meters())
+  expect_setequal(dollar_names(q), c("class", "id", "name", "time", "session", "history", "tree"))
+})
+
 test_that("double bracket", {
   q <- sample_query()
 
@@ -55,6 +60,11 @@ test_that("double bracket", {
   expect_equal(x, y)
 })
 
+test_that("print query", {
+  q <- sample_query()
+  expect_output_file(print(q$class$data.frame), 'text-output/query.txt',
+                     wildcard = '%')
+})
 
 test_that("tag values", {
   q <- as_query(london_meters())
@@ -72,8 +82,3 @@ test_that("tag values", {
   expect_tag_values("names", c("input", "m", "x"), c(5, 1, 5))
 })
 
-test_that("print query", {
-  q <- sample_query()
-  expect_output_file(print(q$class$data.frame), 'text-output/query.txt',
-                     wildcard = '%')
-})
