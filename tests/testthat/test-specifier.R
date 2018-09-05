@@ -14,3 +14,21 @@ test_that("dollar names", {
                        "lm", "tbl_df", "tbl", "data.frame"))
 })
 
+test_that("print artifacts by tag", {
+  q <- as_query(london_meters())
+
+  verify_specifier <- function (key) {
+    s <- unwrap(dollar_name(q, key))
+    p <- file.path("text-output", paste0('specifier-', key, '.txt'))
+
+    expect_true(is_specifier(s), label = key)
+    # TODO requires wildcard implemented in lbartnik/testthat; PR pending in official testthat
+    expect_output_file(print_specifier(s), p, label = key, wildcard = '%')
+  }
+
+  verify_specifier("class")
+  verify_specifier("id")
+  verify_specifier("name")
+  verify_specifier("time")
+  verify_specifier("session")
+})

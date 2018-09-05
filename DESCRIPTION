@@ -31,7 +31,6 @@ Suggests:
 Collate:
   'print.R'
   'query.R'
-  'query-impl.R'
   'query-keys.R'
   'single-result.R'
   'specifier.R'

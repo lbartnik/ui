@@ -41,6 +41,20 @@ test_that("dollar name", {
   expect_s3_class(unwrap(x), 'single_result')
 })
 
+test_that("double bracket", {
+  q <- sample_query()
+
+  x <- expect_output(print(double_bracket(q, 2)), "Query points to a single object")
+  expect_s3_class(x, "wrapper")
+  x <- unwrap(x)
+  expect_true("data.frame" %in% x$class)
+
+  y <- expect_output(print(q[[2]]), "Query points to a single object")
+  expect_s3_class(y, "wrapper")
+  y <- unwrap(y)
+  expect_equal(x, y)
+})
+
 
 test_that("tag values", {
   q <- as_query(london_meters())
@@ -62,37 +76,4 @@ test_that("print query", {
   q <- sample_query()
   expect_output_file(print(q$class$data.frame), 'text-output/query.txt',
                      wildcard = '%')
-})
-
-test_that("print artifacts by tag", {
-  q <- as_query(london_meters())
-
-  verify_specifier <- function (key) {
-    s <- unwrap(dollar_name(q, key))
-    p <- file.path("text-output", paste0('specifier-', key, '.txt'))
-
-    expect_true(is_specifier(s), label = key)
-    # TODO requires wildcard implemented in lbartnik/testthat; PR pending in official testthat
-    expect_output_file(print_specifier(s), p, label = key, wildcard = '%')
-  }
-
-  verify_specifier("class")
-  verify_specifier("id")
-  verify_specifier("name")
-  verify_specifier("time")
-  verify_specifier("session")
-})
-
-test_that("double bracket", {
-  q <- sample_query()
-
-  x <- expect_output(print(double_bracket(q, 2)), "Query points to a single object")
-  expect_s3_class(x, "wrapper")
-  x <- unwrap(x)
-  expect_true("data.frame" %in% x$class)
-
-  y <- expect_output(print(q[[2]]), "Query points to a single object")
-  expect_s3_class(y, "wrapper")
-  y <- unwrap(y)
-  expect_equal(x, y)
 })
