@@ -28,13 +28,13 @@ dollar_name.query <- function (x, n) {
 
   # print as a tree
   if (identical(n, "tree")) {
-    g <- connect_artifacts(read_artifacts(x))
+    g <- connect_artifacts(read_artifacts(as_artifacts(x)))
     return(wrap(g, 'tree'))
   }
 
   # print as a history log
   if (identical(n, "history")) {
-    g <- read_artifacts(x)
+    g <- read_artifacts(as_artifacts(x))
     return(wrap(g, 'history'))
   }
 
@@ -76,7 +76,8 @@ dollar_name.query <- function (x, n) {
     id <- tryCatch(enlongate(n, x$repository$store), error = function (e) {
       abort(glue("{n} is not an artifact name nor identifier"))
     })
-    res <- filter(x$repository, UQ(id) == id)
+    # id is unique so we can drop all other filters
+    res <- as_query(x$repository) %>% filter(UQ(id) == id)
   }
 
   dispatch_result(res)

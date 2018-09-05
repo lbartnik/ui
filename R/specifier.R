@@ -19,7 +19,6 @@ new_specifier <- function (query, key) {
   structure(list(query = query, key = key), class = c(key, 'specifier'))
 }
 
-
 #' @rdname specifier
 is_specifier <- function (x) inherits(x, 'specifier')
 
@@ -28,7 +27,7 @@ is_specifier <- function (x) inherits(x, 'specifier')
 #'
 #' @rdname specifier
 dollar_names.specifier <- function (x, pattern = "") {
-  vls <- tag_values(x$query)[[x$key]]
+  vls <- unlist(tag_values(x$query)[[x$key]])
   grep(pattern, vls, value = TRUE)
 }
 

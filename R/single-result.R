@@ -20,7 +20,7 @@ dispatch_result <- function (q) {
   res <- q %>% summarise(n = n())
   if (identical(res$n, 1L)) {
     a <- as_artifacts(q) %>% read_artifacts %>% first
-    return(wrap(single_result(a)))
+    return(wrap(new_single_result(a, q$repository)))
   }
 
   wrap(q)

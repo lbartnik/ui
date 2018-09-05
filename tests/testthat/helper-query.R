@@ -1,7 +1,9 @@
 sample_state <- function () {
+  expect_true(requireNamespace("repository", quietly = TRUE))
+
   state <- new.env(parent = emptyenv())
   initiate_state(state)
-  state$repo <- london_meters()
+  state$repo <- repository::london_meters()
 
   state
 }

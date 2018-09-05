@@ -1,12 +1,49 @@
 context("query")
 
 test_that("dollar name", {
-  skip("TODO dollar_name.query")
+  q <- as_query(london_meters())
+
+  # explain as tree
+  x <- dollar_name(q, "tree")
+  expect_true(is_wrapper(x))
+  expect_s3_class(x, "tree")
+
+  # explain as history
+  x <- dollar_name(q, "history")
+  expect_true(is_wrapper(x))
+  expect_s3_class(x, "history")
+
+  # key specifiers
+  for (name in c("time", "id", "class", "name", "session")) {
+    x <- dollar_name(q, name)
+    expect_true(is_wrapper(x), info = name)
+    expect_true(is_specifier(unwrap(x)), info = name)
+  }
+
+  # shortcut to plots
+  x <- dollar_name(q, "plots")
+  expect_true(is_wrapper(x))
+  expect_true(is_query(unwrap(x)))
+
+  # shortcut by date
+  x <- dollar_name(q, "2018-08-19")
+  expect_true(is_wrapper(x))
+  expect_true(is_query(unwrap(x)))
+
+  # shortcut by id
+  x <- dollar_name(q, "14e3598b1c58f1f48b74aab35d6c39183568286f")
+  expect_true(is_wrapper(x))
+  expect_s3_class(unwrap(x), 'single_result')
+
+  # shortcut by id
+  x <- dollar_name(q, "m")
+  expect_true(is_wrapper(x))
+  expect_s3_class(unwrap(x), 'single_result')
 })
 
 
 test_that("tag values", {
-  q <- unwrap(sample_query())
+  q <- as_query(london_meters())
 
   expect_tag_values <- function (tag, values, numbers) {
     x <- table_tag_values(q, tag)
@@ -28,7 +65,7 @@ test_that("print query", {
 })
 
 test_that("print artifacts by tag", {
-  q <- sample_query()
+  q <- as_query(london_meters())
 
   verify_specifier <- function (key) {
     s <- unwrap(dollar_name(q, key))
