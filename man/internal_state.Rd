@@ -4,6 +4,7 @@
 \name{state}
 \alias{state}
 \alias{initiate_state}
+\alias{open_repo}
 \alias{open_default_repo}
 \alias{pick_branch}
 \alias{start_tracking}
@@ -14,6 +15,8 @@
 state
 
 initiate_state(state)
+
+open_repo(state, env, path, create)
 
 open_default_repo(state, env, create = FALSE)
 
@@ -26,7 +29,9 @@ stop_tracking(state)
 \arguments{
 \item{state}{state object (environment).}
 
-\item{env}{\code{environment} used to find the branch to attach to.}
+\item{env}{\link{environment} used to find the branch to attach to.}
+
+\item{path}{directory for the new/existing repository.}
 
 \item{create}{if \code{TRUE}, create the repository if it does not exist.}
 }

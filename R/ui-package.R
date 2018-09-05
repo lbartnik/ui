@@ -11,8 +11,9 @@
 #'
 #' @import repository
 #' @import utilities
-#' @importFrom storage shorten enlongate
+#' @import storage
 #' @importFrom glue glue
+#' @importFrom rlang inform
 #'
 #' @name ui
 #' @rdname ui

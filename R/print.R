@@ -1,6 +1,6 @@
-new_tree <- function (x) structure(x, class = c('tree', class(x)))
+new_tree <- function (x) wrap(x, 'tree')
 
-new_history <- function (x) structure(x, class = c('history', class(x)))
+new_history <- function (x) wrap(x, 'history')
 
 #' Pretty-print sets of artifacts.
 #'

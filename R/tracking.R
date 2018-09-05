@@ -7,66 +7,53 @@
 #'   \item{task_callback_id}{id of the callback passed to [addTaskCallback]}
 #' }
 #'
-#' @rdname internal_state
+#' @param state state object (environment).
+#' @param env [environment] used to find the branch to attach to.
+#' @param create if `TRUE`, create the repository if it does not exist.
 #'
+#' @rdname internal_state
 state <- new.env()
-
 
 #' @description `initiate_state` assigns the default values to all
 #' parameters of the global `state` object. By default it:
 #' * creates or open a file-system-based [repository::repository]
 #' * turns tracking on
 #'
-#' @param state state object (environment).
-#'
 #' @rdname internal_state
-#'
-initiate_state <- function (state)
-{
+initiate_state <- function (state) {
   state$repo             <- NULL
   state$task_callback_id <- NA
 }
 
-
-#' @param env `environment` used to find the branch to attach to.
-#' @param create if `TRUE`, create the repository if it does not exist.
-#'
+#' @param path directory for the new/existing repository.
 #' @rdname internal_state
-#' @importFrom rlang inform
-#' @import repository
-#' @import storage
-#'
-open_default_repo <- function (state, env, create = FALSE)
-{
-  path  <- file.path(getwd(), 'repository')
+open_repo <- function (state, env, path, create) {
   if (!file.exists(path) && isTRUE(create)) {
-    inform(sprintf("%sno repository found, creating one under '%s'", message_prefix, path))
-  }
-  if (file.exists(path)) {
-    inform(sprintf("%sattaching to repository '%s'", message_prefix, path))
+    inform(glue("{message_prefix}no repository found, creating one under '{path}'"))
+  } else if (file.exists(path)) {
+    inform(glue("{message_prefix}attaching to repository '{path}'"))
   }
 
-  store <- storage::filesystem(path, create = create)
-  repo  <- repository::repository(store)
-
-  state$repo <- repo
+  state$repo <- repository(filesystem(path, create = create))
 }
+
+#' @rdname internal_state
+open_default_repo <- function (state, env, create = FALSE) {
+  open_repo(state, env, file.path(getwd(), 'repository'), create)
+}
+
 
 #' @rdname internal_state
 #' @import repository
 #' @importFrom rlang abort inform
 #'
-pick_branch <- function (state, env)
-{
-  repo <- state$repo
-  hs <- repository::repository_history(repo)
-
+pick_branch <- function (state, env) {
   most_recent <- function (commits) {
     nth(commits, last(order(map_int(commits, `[[`, i = 'time'))))
   }
 
   if (length(ls(env))) {
-    m <- repository::filter(hs, data_matches(data = as.list(env)))
+    m <- as_commits(state$repo) %>% filter(data_matches(data = as.list(env))) %>% read_commits
     if (!length(m)) {
       abort(msg("global environment is not empty but its contents cannot be matched against history, will not attach"))
       # TODO show a warning and implement an API call to attach manually
@@ -80,12 +67,12 @@ pick_branch <- function (state, env)
       m <- first(m)
     }
 
-    repository::repository_rewind(repo, m$id)
+    repository_rewind(state$repo, m$id)
     return()
   }
 
   # if globalenv is empty try attaching to one of the "leaves"
-  lv <- repository::filter(hs, branch_tip())
+  lv <- as_commits(state$repo) %>% filter(no_children()) %>% read_commits
   if (!length(lv)) return()
 
   # TODO return commit id and contents, assign to env outside of this function
@@ -98,10 +85,8 @@ pick_branch <- function (state, env)
 
   inform(msg("attaching to repository, commit ", storage::shorten(lv$id)))
 
-  repository::repository_rewind(repo, lv$id)
-  repository::commit_checkout(lv, env)
-
-  invisible()
+  repository_rewind(state$repo, lv$id)
+  commit_checkout(lv, env)
 }
 
 
@@ -171,7 +156,7 @@ task_callback <- function (expr, result, successful, printed)
 
       # it's length of ls() because we don't care for hidden objects
       if (length(ls(globalenv()))) {
-        repository::repository_update(state$repo, globalenv(), plot, expr)
+        repository_update(state$repo, globalenv(), plot, expr)
       }
     }
   )
