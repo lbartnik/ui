@@ -114,13 +114,12 @@ double_bracket.query <- function (x, i) {
 #' @importFrom stringi stri_paste
 #' @export
 print.query <- function (x, ..., n = 3) {
-
   # print the query itself
   ccat(silver = 'Query:\n')
   cat(format(x, ...), '\n')
 
   # and a short summary of types of artifacts
-  res <- as_tags(x) %>% read_tags(-object, -parent_commit, -id, -parents)
+  res <- as_tags(x) %>% read_tags(-parent_commit, -id, -parents)
   ccat0(grey = '\nMatched ', nrow(res),
         grey = ' artifact(s), of that ', sum(map_lgl(res$class, function(x) "plot" %in% x)),
         grey = " plot(s)\n")
