@@ -12,6 +12,7 @@ new_history <- function (x) wrap(x, 'history')
 #' @export
 #' @rdname printers
 print.tree <- function (x, ...) {
+  x <- unwrap(x)
 
   # if there is nothing to print
   if (!length(x)) {
@@ -40,7 +41,7 @@ print.tree <- function (x, ...) {
     invisible(x)
   }
 
-  print_level(stratify(x), '', '')
+  print_level(stratify(connect_artifacts(x)), '', '')
 }
 
 
