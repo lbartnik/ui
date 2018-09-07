@@ -31,7 +31,7 @@ test_that("dollar name", {
   expect_true(is_query(unwrap(x)))
 
   # shortcut by id
-  x <- dollar_name(q, "14e3598b1c58f1f48b74aab35d6c39183568286f")
+  x <- dollar_name(q, sample_artifact_id())
   expect_true(is_wrapper(x))
   expect_s3_class(unwrap(x), 'single_result')
 

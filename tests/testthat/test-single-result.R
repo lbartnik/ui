@@ -16,5 +16,7 @@ test_that("dollar names", {
 })
 
 test_that("dollar name", {
-  skip("TODO dollar_name.single_result")
+  s <- new_single_result(sample_artifact(), sample_repository())
+
+  #dollar_name(s, )
 })
