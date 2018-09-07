@@ -1,0 +1,65 @@
+89c78e89  no parents
+input <- system.file("extdata/block_62.csv", package = "repository") %>%
+  readr::read_csv(na = "Null") %>%
+  dplyr::rename(meter = LCLid, timestamp = tstp, usage = energy_kWh) %>%
+  dplyr::filter(meter %in% c("MAC004929", "MAC000010", "MAC004391"), lubridate::year(timestamp) == 2013)
+
+2b67f493  parents:89c78e89
+input %<>% dplyr::mutate(timestamp = lubridate::floor_date(timestamp, "hours")) %>%
+  dplyr::group_by(meter, timestamp) %>%
+  dplyr::summarise(usage = sum(usage))
+
+af206c42  parents:2b67f493
+input %<>% dplyr::filter(meter == "MAC004929")
+
+70f3c0a4  parents:af206c42
+with(input, plot(timestamp, usage, type = "p", pch = "."))
+
+f59403b5  parents:af206c42
+x <- input %>%
+  dplyr::mutate(hour = lubridate::hour(timestamp), dow = lubridate::wday(timestamp, label = TRUE)) %>%
+  dplyr::mutate_at(dplyr::vars(hour, dow), dplyr::funs(as.factor)) %>%
+  dplyr::group_by(hour, dow) %>%
+  dplyr::summarise(usage = mean(usage, na.rm = TRUE))
+
+14e3598b  parents:f59403b5
+with(x, plot(hour, usage))
+
+64228d01  parents:f59403b5
+ggplot2::ggplot(x) + ggplot2::geom_point(ggplot2::aes(x = hour, y = usage)) + ggplot2::facet_wrap(~dow)
+
+fb79a008  parents:f59403b5
+ggplot2::ggplot(x) + ggplot2::geom_point(ggplot2::aes(x = hour, y = usage)) + ggplot2::facet_wrap(~dow)
+
+b83ee352  parents:af206c42
+x <- input %>%
+  dplyr::mutate(hour = lubridate::hour(timestamp), dow = lubridate::wday(timestamp)) %>%
+  dplyr::mutate_at(dplyr::vars(hour, dow), dplyr::funs(as.factor))
+
+d0fe8d94  parents:b83ee352
+ggplot2::ggplot(x) + ggplot2::geom_boxplot(ggplot2::aes(x = hour, y = usage)) + ggplot2::facet_wrap(~dow)
+
+57fbe755  parents:b83ee352
+m <- stats::lm(usage ~ hour:dow, x)
+
+f2d8e929  parents:2b67f493
+input %<>% filter(meter == "MAC000010")
+
+866190fb  parents:f2d8e929
+x <- input %>%
+  mutate(hour = hour(timestamp), dow = wday(timestamp)) %>%
+  mutate_at(vars(hour, dow), funs(as.factor))
+
+ba5bb305  parents:866190fb
+ggplot(x) + geom_boxplot(aes(x = hour, y = usage)) + facet_wrap(~dow)
+
+6ee2aaba  parents:2b67f493
+input %<>% filter(meter == "MAC004391")
+
+b418c062  parents:6ee2aaba
+x <- input %>%
+  mutate(hour = hour(timestamp), dow = wday(timestamp)) %>%
+  mutate_at(vars(hour, dow), funs(as.factor))
+
+539d7b91  parents:b418c062
+ggplot(x) + geom_boxplot(aes(x = hour, y = usage)) + facet_wrap(~dow)

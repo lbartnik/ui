@@ -48,6 +48,8 @@ print.tree <- function (x, ...) {
 #' @export
 #' @rdname printers
 print.history <- function (x, ...) {
+  x <- unwrap(x)
+
   # sort entries and then print them
   i <- order(map_dbl(x, `[[`, 'time'), decreasing = FALSE)
   x <- x[i]
