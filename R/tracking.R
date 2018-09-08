@@ -95,7 +95,7 @@ pick_branch <- function (state, env) {
 start_tracking <- function (state)
 {
   if (!is.na(state$task_callback_id)) {
-    stop("task callback id found, tracking already started")
+    abort("task callback id found, tracking already started", call = TRUE)
   }
 
   state$task_callback_id <- addTaskCallback(task_callback)

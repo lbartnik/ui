@@ -24,5 +24,11 @@ test_that("fail to open", {
 })
 
 test_that("pick branch", {
+  s <- sample_state()
+  e <- new.env()
+  i <- '793044c9d056c2e61a69a98021a0f7819250bfd4'
 
+  expect_message(pick_branch(s, e), 'attaching to repository, commit')
+  expect_equal(s$repo$last_commit$id, '793044c9d056c2e61a69a98021a0f7819250bfd4')
+  expect_named(e, c('x', 'input', 'm'), ignore.order = TRUE)
 })
