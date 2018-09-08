@@ -16,7 +16,24 @@ test_that("dollar names", {
 })
 
 test_that("dollar name", {
-  s <- new_single_result(sample_artifact(), sample_repository())
+  a <- sample_artifact()
+  s <- new_single_result(a, sample_repository())
 
-  #dollar_name(s, )
+  x <- dollar_name(s, 'explain')
+  expect_true(is_wrapper(x))
+  expect_s3_class(x, 'tree')
+  expect_length(unwrap(x), 2)
+
+  expect_error(dollar_name(s, 'plot'), 'cannot plot a non-plot')
+
+  x <- expect_message(dollar_name(s, 'value'), 'Extracting element')
+  expect_equal(x, repository::artifact_data(a))
+})
+
+test_that("dollar name, plot", {
+  s <- new_single_result(sample_plot_artifact(), sample_repository())
+
+  x <- expect_silent(dollar_name(s, 'plot'))
+  expect_true(is_wrapper(x))
+  expect_s3_class(x, 'replot')
 })

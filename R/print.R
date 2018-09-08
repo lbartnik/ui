@@ -1,6 +1,18 @@
-new_tree <- function (x) wrap(x, 'tree')
+new_tree <- function (x) {
+  stopifnot(is_container(x))
+  wrap(x, 'tree')
+}
 
-new_history <- function (x) wrap(x, 'history')
+new_history <- function (x) {
+  stopifnot(is_container(x))
+  wrap(x, 'history')
+}
+
+new_replot <- function (x) {
+  stopifnot(is_rawplot(x))
+  wrap(x, 'replot')
+}
+
 
 #' Pretty-print sets of artifacts.
 #'
@@ -116,4 +128,9 @@ print.artifact <- function (x, ..., style = 'full') {
   }
 
   invisible(x)
+}
+
+#' @export
+print.replot <- function (x, ...) {
+  plot(unwrap(x))
 }

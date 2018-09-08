@@ -63,7 +63,7 @@ dollar_name.single_result <- function (x, i) {
   # print the tree
   if (identical(i, "explain")) {
     ans <- as_artifacts(x$repository) %>% filter(ancestor_of(x$artifact$id)) %>% read_artifacts
-    return(wrap(ans, 'explanation'))
+    return(new_tree(ans))
   }
 
   # TODO ???
@@ -77,8 +77,7 @@ dollar_name.single_result <- function (x, i) {
       abort('cannot plot a non-plot')
     }
 
-    graphics::plot(artifact_data(x$artifact))
-    return(invisible(x))
+    return(new_replot(artifact_data(x$artifact)))
   }
 
   # return the raw value

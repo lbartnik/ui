@@ -9,3 +9,15 @@ test_that("print tree", {
 test_that("print history", {
   expect_output_file(print(new_history(a)), "text-output/print-history.txt")
 })
+
+test_that('print replot', {
+  d <- repository::artifact_data(sample_plot_artifact())
+  r <- new_replot(d)
+  p <- tempfile()
+
+  png(p)
+  expect_silent(print(r))
+  dev.off()
+
+  expect_equal(file.size(p), 15070)
+})
