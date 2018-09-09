@@ -34,10 +34,15 @@ test_that("class", {
 
 test_that("time", {
   s <- new_specifier(sample_query(), 'time')
-  expect_setequal(dollar_names(s), names(DollarNamesMapping$time))
+  if (is_running_in_rstudio()) {
+    expect_setequal(dollar_names(s), names(ui:::DollarNamesMapping$time))
+  } else {
+    expect_length(dollar_names(s), 5)
+  }
 
   x <- dollar_name(s, "today") # will not match any objects
-  expect_true(is_query(x))
+  expect_true(is_wrapper(x))
+  expect_true(is_query(unwrap(x)))
 })
 
 test_that("session", {

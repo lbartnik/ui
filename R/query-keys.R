@@ -27,14 +27,14 @@ dollar_name.id <- function (x, i) {
 
 
 dollar_names.time <- function (x, pattern = "") {
-  top_keys <- c("last", "since", "today", "yesterday", "thisweek")
-
   # RStudio intercepts the pattern and calls .DollarNames with pattern
   # set to ""; see below for details
   # https://github.com/rstudio/rstudio/commit/c25739a15ca49fda68c10f6fd2d25266065cb80b
   if (is_running_in_rstudio()) {
     return(names(DollarNamesMapping$time))
   }
+
+  keys <- c("last", "since", "today", "yesterday", "thisweek")
 
   if (any(stringi::stri_detect_fixed(pattern, c("last", "since")))) {
     keys <- grep(pattern, names(DollarNamesMapping$time), value = TRUE)

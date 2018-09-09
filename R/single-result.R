@@ -45,6 +45,8 @@ new_single_result <- function (artifact, repository) {
 
 is_single_result <- function(x) inherits(x, 'single_result')
 
+#' @inheritParams base::print
+#'
 #' @importFrom rlang UQ
 #' @rdname single_result
 print.single_result <- function (x, ...) {

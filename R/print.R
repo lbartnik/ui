@@ -132,5 +132,5 @@ print.artifact <- function (x, ..., style = 'full') {
 
 #' @export
 print.replot <- function (x, ...) {
-  plot(unwrap(x))
+  graphics::plot(unwrap(x))
 }

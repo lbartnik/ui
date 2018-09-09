@@ -11,6 +11,7 @@ BugReports: https://github.com/lbartnik/ui/issues
 Depends:
   R (>= 3.4.0)
 Imports:
+  browser,
   dplyr,
   glue,
   graphics,

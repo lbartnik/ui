@@ -19,6 +19,10 @@ new_single_result(artifact, repository)
 \item{artifact}{retrieved from a repository with \link[repository:read_artifacts]{repository::read_artifacts}}
 
 \item{repository}{origin of \code{artifact}.}
+
+\item{x}{an object used to select a method.}
+
+\item{...}{further arguments passed to or from other methods.}
 }
 \value{
 A \link{single_result} object or wrapped query \code{q}.

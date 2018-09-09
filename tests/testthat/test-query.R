@@ -49,12 +49,13 @@ test_that("dollar names", {
 test_that("double bracket", {
   q <- sample_wrapped_query()
 
-  x <- expect_output(print(double_bracket(q, 2)), "Query points to a single object")
+  x <- double_bracket(q, 2)
   expect_s3_class(x, "wrapper")
   x <- unwrap(x)
-  expect_true("data.frame" %in% x$class)
+  expect_true(is_single_result(x))
+  expect_true("data.frame" %in% x$artifact$class)
 
-  y <- expect_output(print(q[[2]]), "Query points to a single object")
+  y <- q[[2]]
   expect_s3_class(y, "wrapper")
   y <- unwrap(y)
   expect_equal(x, y)
