@@ -81,4 +81,3 @@ test_that("tag values", {
 
   expect_tag_values("names", c("input", "m", "x"), c(5, 1, 5))
 })
-
