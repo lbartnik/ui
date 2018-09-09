@@ -1,14 +1,12 @@
 
-
 dollar_names.name <- function (x, pattern = "") {
   vls <- tag_values(x$query)[["names"]]
   grep(pattern, vls, value = TRUE)
 }
 
 dollar_name.name <- function (x, i) {
-  dispatch_result(repository::filter(x$query, UQ(i) %in% names))
+  dispatch_result(filter(x$query, UQ(i) %in% names))
 }
-
 
 print_specifier.name <- function (x) {
   format_specifier_header("names")
@@ -16,10 +14,15 @@ print_specifier.name <- function (x) {
 }
 
 
+dollar_names.id <- function (x, pattern = "") {
+  vls <- first(read_tags(as_tags(x$query), 'id'))
+  grep(pattern, vls, value = TRUE)
+}
+
 dollar_name.id <- function (x, i) {
   i <- storage::enlongate(i, x$query$repository$store)
   stopifnot(length(i) > 0)
-  dispatch_result(x$query$repository %>% repository::filter(UQ(i) == id))
+  dispatch_result(x$query %>% filter(UQ(i) == id))
 }
 
 
@@ -40,15 +43,12 @@ dollar_names.time <- function (x, pattern = "") {
   grep(pattern, keys, value = TRUE)
 }
 
-
 #' @importFrom rlang UQ
-#' @import utilities
-#'
 dollar_name.time <- function (x, i) {
   stopifnot(has_name(DollarNamesMapping$time, i))
 
   expr <- DollarNamesMapping$time[[i]]
-  dispatch_result(repository::filter(x$query, UQ(expr)))
+  dispatch_result(filter(x$query, UQ(expr)))
 }
 
 print_specifier.time <- function (x) {

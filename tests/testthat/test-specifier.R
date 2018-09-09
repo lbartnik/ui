@@ -7,15 +7,8 @@ test_that("creation", {
   expect_true(is_specifier(s))
 })
 
-test_that("dollar names", {
-  s <- new_specifier(as_query(london_meters()), 'class')
-  k <- dollar_names(s)
-  expect_setequal(k, c("commit", "rawplot", "plot", "grouped_df", "tbl_df", "tbl", "data.frame",
-                       "lm", "tbl_df", "tbl", "data.frame"))
-})
-
 test_that("print artifacts by tag", {
-  q <- as_query(london_meters())
+  q <- sample_query()
 
   verify_specifier <- function (key) {
     s <- unwrap(dollar_name(q, key))

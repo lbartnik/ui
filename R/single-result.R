@@ -19,6 +19,8 @@ dispatch_result <- function (q) {
 
   res <- q %>% summarise(n = n())
   if (identical(res$n, 1L)) {
+    cinform0(grey = 'Query points to a single object\n')
+
     a <- as_artifacts(q) %>% read_artifacts %>% first
     return(wrap(new_single_result(a, q$repository)))
   }
@@ -41,10 +43,11 @@ new_single_result <- function (artifact, repository) {
             class = 'single_result')
 }
 
+is_single_result <- function(x) inherits(x, 'single_result')
+
 #' @importFrom rlang UQ
 #' @rdname single_result
 print.single_result <- function (x, ...) {
-  ccat0(grey = 'Query points to a single object\n')
   print(x$artifact)
 }
 

@@ -47,7 +47,7 @@ test_that("dollar names", {
 })
 
 test_that("double bracket", {
-  q <- sample_query()
+  q <- sample_wrapped_query()
 
   x <- expect_output(print(double_bracket(q, 2)), "Query points to a single object")
   expect_s3_class(x, "wrapper")
@@ -61,7 +61,7 @@ test_that("double bracket", {
 })
 
 test_that("print query", {
-  q <- sample_query()
+  q <- sample_wrapped_query()
   expect_output_file(print(q$class$data.frame), 'text-output/query.txt',
                      wildcard = '%')
 })
