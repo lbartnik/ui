@@ -1,39 +1,35 @@
 Query:
   <repository:%/sample-repository> %>%
-    filter(isTRUE(artifact), "data.frame" %in% class)
-default
+    filter(artifact, "data.frame" %in% class) 
+
 Matched 10 artifact(s), of that 0 plot(s)
 
 *
-Artifact: b418c062
+Artifact: 14e3598b (plot)
 Expression:
-  x <- input %>%
-    mutate(hour = hour(timestamp), dow = wday(timestamp)) %>%
-    mutate_at(vars(hour, dow), funs(as.factor))
-Name:    x
-Class:   grouped_df tbl_df tbl data.frame
+with(x, plot(hour, usage))
+Class:   rawplot plot
 Created: %
-Summary: data.frame[8760, 5]
+Summary: 
 
 *
-Artifact: 6ee2aaba
+Artifact: 2b67f493
 Expression:
-  input %<>% filter(meter == "MAC004391")
+input %<>% dplyr::mutate(timestamp = lubridate::floor_date(timestamp, "hours")) %>%
+  dplyr::group_by(meter, timestamp) %>%
+  dplyr::summarise(usage = sum(usage))
 Name:    input
 Class:   grouped_df tbl_df tbl data.frame
 Created: %
-Summary: data.frame[8760, 3]
+Summary: data.frame[26280, 3]
 
 *
-Artifact: 866190fb
+Artifact: 539d7b91 (plot)
 Expression:
-  x <- input %>%
-    mutate(hour = hour(timestamp), dow = wday(timestamp)) %>%
-    mutate_at(vars(hour, dow), funs(as.factor))
-Name:    x
-Class:   grouped_df tbl_df tbl data.frame
+ggplot(x) + geom_boxplot(aes(x = hour, y = usage)) + facet_wrap(~dow)
+Class:   rawplot plot
 Created: %
-Summary: data.frame[8760, 5]
+Summary: 
 
 ... with 7 more artifact(s)
 You can still specify following tags: class id name session time

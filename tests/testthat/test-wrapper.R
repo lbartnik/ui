@@ -13,4 +13,7 @@ test_that("unwrap dollar key", {
   expect_equal(w$unwrap, x)
 })
 
-
+test_that("custom class", {
+  w <- wrap(1, 'x')
+  expect_s3_class(w, 'x')
+})

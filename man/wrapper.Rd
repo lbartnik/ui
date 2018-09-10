@@ -20,7 +20,7 @@
 \alias{dollar_name.default}
 \title{Wrapper and dollar-name interceptors.}
 \usage{
-wrap(x)
+wrap(x, class)
 
 unwrap(x)
 
@@ -55,6 +55,9 @@ double_bracket(x, i)
 \arguments{
 \item{x}{object to be wrapped, a \code{wrapper} object to be unwrapped
 or printed, or any other object to be tested.}
+
+\item{class}{optional S3 class name assigned alongside the \code{"wrapper"}
+class.}
 
 \item{...}{further arguments passed to or from other methods.}
 

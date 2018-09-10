@@ -19,11 +19,18 @@ NULL
 #' to `"wrapper"`.
 #'
 #' @param x object to be wrapped, a `wrapper` object to be unwrapped
-#'          or printed, or any other object to be tested.
+#'        or printed, or any other object to be tested.
+#' @param class optional S3 class name assigned alongside the `"wrapper"`
+#'        class.
 #'
+#' @importFrom rlang is_character
 #' @rdname wrapper
-wrap <- function (x) structure(list(x), class = 'wrapper')
+wrap <- function (x, class) {
+  if (missing(class)) class <- character()
+  stopifnot(is_character(class))
 
+  structure(list(x), class = c(class, 'wrapper'))
+}
 
 #' @description `unwrap` returns the original wrapped object.
 #'

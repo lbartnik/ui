@@ -1,6 +1,3 @@
-#' @name ui
-#' @rdname ui
-#'
 #' @title User Interface for Artifact Repository
 #' @description Provides user interface for the [repository] package.
 #'
@@ -10,6 +7,16 @@
 #'   * `ui.track` (default: `TRUE`) start tracking when the `ui` package
 #'     is loaded
 #'
+#' @docType package
+#'
+#' @import repository
+#' @import utilities
+#' @import storage
+#' @importFrom glue glue
+#' @importFrom rlang inform
+#'
+#' @name ui
+#' @rdname ui
 NULL
 
 
@@ -49,7 +56,7 @@ artifacts <- NULL
 
 init_artifacts <- function () {
   unlockBinding('artifacts', asNamespace('ui'))
-  artifacts <<- wrap(repository::filter(state$repo, isTRUE(artifact)))
+  artifacts <<- wrap(as_artifacts(state$repo))
   lockBinding('artifacts', asNamespace('ui'))
 }
 
