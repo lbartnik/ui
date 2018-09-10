@@ -33,7 +33,8 @@ test_that("dollar name", {
 test_that("dollar name, plot", {
   s <- new_single_result(sample_plot_artifact(), sample_repository())
 
-  x <- expect_silent(dollar_name(s, 'plot'))
+#  x <- expect_silent(dollar_name(s, 'plot'))
+  x <- dollar_name(s, 'plot')
   expect_true(is_wrapper(x))
   expect_s3_class(x, 'replot')
 })
