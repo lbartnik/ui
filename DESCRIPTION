@@ -30,6 +30,7 @@ Suggests:
   rstudioapi,
   testthat
 Collate:
+  'addins.R'
   'print.R'
   'query.R'
   'query-keys.R'
@@ -38,14 +39,13 @@ Collate:
   'tracking.R'
   'ui-package.R'
   'utils.R'
-  'widget.R'
   'wrapper.R'
 Remotes:
-  lbartnik/browser,
-  lbartnik/repository,
-  lbartnik/storage,
-  lbartnik/utilities,
-  lbartnik/testthat
+  github::lbartnik/browser,
+  github::lbartnik/repository,
+  github::lbartnik/storage,
+  github::lbartnik/utilities,
+  github::lbartnik/testthat
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1
 Roxygen: list(markdown = TRUE)
