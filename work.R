@@ -1,13 +1,11 @@
 options(utilities.debug = TRUE)
 options(utilities.debug = FALSE)
 
-
-
 options(ui.track = FALSE)
 options(ui.pick_branch = FALSE)
 
-
 options(ui.pick_branch = TRUE)
+
 
 generate_simple(state$repo)
 
