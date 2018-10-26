@@ -12,7 +12,7 @@
 #' @param create if `TRUE`, create the repository if it does not exist.
 #'
 #' @rdname internal_state
-state <- new.env()
+create_state <- function() new.env()
 
 #' @description `initiate_state` assigns the default values to all
 #' parameters of the global `state` object. By default it:

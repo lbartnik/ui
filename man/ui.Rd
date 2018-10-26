@@ -4,7 +4,7 @@
 \name{ui}
 \alias{ui}
 \alias{ui-package}
-\title{User Interface for Artifact Repository}
+\title{User Interface for the Repository of Artifacts}
 \description{
 Provides user interface for the \link{repository} package.
 
