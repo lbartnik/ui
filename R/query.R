@@ -18,6 +18,13 @@
 #' @importFrom lubridate as_date ymd
 #' @importFrom storage enlongate
 #'
+#' @export
+#' @rdname ui-query
+artifacts_query <- function (state) {
+  stopifnot(is_state(state))
+  wrap(as_artifacts(state$repo))
+}
+
 #' @rdname ui-query
 dollar_name.query <- function (x, n) {
   # TODO

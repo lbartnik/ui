@@ -2,6 +2,7 @@
 % Please edit documentation in R/tracking.R
 \name{create_state}
 \alias{create_state}
+\alias{is_state}
 \alias{reset_state}
 \alias{open_repo}
 \alias{open_default_repo}
@@ -11,6 +12,8 @@
 \title{Global state of the tracker.}
 \usage{
 create_state()
+
+is_state(x)
 
 reset_state(state)
 
@@ -25,6 +28,8 @@ start_tracking(state)
 stop_tracking(state)
 }
 \arguments{
+\item{x}{object being tested.}
+
 \item{state}{state object (environment).}
 
 \item{env}{\link{environment} used to find the branch to attach to.}

@@ -15,6 +15,10 @@
 #' @export
 create_state <- function() new.env()
 
+#' @param x object being tested.
+#' @rdname state
+is_state <- function (x) is.environment(x)
+
 #' @description `initiate_state` assigns the default values to all
 #' parameters of the global `state` object. By default it:
 #' * creates or open a file-system-based [repository::repository]
@@ -32,9 +36,9 @@ reset_state <- function (state) {
 #' @export
 open_repo <- function (state, env, path, create) {
   if (!file.exists(path) && isTRUE(create)) {
-    inform(glue("{message_prefix}no repository found, creating one under '{path}'"))
+    inform(glue("no repository found, creating one under '{path}'"))
   } else if (file.exists(path)) {
-    inform(glue("{message_prefix}attaching to repository '{path}'"))
+    inform(glue("attaching to repository '{path}'"))
   }
 
   state$repo <- repository(filesystem(path, create = create))
