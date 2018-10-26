@@ -13,7 +13,7 @@
 #' @import utilities
 #' @import storage
 #' @importFrom glue glue
-#' @importFrom rlang inform
+#' @importFrom rlang inform abort
 #'
 #' @name ui
 #' @rdname ui

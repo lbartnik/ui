@@ -2,7 +2,7 @@
 % Please edit documentation in R/tracking.R
 \name{create_state}
 \alias{create_state}
-\alias{initiate_state}
+\alias{reset_state}
 \alias{open_repo}
 \alias{open_default_repo}
 \alias{pick_branch}
@@ -12,7 +12,7 @@
 \usage{
 create_state()
 
-initiate_state(state)
+reset_state(state)
 
 open_repo(state, env, path, create)
 

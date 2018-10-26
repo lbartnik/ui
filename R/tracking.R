@@ -11,7 +11,8 @@
 #' @param env [environment] used to find the branch to attach to.
 #' @param create if `TRUE`, create the repository if it does not exist.
 #'
-#' @rdname internal_state
+#' @rdname state
+#' @export
 create_state <- function() new.env()
 
 #' @description `initiate_state` assigns the default values to all
@@ -19,14 +20,16 @@ create_state <- function() new.env()
 #' * creates or open a file-system-based [repository::repository]
 #' * turns tracking on
 #'
-#' @rdname internal_state
-initiate_state <- function (state) {
+#' @rdname state
+#' @export
+reset_state <- function (state) {
   state$repo             <- NULL
   state$task_callback_id <- NA
 }
 
 #' @param path directory for the new/existing repository.
-#' @rdname internal_state
+#' @rdname state
+#' @export
 open_repo <- function (state, env, path, create) {
   if (!file.exists(path) && isTRUE(create)) {
     inform(glue("{message_prefix}no repository found, creating one under '{path}'"))
@@ -37,16 +40,15 @@ open_repo <- function (state, env, path, create) {
   state$repo <- repository(filesystem(path, create = create))
 }
 
-#' @rdname internal_state
+#' @rdname state
+#' @export
 open_default_repo <- function (state, env, create = FALSE) {
   open_repo(state, env, file.path(getwd(), 'repository'), create)
 }
 
 
-#' @rdname internal_state
-#' @import repository
-#' @importFrom rlang abort inform
-#'
+#' @rdname state
+#' @export
 pick_branch <- function (state, env) {
   most_recent <- function (commits) {
     nth(commits, last(order(map_int(commits, `[[`, i = 'time'))))
@@ -90,8 +92,8 @@ pick_branch <- function (state, env) {
 }
 
 
-#' @rdname internal_state
-#'
+#' @rdname state
+#' @export
 start_tracking <- function (state)
 {
   if (!is.na(state$task_callback_id)) {
@@ -106,8 +108,8 @@ start_tracking <- function (state)
 }
 
 
-#' @rdname internal_state
-#'
+#' @rdname state
+#' @export
 stop_tracking <- function (state)
 {
   if (!is.numeric(state$task_callback_id)) {
