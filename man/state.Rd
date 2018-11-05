@@ -3,7 +3,6 @@
 \name{create_state}
 \alias{create_state}
 \alias{is_state}
-\alias{reset_state}
 \alias{open_repo}
 \alias{open_default_repo}
 \alias{pick_branch}
@@ -14,8 +13,6 @@
 create_state()
 
 is_state(x)
-
-reset_state(state)
 
 open_repo(state, env, path, create)
 
@@ -39,15 +36,12 @@ stop_tracking(state)
 \item{create}{if \code{TRUE}, create the repository if it does not exist.}
 }
 \description{
+\code{create_state} creates a new \code{state} object and
+assigns the default values to all its attributes.
+}
+\details{
 \describe{
 \item{repo}{a \code{\link[repository:repository]{repository::repository()}} object}
 \item{task_callback_id}{id of the callback passed to \link{addTaskCallback}}
-}
-
-\code{initiate_state} assigns the default values to all
-parameters of the global \code{state} object. By default it:
-\itemize{
-\item creates or open a file-system-based \link[repository:repository]{repository::repository}
-\item turns tracking on
 }
 }

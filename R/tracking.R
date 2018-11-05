@@ -11,25 +11,21 @@
 #' @param env [environment] used to find the branch to attach to.
 #' @param create if `TRUE`, create the repository if it does not exist.
 #'
+#' @description `create_state` creates a new `state` object and
+#' assigns the default values to all its attributes.
+#'
 #' @rdname state
 #' @export
-create_state <- function() new.env()
+create_state <- function () {
+  state <- new.env()
+  state$repo             <- NULL
+  state$task_callback_id <- NA
+  state
+}
 
 #' @param x object being tested.
 #' @rdname state
 is_state <- function (x) is.environment(x)
-
-#' @description `initiate_state` assigns the default values to all
-#' parameters of the global `state` object. By default it:
-#' * creates or open a file-system-based [repository::repository]
-#' * turns tracking on
-#'
-#' @rdname state
-#' @export
-reset_state <- function (state) {
-  state$repo             <- NULL
-  state$task_callback_id <- NA
-}
 
 #' @param path directory for the new/existing repository.
 #' @rdname state

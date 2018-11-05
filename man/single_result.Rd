@@ -28,8 +28,6 @@ new_single_result(artifact, repository)
 A \link{single_result} object or wrapped query \code{q}.
 }
 \description{
-Access a single artifact.
-
 \code{dispatch_result} makes the decision whether to return
 a wrapped \code{query} object for further narrowing of the query, or
 a \code{single_result} object which wraps a single artifact retrieved
