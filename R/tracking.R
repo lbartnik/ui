@@ -108,7 +108,7 @@ pick_branch <- function (state, env, int = interactions()) {
     lv <- first(lv)
   }
 
-  inform(glue("attaching to repository, commit {storage::shorten(lv$id)}"))
+  inform(glue("attaching to commit {storage::shorten(lv$id)}"))
 
   # TODO return commit id and contents, assign to env outside of this function
   repository_rewind(state$repo, lv$id)
