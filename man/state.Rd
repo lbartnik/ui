@@ -15,9 +15,9 @@ state_new()
 
 is_state(x)
 
-state_reset()
+state_reset(state)
 
-open_repository(state, path, create)
+open_repository(state, path, int = interactions())
 
 pick_branch(state, env, int = interactions())
 
@@ -34,7 +34,7 @@ stop_tracking(state)
 
 \item{path}{directory for the new/existing repository.}
 
-\item{create}{if \code{TRUE}, create the repository if it does not exist.}
+\item{int}{an \link{interactions} object.}
 
 \item{env}{\link{environment} used to find the branch to attach to.}
 }
@@ -44,6 +44,9 @@ assigns the default values to all its attributes.
 
 \code{state_reset} assign default values to all attributes
 of the \code{state} object.
+
+\code{pick_branch} implements the logic of choosing the commit
+to attach to.
 
 \code{interactions} creates an object with a number of callbacks
 to be used when decision can be delegated to the user. It provides default

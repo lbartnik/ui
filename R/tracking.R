@@ -7,10 +7,6 @@
 #'   \item{task_callback_id}{id of the callback passed to [addTaskCallback]}
 #' }
 #'
-#' @param state state object (environment).
-#' @param env [environment] used to find the branch to attach to.
-#' @param create if `TRUE`, create the repository if it does not exist.
-#'
 #' @description `state_new` creates a new `state` object and
 #' assigns the default values to all its attributes.
 #'
@@ -30,27 +26,41 @@ is_state <- function (x) is.environment(x)
 #' @description `state_reset` assign default values to all attributes
 #' of the `state` object.
 #'
+#' @param state state object (environment).
+#'
 #' @export
 #' @rdname state
-state_reset <- function () {
+state_reset <- function (state) {
   state$repo             <- NULL
   state$task_callback_id <- NA
 }
 
+
 #' @param path directory for the new/existing repository.
+#' @param int an [interactions] object.
+#'
 #' @rdname state
 #' @export
-open_repository <- function (state, path, create) {
-  if (!file.exists(path) && isTRUE(create)) {
-    inform(glue("no repository found, creating one under '{path}'"))
-  } else if (file.exists(path)) {
+open_repository <- function (state, path, int = interactions()) {
+  if (file.exists(path)) {
     inform(glue("attaching to repository '{path}'"))
+  } else {
+    if (isTRUE(int$create_repository())) {
+      inform(glue("no repository found, creating one under '{path}'"))
+    } else {
+      abort(glue("repository '{path}' not found, aborting"))
+    }
   }
 
-  state$repo <- repository(filesystem(path, create = create))
+  state$repo <- repository(filesystem(path, create = TRUE))
 }
 
 
+#' @description `pick_branch` implements the logic of choosing the commit
+#' to attach to.
+#'
+#' @param env [environment] used to find the branch to attach to.
+#'
 #' @rdname state
 #' @export
 pick_branch <- function (state, env, int = interactions()) {
