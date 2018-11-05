@@ -4,7 +4,7 @@
 \alias{task_callback}
 \title{A callback run after each top-level expression is evaluated.}
 \usage{
-task_callback(expr, result, successful, printed)
+task_callback(expr, result, successful, printed, state)
 }
 \arguments{
 \item{expr}{Expression for the top-level task.}
@@ -16,6 +16,9 @@ successfully completed or not (always \code{TRUE} at present).}
 
 \item{printed}{A logical value indicating whether the result was
 printed or not.}
+
+\item{state}{created with \link{new_state}, passed as the \code{data} argument
+to \link{addTaskCallback}}
 }
 \value{
 A logical value indicating whether to keep this function in

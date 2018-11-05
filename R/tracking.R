@@ -7,12 +7,12 @@
 #'   \item{task_callback_id}{id of the callback passed to [addTaskCallback]}
 #' }
 #'
-#' @description `state_new` creates a new `state` object and
+#' @description `new_state` creates a new `state` object and
 #' assigns the default values to all its attributes.
 #'
 #' @rdname state
 #' @export
-state_new <- function () {
+new_state <- function () {
   state <- new.env()
   state_reset(state)
   state
@@ -167,13 +167,12 @@ is_interactions <- function(x) inherits(x, 'interactions')
 
 #' @rdname state
 #' @export
-start_tracking <- function (state)
-{
+start_tracking <- function (state, callback_name) {
   if (!is.na(state$task_callback_id)) {
     abort("task callback id found, tracking already started", call = TRUE)
   }
 
-  state$task_callback_id <- addTaskCallback(task_callback)
+  state$task_callback_id <- addTaskCallback(task_callback, data = state, name = callback_name)
 
   # TODO see if there is a match for the current globalenv() to continue
   #      work from a given point; if not, ask the user if they want to
@@ -206,6 +205,8 @@ stop_tracking <- function (state)
 #'        successfully completed or not (always `TRUE` at present).
 #' @param printed A logical value indicating whether the result was
 #'        printed or not.
+#' @param state created with [new_state], passed as the `data` argument
+#'        to [addTaskCallback]
 #'
 #' @return A logical value indicating whether to keep this function in
 #'         the list of active callbacks.
@@ -213,8 +214,7 @@ stop_tracking <- function (state)
 #' @import grDevices
 #' @import utilities
 #'
-task_callback <- function (expr, result, successful, printed)
-{
+task_callback <- function (expr, result, successful, printed, state) {
   guard()
 
   if (!isTRUE(successful))
