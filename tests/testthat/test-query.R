@@ -80,5 +80,7 @@ test_that("tag values", {
                     c("data.frame", "grouped_df", "lm", "plot", "rawplot", "tbl", "tbl_df"),
                     c(10, 9, 1, 6, 6, 10, 10))
 
-  expect_tag_values("names", c("input", "m", "x"), c(5, 1, 5))
+  expect_tag_values("names",
+                    c("hourly", "input", "m", "meter_0010", "meter_4391", "meter_4929", "x"),
+                    c(1, 1, 1, 1, 1, 1, 5))
 })

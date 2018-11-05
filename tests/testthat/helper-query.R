@@ -1,8 +1,7 @@
 new_test_state <- function (repo) {
   expect_true(requireNamespace("repository", quietly = TRUE))
 
-  state <- new.env(parent = emptyenv())
-  initiate_state(state)
+  state <- new_state()
   state$repo <- repo
 
   state

@@ -1,65 +1,69 @@
 89c78e89  no parents
 input <- system.file("extdata/block_62.csv", package = "repository") %>%
-  readr::read_csv(na = "Null") %>%
-  dplyr::rename(meter = LCLid, timestamp = tstp, usage = energy_kWh) %>%
-  dplyr::filter(meter %in% c("MAC004929", "MAC000010", "MAC004391"), lubridate::year(timestamp) == 2013)
+  read_csv(na = "Null") %>%
+  rename(meter = LCLid, timestamp = tstp, usage = energy_kWh) %>%
+  filter(meter %in% c("MAC004929", "MAC000010", "MAC004391"), year(timestamp) == 2013)
 
 2b67f493  parents:89c78e89
-input %<>% dplyr::mutate(timestamp = lubridate::floor_date(timestamp, "hours")) %>%
-  dplyr::group_by(meter, timestamp) %>%
-  dplyr::summarise(usage = sum(usage))
+hourly <- input %>%
+  mutate(timestamp = floor_date(timestamp, "hours")) %>%
+  group_by(meter, timestamp) %>%
+  summarise(usage = sum(usage))
 
-af206c42  parents:2b67f493
-input %<>% dplyr::filter(meter == "MAC004929")
+c7d8d01c  parents:2b67f493
+meter_4929 <- hourly %>%
+  subset(meter == "MAC004929")
 
-70f3c0a4  parents:af206c42
-with(input, plot(timestamp, usage, type = "p", pch = "."))
+90b386d2  parents:c7d8d01c
+with(meter_4929, plot(timestamp, usage, type = "p", pch = "."))
 
-f59403b5  parents:af206c42
-x <- input %>%
-  dplyr::mutate(hour = lubridate::hour(timestamp), dow = lubridate::wday(timestamp, label = TRUE)) %>%
-  dplyr::mutate_at(dplyr::vars(hour, dow), dplyr::funs(as.factor)) %>%
-  dplyr::group_by(hour, dow) %>%
-  dplyr::summarise(usage = mean(usage, na.rm = TRUE))
+f59403b5  parents:c7d8d01c
+x <- meter_4929 %>%
+  mutate(hour = hour(timestamp), dow = wday(timestamp, label = TRUE)) %>%
+  mutate_at(vars(hour, dow), funs(as.factor)) %>%
+  group_by(hour, dow) %>%
+  summarise(usage = mean(usage, na.rm = TRUE))
 
-14e3598b  parents:f59403b5
+efaf9da3  parents:f59403b5
 with(x, plot(hour, usage))
 
 64228d01  parents:f59403b5
-ggplot2::ggplot(x) + ggplot2::geom_point(ggplot2::aes(x = hour, y = usage)) + ggplot2::facet_wrap(~dow)
+ggplot(x) + geom_point(aes(x = hour, y = usage)) + facet_wrap(~dow)
 
-fb79a008  parents:f59403b5
-ggplot2::ggplot(x) + ggplot2::geom_point(ggplot2::aes(x = hour, y = usage)) + ggplot2::facet_wrap(~dow)
+97229989  parents:f59403b5
+ggplot(x) + geom_point(aes(x = hour, y = usage)) + facet_wrap(~dow)
 
-b83ee352  parents:af206c42
-x <- input %>%
-  dplyr::mutate(hour = lubridate::hour(timestamp), dow = lubridate::wday(timestamp)) %>%
-  dplyr::mutate_at(dplyr::vars(hour, dow), dplyr::funs(as.factor))
-
-d0fe8d94  parents:b83ee352
-ggplot2::ggplot(x) + ggplot2::geom_boxplot(ggplot2::aes(x = hour, y = usage)) + ggplot2::facet_wrap(~dow)
-
-57fbe755  parents:b83ee352
-m <- stats::lm(usage ~ hour:dow, x)
-
-f2d8e929  parents:2b67f493
-input %<>% filter(meter == "MAC000010")
-
-866190fb  parents:f2d8e929
-x <- input %>%
+9e93375a  parents:c7d8d01c
+x <- meter_4929 %>%
   mutate(hour = hour(timestamp), dow = wday(timestamp)) %>%
   mutate_at(vars(hour, dow), funs(as.factor))
 
-ba5bb305  parents:866190fb
+9176430b  parents:9e93375a
 ggplot(x) + geom_boxplot(aes(x = hour, y = usage)) + facet_wrap(~dow)
 
-6ee2aaba  parents:2b67f493
-input %<>% filter(meter == "MAC004391")
+57fbe755  parents:9e93375a
+m <- stats::lm(usage ~ hour:dow, x)
 
-b418c062  parents:6ee2aaba
-x <- input %>%
+4756f19b  parents:2b67f493
+meter_0010 <- hourly %>%
+  subset(meter == "MAC000010")
+
+ce1f39c7  parents:4756f19b
+x <- meter_0010 %>%
   mutate(hour = hour(timestamp), dow = wday(timestamp)) %>%
   mutate_at(vars(hour, dow), funs(as.factor))
 
-539d7b91  parents:b418c062
+9ec96c2a  parents:ce1f39c7
+ggplot(x) + geom_boxplot(aes(x = hour, y = usage)) + facet_wrap(~dow)
+
+be56d761  parents:2b67f493
+meter_4391 <- hourly %>%
+  subset(meter == "MAC004391")
+
+4fc9b41b  parents:be56d761
+x <- meter_4391 %>%
+  mutate(hour = hour(timestamp), dow = wday(timestamp)) %>%
+  mutate_at(vars(hour, dow), funs(as.factor))
+
+8d934677  parents:4fc9b41b
 ggplot(x) + geom_boxplot(aes(x = hour, y = usage)) + facet_wrap(~dow)

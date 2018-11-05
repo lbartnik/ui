@@ -1,3 +1,4 @@
 Tag:  names 
 Values (#artifacts):
-  input (5)    m (1)        x (5)
+  hourly (1)        input (1)         m (1)             meter_0010 (1)
+  meter_4391 (1)    meter_4929 (1)    x (5)
