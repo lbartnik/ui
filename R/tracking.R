@@ -11,15 +11,14 @@
 #' @param env [environment] used to find the branch to attach to.
 #' @param create if `TRUE`, create the repository if it does not exist.
 #'
-#' @description `create_state` creates a new `state` object and
+#' @description `state_new` creates a new `state` object and
 #' assigns the default values to all its attributes.
 #'
 #' @rdname state
 #' @export
-create_state <- function () {
+state_new <- function () {
   state <- new.env()
-  state$repo             <- NULL
-  state$task_callback_id <- NA
+  state_reset(state)
   state
 }
 
@@ -27,10 +26,21 @@ create_state <- function () {
 #' @rdname state
 is_state <- function (x) is.environment(x)
 
+
+#' @description `state_reset` assign default values to all attributes
+#' of the `state` object.
+#'
+#' @export
+#' @rdname state
+state_reset <- function () {
+  state$repo             <- NULL
+  state$task_callback_id <- NA
+}
+
 #' @param path directory for the new/existing repository.
 #' @rdname state
 #' @export
-open_repo <- function (state, env, path, create) {
+open_repository <- function (state, path, create) {
   if (!file.exists(path) && isTRUE(create)) {
     inform(glue("no repository found, creating one under '{path}'"))
   } else if (file.exists(path)) {
@@ -40,30 +50,25 @@ open_repo <- function (state, env, path, create) {
   state$repo <- repository(filesystem(path, create = create))
 }
 
-#' @rdname state
-#' @export
-open_default_repo <- function (state, env, create = FALSE) {
-  open_repo(state, env, file.path(getwd(), 'repository'), create)
-}
-
 
 #' @rdname state
 #' @export
-pick_branch <- function (state, env) {
-  most_recent <- function (commits) {
-    nth(commits, last(order(map_int(commits, `[[`, i = 'time'))))
-  }
+pick_branch <- function (state, env, int = interactions()) {
+  stopifnot(is_interactions(int))
 
   if (length(ls(env))) {
     m <- as_commits(state$repo) %>% filter(data_matches(data = as.list(env))) %>% read_commits
-    if (!length(m)) {
-      abort("global environment is not empty but its contents cannot be matched against history, will not attach")
-      # TODO show a warning and implement an API call to attach manually
+
+    # if there is no match but the session is not empty, ask user if the session
+    # should be cleaned first; by default int$clean_env() throws an exception
+    if (!length(m) && int$clean_env()) {
+      rm(list = ls(envir = env, all.names = TRUE), envir = env)
     }
 
+    # if there are multiple matches, ask user which attach to;
+    # the default is the most recent one
     if (length(m) > 1) {
-      inform("global environment matched more than once against history, attaching to the most recent one")
-      m <- most_recent(m)
+      m <- int$choose_commit(m)
     } else {
       inform("global environment matches history, attaching to repository")
       m <- first(m)
@@ -75,21 +80,79 @@ pick_branch <- function (state, env) {
 
   # if globalenv is empty try attaching to one of the "leaves"
   lv <- as_commits(state$repo) %>% filter(no_children()) %>% read_commits
-  if (!length(lv)) return()
+  if (!length(lv)) {
+    n <- as_commits(state$repo) %>% summary(n = n()) %>% first
+    if (isTRUE(n > 0)) {
+      abort("repository is not empty but there are no leaf commits")
+    }
 
-  # TODO return commit id and contents, assign to env outside of this function
-  if (length(lv) == 1) {
-    lv <- first(lv)
+    inform("attached to an empty repository")
+    return()
+  }
+
+  # finally, if there is more than one leaf, ask the user; by default choose
+  # the most recent one
+  if (length(lv) > 1) {
+    lv <- int$choose_branch(lv)
   } else {
-    inform("repository contains more than one branch, choosing the most recent one")
-    lv <- most_recent(lv)
+    lv <- first(lv)
   }
 
   inform(glue("attaching to repository, commit {storage::shorten(lv$id)}"))
 
+  # TODO return commit id and contents, assign to env outside of this function
   repository_rewind(state$repo, lv$id)
   commit_checkout(lv, env)
 }
+
+
+#' @description `interactions` creates an object with a number of callbacks
+#' to be used when decision can be delegated to the user. It provides default
+#' implementations which either make the most straightforwards decision or
+#' abort the call with a descriptive user message.
+#'
+#' Provided callbacks:
+#' * `create_repository` to decide if a new repository should be created
+#' * `clean_env` to decide if objects in the global environment should be
+#'   removed in order to attach to repository
+#' * `choose_commit` when there are multiple commits matching global environment
+#' * `choose_branch` when there is more than one branch and global environment
+#'   is empty
+#'
+#' @rdname state
+#' @export
+interactions <- function (create_repository, clean_env, choose_commit, choose_branch) {
+  if (missing(create_repository)) create_repository <- function() TRUE
+
+  if (missing(clean_env)) clean_env <- function() {
+    abort("global environment is not empty but there is no match in the history, will not attach")
+  }
+
+  if (missing(choose_commit)) choose_commit <- function (commits) {
+    inform("global environment matched more than once in history, attaching to the most recent one")
+    most_recent(commits)
+  }
+
+  if (missing(choose_branch)) choose_branch <- function (commits) {
+    inform("repository contains more than one branch, choosing the most recent one")
+    most_recent(commits)
+  }
+
+  most_recent <- function (commits) {
+    nth(commits, last(order(map_int(commits, `[[`, i = 'time'))))
+  }
+
+  callbacks <- list(
+    create_repository = create_repository,
+    clean_env         = clean_env,
+    choose_commit     = choose_commit,
+    choose_branch     = choose_branch
+  )
+
+  structure(callbacks, class = 'interactions')
+}
+
+is_interactions <- function(x) inherits(x, 'interactions')
 
 
 #' @rdname state
