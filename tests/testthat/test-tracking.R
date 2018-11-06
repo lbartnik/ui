@@ -27,7 +27,8 @@ test_that("pick branch", {
   s <- sample_state()
   e <- new.env()
 
-  expect_message(pick_branch(s, e), 'attaching to repository, commit')
+  # commit id is surrounded with ANSI escape-color characters
+  expect_message(pick_branch(s, e), 'attaching to commit .*9af76975.*')
   expect_equal(s$repo$last_commit$id, '9af7697541a1331f46ae89bfb23b3864da9bb7e7')
   expect_named(e,
                c("hourly", "input", "m", "meter_0010", "meter_4391", "meter_4929", "x"),

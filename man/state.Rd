@@ -21,7 +21,8 @@ open_repository(state, path, int = interactions())
 
 pick_branch(state, env, int = interactions())
 
-interactions(create_repository, clean_env, choose_commit, choose_branch)
+interactions(create_first_commit, create_repository, clean_env,
+  choose_commit, choose_branch)
 
 start_tracking(state, callback_name)
 
@@ -37,6 +38,16 @@ stop_tracking(state)
 \item{int}{an \link{interactions} object.}
 
 \item{env}{\link{environment} used to find the branch to attach to.}
+
+\item{create_first_commit}{callback function}
+
+\item{create_repository}{callback function}
+
+\item{clean_env}{callback function}
+
+\item{choose_commit}{callback function}
+
+\item{choose_branch}{callback function}
 }
 \description{
 \code{new_state} creates a new \code{state} object and
@@ -55,6 +66,8 @@ abort the call with a descriptive user message.
 
 Provided callbacks:
 \itemize{
+\item \code{create_first_commit} to decide whether load the contents or R session
+into an empty repository as its first commit
 \item \code{create_repository} to decide if a new repository should be created
 \item \code{clean_env} to decide if objects in the global environment should be
 removed in order to attach to repository

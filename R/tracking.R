@@ -64,55 +64,82 @@ open_repository <- function (state, path, int = interactions()) {
 #' @rdname state
 #' @export
 pick_branch <- function (state, env, int = interactions()) {
+  # TODO return commit id and contents, assign to env outside of this function
   stopifnot(is_interactions(int))
 
-  if (length(ls(env))) {
-    m <- as_commits(state$repo) %>% filter(data_matches(data = as.list(env))) %>% read_commits
+  # is there anything in the repository?
+  n_co <- as_commits(state$repo) %>% summary(n = n()) %>% first
+  n_en <- length(env)
 
-    # if there is no match but the session is not empty, ask user if the session
-    # should be cleaned first; by default int$clean_env() throws an exception
-    if (!length(m) && int$clean_env()) {
-      rm(list = ls(envir = env, all.names = TRUE), envir = env)
+  # if repository is empty, it's quite simple
+  if (identical(n_co, 0L)) {
+    # if environment is empty simply return right away
+    if (identical(n_en, 0L)) {
+      inform("attached to an empty repository")
+      return()
     }
 
-    # if there are multiple matches, ask user which attach to;
-    # the default is the most recent one
-    if (length(m) > 1) {
-      m <- int$choose_commit(m)
-    } else {
-      inform("global environment matches history, attaching to repository")
-      m <- first(m)
+    # otherwise, see if the user wants to initialize the repository with
+    # the contents of the environment; if not, throw an error
+    if (!int$create_first_commit()) {
+      abort("repository is empty but session contains data")
     }
 
-    repository_rewind(state$repo, m$id)
-    return()
+    # finally, initialize the repository and exit
+    inform("creating the first commit in the repository")
+    repository_update(state$repo, env, NULL, bquote())
+
+    return(TRUE)
   }
 
-  # if globalenv is empty try attaching to one of the "leaves"
-  lv <- as_commits(state$repo) %>% filter(no_children()) %>% read_commits
-  if (!length(lv)) {
-    n <- as_commits(state$repo) %>% summary(n = n()) %>% first
-    if (isTRUE(n > 0)) {
-      abort("repository is not empty but there are no leaf commits")
+  # if session environment is not empty, try to identify a matching
+  # commit or ask the user to clean the session
+  if (!identical(n_en, 0L)) {
+    matching <- as_commits(state$repo) %>% filter(data_matches(data = as.list(env))) %>% read_commits
+    n_ma <- length(matching)
+
+    # if there are matches, pick the one to attach to
+    if (!identical(n_ma, 0L)) {
+      if (identical(n_ma, 1L)) {
+        commit <- first(matching)
+        cinform("only commit", green = shorten(commit$id), "matches the session")
+      } else {
+        # if there are multiple matches, ask user which attach to;
+        # the default is the most recent one
+        commit <- int$choose_commit(matching)
+      }
+
+      repository_rewind(state$repo, commit$id)
+      return()
     }
 
-    inform("attached to an empty repository")
-    return()
+    # if nothing matches, ask about removing session data
+    if (!int$clean_env()) {
+      abort("global environment is not empty but there is no match in the history, will not attach")
+    }
+
+    inform("session does not match any commits, removing session data")
+    rm(list = ls(envir = env, all.names = TRUE), envir = env)
   }
 
-  # finally, if there is more than one leaf, ask the user; by default choose
-  # the most recent one
-  if (length(lv) > 1) {
-    lv <- int$choose_branch(lv)
+  # now we are sure the session environment is empty: either because it
+  # was from the beginning or because the user decided to remove all objects;
+  # we can safely proceed to picking the branch to attach to - that is, one
+  # from the commits that themselves have no child commits
+  leaves <- as_commits(state$repo) %>% filter(no_children()) %>% read_commits
+  if (!length(leaves)) {
+    abort("no leaf commits, repository seems broken")
+  }
+
+  if (identical(length(leaves), 1L)) {
+    commit <- first(leaves)
   } else {
-    lv <- first(lv)
+    commit <- int$choose_branch(leaves)
   }
 
-  inform(glue("attaching to commit {storage::shorten(lv$id)}"))
-
-  # TODO return commit id and contents, assign to env outside of this function
-  repository_rewind(state$repo, lv$id)
-  commit_checkout(lv, env)
+  cinform("attaching to commit", green = storage::shorten(commit$id))
+  repository_rewind(state$repo, commit$id)
+  commit_checkout(commit, env)
 }
 
 
@@ -122,6 +149,8 @@ pick_branch <- function (state, env, int = interactions()) {
 #' abort the call with a descriptive user message.
 #'
 #' Provided callbacks:
+#' * `create_first_commit` to decide whether load the contents or R session
+#'   into an empty repository as its first commit
 #' * `create_repository` to decide if a new repository should be created
 #' * `clean_env` to decide if objects in the global environment should be
 #'   removed in order to attach to repository
@@ -129,14 +158,20 @@ pick_branch <- function (state, env, int = interactions()) {
 #' * `choose_branch` when there is more than one branch and global environment
 #'   is empty
 #'
+#' @param create_first_commit callback function
+#' @param create_repository callback function
+#' @param clean_env callback function
+#' @param choose_commit callback function
+#' @param choose_branch callback function
+#'
 #' @rdname state
 #' @export
-interactions <- function (create_repository, clean_env, choose_commit, choose_branch) {
+interactions <- function (create_first_commit, create_repository, clean_env, choose_commit, choose_branch) {
+  if (missing(create_first_commit)) create_first_commit <- function () FALSE
+
   if (missing(create_repository)) create_repository <- function() TRUE
 
-  if (missing(clean_env)) clean_env <- function() {
-    abort("global environment is not empty but there is no match in the history, will not attach")
-  }
+  if (missing(clean_env)) clean_env <- function() FALSE
 
   if (missing(choose_commit)) choose_commit <- function (commits) {
     inform("global environment matched more than once in history, attaching to the most recent one")
