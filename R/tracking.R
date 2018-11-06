@@ -69,7 +69,7 @@ pick_branch <- function (state, env, int = interactions()) {
 
   # is there anything in the repository?
   n_co <- as_commits(state$repo) %>% summary(n = n()) %>% first
-  n_en <- length(env)
+  n_en <- length(ls(env)) # ignore hidden objects in global environment
 
   # if repository is empty, it's quite simple
   if (identical(n_co, 0L)) {
