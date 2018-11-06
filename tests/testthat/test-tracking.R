@@ -19,7 +19,7 @@ test_that("fail to open", {
   on.exit(unlink(p, TRUE, TRUE))
 
   expect_error(open_repository(s, p, interactions(create_repository = function()FALSE)),
-               "repository '/tmp/.*/xyz' not found, aborting")
+               "repository '.*/xyz' not found, aborting")
   expect_false(dir.exists(p))
 })
 

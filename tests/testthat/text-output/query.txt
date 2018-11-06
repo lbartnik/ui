@@ -1,6 +1,6 @@
 Query:
   <repository:%/london-meters> %>%
-    filter(artifact, "data.frame" %in% class) 
+    filter(artifact, "data.frame" %in% class)
 
 Matched 10 artifact(s), of that 0 plot(s)
 
@@ -13,7 +13,7 @@ hourly <- input %>%
   summarise(usage = sum(usage))
 Name:    hourly
 Class:   grouped_df tbl_df tbl data.frame
-Created: 2018-10-25 23:49:47
+Created: %
 Summary: data.frame[26280, 3]
 
 *
@@ -23,7 +23,7 @@ meter_0010 <- hourly %>%
   subset(meter == "MAC000010")
 Name:    meter_0010
 Class:   grouped_df tbl_df tbl data.frame
-Created: 2018-10-26 02:00:55
+Created: %
 Summary: data.frame[8760, 3]
 
 *
@@ -34,7 +34,7 @@ x <- meter_4391 %>%
   mutate_at(vars(hour, dow), funs(as.factor))
 Name:    x
 Class:   grouped_df tbl_df tbl data.frame
-Created: 2018-10-26 02:05:02
+Created: %
 Summary: data.frame[8760, 5]
 
 ... with 7 more artifact(s)
