@@ -10,6 +10,8 @@ artifacts_query(state)
 \method{dollar_name}{query}(x, n)
 }
 \arguments{
+\item{state}{object returned by \code{\link[=new_state]{new_state()}}}
+
 \item{x}{\link[repository:query]{repository::query} object.}
 
 \item{n}{action name.}

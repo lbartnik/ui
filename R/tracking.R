@@ -200,6 +200,7 @@ interactions <- function (create_first_commit, create_repository, clean_env, cho
 is_interactions <- function(x) inherits(x, 'interactions')
 
 
+#' @param callback_name passed to [addTaskCallback] as `name`
 #' @rdname state
 #' @export
 start_tracking <- function (state, callback_name) {

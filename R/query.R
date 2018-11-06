@@ -11,6 +11,7 @@
 #'   * query specifier: `name`, `id`, `class`, `time`, `session`
 #'   * artifact name or identifier
 #'
+#' @param state object returned by [new_state()]
 #' @param x [repository::query] object.
 #' @param n action name.
 #'

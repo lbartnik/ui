@@ -48,6 +48,8 @@ stop_tracking(state)
 \item{choose_commit}{callback function}
 
 \item{choose_branch}{callback function}
+
+\item{callback_name}{passed to \link{addTaskCallback} as \code{name}}
 }
 \description{
 \code{new_state} creates a new \code{state} object and
