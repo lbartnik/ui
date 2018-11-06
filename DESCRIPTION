@@ -36,7 +36,6 @@ Collate:
   'specifier.R'
   'tracking.R'
   'ui-package.R'
-  'utils.R'
   'wrapper.R'
 Remotes:
   github::lbartnik/browser,
