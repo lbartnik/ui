@@ -34,7 +34,7 @@ test_that("class", {
 
 test_that("time", {
   s <- new_specifier(sample_query(), 'time')
-  if (is_running_in_rstudio()) {
+  if (is_rstudio()) {
     expect_setequal(dollar_names(s), names(ui:::DollarNamesMapping$time))
   } else {
     expect_length(dollar_names(s), 5)

@@ -1,7 +1,3 @@
-is_running_in_rstudio <- function () {
-  requireNamespace('rstudioapi', quietly = TRUE) && rstudioapi::isAvailable()
-}
-
 #' Work with the sample repository.
 #'
 #' Switches the current repository to the sample one (see [repository::london_meters()]
