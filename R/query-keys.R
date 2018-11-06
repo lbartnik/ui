@@ -30,7 +30,7 @@ dollar_names.time <- function (x, pattern = "") {
   # RStudio intercepts the pattern and calls .DollarNames with pattern
   # set to ""; see below for details
   # https://github.com/rstudio/rstudio/commit/c25739a15ca49fda68c10f6fd2d25266065cb80b
-  if (is_running_in_rstudio()) {
+  if (is_rstudio()) {
     return(names(DollarNamesMapping$time))
   }
 

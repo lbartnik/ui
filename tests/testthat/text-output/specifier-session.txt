@@ -1,3 +1,3 @@
 Tag:  session 
 Values (#artifacts):
-  56d67965: % (6)     d75d3d72: % (11)
+  56d67965: % (6) % d75d3d72: % (11)

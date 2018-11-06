@@ -22,7 +22,7 @@ sample_artifact_id <- function () '2b67f4934da0aa3baecfdd3001008539217d5719'
 
 sample_artifact <- function () extract_artifact(sample_artifact_id())
 
-sample_plot_id <- function () '539d7b916fd845319be242640085b59dbcf52506'
+sample_plot_id <- function () '9ec96c2a27f22ac7f6a2fda80e1796197d7b38b1'
 
 sample_plot_artifact <- function () extract_artifact(sample_plot_id())
 

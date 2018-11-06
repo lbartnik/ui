@@ -2,7 +2,7 @@ context("query-keys")
 
 test_that("name", {
   s <- new_specifier(sample_query(), 'name')
-  expect_setequal(dollar_names(s), c("input", "m", "x"))
+  expect_setequal(dollar_names(s), c("hourly", "input", "m", "meter_0010", "meter_4391", "meter_4929", "x"))
 
   x <- expect_message(dollar_name(s, "m"), "Query points to a single object")
   expect_true(is_wrapper(x))
@@ -34,7 +34,7 @@ test_that("class", {
 
 test_that("time", {
   s <- new_specifier(sample_query(), 'time')
-  if (is_running_in_rstudio()) {
+  if (is_rstudio()) {
     expect_setequal(dollar_names(s), names(ui:::DollarNamesMapping$time))
   } else {
     expect_length(dollar_names(s), 5)

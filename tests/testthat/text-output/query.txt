@@ -5,31 +5,37 @@ Query:
 Matched 10 artifact(s), of that 0 plot(s)
 
 *
-Artifact: 14e3598b (plot)
-Expression:
-with(x, plot(hour, usage))
-Class:   rawplot plot
-Created: %
-Summary: 
-
-*
 Artifact: 2b67f493
 Expression:
-input %<>% dplyr::mutate(timestamp = lubridate::floor_date(timestamp, "hours")) %>%
-  dplyr::group_by(meter, timestamp) %>%
-  dplyr::summarise(usage = sum(usage))
-Name:    input
+hourly <- input %>%
+  mutate(timestamp = floor_date(timestamp, "hours")) %>%
+  group_by(meter, timestamp) %>%
+  summarise(usage = sum(usage))
+Name:    hourly
 Class:   grouped_df tbl_df tbl data.frame
 Created: %
 Summary: data.frame[26280, 3]
 
 *
-Artifact: 539d7b91 (plot)
+Artifact: 4756f19b
 Expression:
-ggplot(x) + geom_boxplot(aes(x = hour, y = usage)) + facet_wrap(~dow)
-Class:   rawplot plot
+meter_0010 <- hourly %>%
+  subset(meter == "MAC000010")
+Name:    meter_0010
+Class:   grouped_df tbl_df tbl data.frame
 Created: %
-Summary: 
+Summary: data.frame[8760, 3]
+
+*
+Artifact: 4fc9b41b
+Expression:
+x <- meter_4391 %>%
+  mutate(hour = hour(timestamp), dow = wday(timestamp)) %>%
+  mutate_at(vars(hour, dow), funs(as.factor))
+Name:    x
+Class:   grouped_df tbl_df tbl data.frame
+Created: %
+Summary: data.frame[8760, 5]
 
 ... with 7 more artifact(s)
 You can still specify following tags: class id name session time

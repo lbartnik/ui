@@ -23,8 +23,6 @@
 \item{style}{\code{"full"}, \code{"short"} or \code{"line"}.}
 }
 \description{
-Pretty-print sets of artifacts.
-
 \code{print.explained} pretty-prints a description of an
 artifact.
 }

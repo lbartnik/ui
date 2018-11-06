@@ -11,6 +11,7 @@
 #'   * query specifier: `name`, `id`, `class`, `time`, `session`
 #'   * artifact name or identifier
 #'
+#' @param state object returned by [new_state()]
 #' @param x [repository::query] object.
 #' @param n action name.
 #'
@@ -18,6 +19,13 @@
 #' @importFrom lubridate as_date ymd
 #' @importFrom storage enlongate
 #'
+#' @export
+#' @rdname ui-query
+artifacts_query <- function (state) {
+  stopifnot(is_state(state))
+  wrap(as_artifacts(state$repo))
+}
+
 #' @rdname ui-query
 dollar_name.query <- function (x, n) {
   # TODO
