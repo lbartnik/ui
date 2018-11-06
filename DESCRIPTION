@@ -30,7 +30,6 @@ Suggests:
   rstudioapi,
   testthat
 Collate:
-  'addins.R'
   'print.R'
   'query.R'
   'query-keys.R'
