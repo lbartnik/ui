@@ -81,11 +81,11 @@ dollar_name.query <- function (x, n) {
     res <- filter(x, UQ(n) %in% names)
   }
   else {
-    id <- tryCatch(enlongate(n, x$repository$store), error = function (e) {
+    id <- tryCatch(enlongate(n, x$store), error = function (e) {
       abort(glue("{n} is not an artifact name nor identifier"))
     })
     # id is unique so we can drop all other filters
-    res <- as_query(x$repository) %>% filter(UQ(id) == id)
+    res <- as_query(x$store) %>% filter(UQ(id) == id)
   }
 
   dispatch_result(res)
@@ -112,7 +112,7 @@ double_bracket.query <- function (x, i) {
   }
 
   ans <- as_artifacts(x) %>% filter(id == nth(ids, i)) %>% read_artifacts %>% first
-  wrap(new_single_result(ans, x$repository))
+  wrap(new_single_result(ans))
 }
 
 
@@ -132,7 +132,7 @@ print.query <- function (x, ..., n = 3) {
 
   # print the first n objects
   if (nrow(res)) {
-    obj <- as_artifacts(x$repository) %>% top_n(n) %>% read_artifacts
+    obj <- as_artifacts(x$store) %>% top_n(n) %>% read_artifacts
     lapply(obj, function (x) {
       ccat(green = '\n*\n')
       print(x)

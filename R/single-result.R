@@ -22,7 +22,7 @@ dispatch_result <- function (q) {
     cinform0(grey = 'Query points to a single object\n')
 
     a <- as_artifacts(q) %>% read_artifacts %>% first
-    return(wrap(new_single_result(a, q$repository)))
+    return(wrap(new_single_result(a)))
   }
 
   wrap(q)
@@ -33,14 +33,12 @@ dispatch_result <- function (q) {
 #' operations via the dollar operator `$`.
 #'
 #' @param artifact retrieved from a repository with [repository::read_artifacts]
-#' @param repository origin of `artifact`.
+#' @param store origin of `artifact`.
 #'
 #' @rdname single_result
-new_single_result <- function (artifact, repository) {
+new_single_result <- function (artifact) {
   stopifnot(is_artifact(artifact))
-  stopifnot(is_repository(repository))
-  structure(list(artifact = artifact, repository = repository),
-            class = 'single_result')
+  structure(list(artifact = artifact), class = 'single_result')
 }
 
 is_single_result <- function(x) inherits(x, 'single_result')
@@ -64,10 +62,11 @@ dollar_names.single_result <- function (x, pattern = "") {
 
 #' @importFrom rlang UQ
 dollar_name.single_result <- function (x, i) {
+  a <- x$artifact
 
   # print the tree
   if (identical(i, "explain")) {
-    ans <- as_artifacts(x$repository) %>% filter(ancestor_of(x$artifact$id)) %>% read_artifacts
+    ans <- as_artifacts(artifact_store(a)) %>% filter(ancestor_of(a$id)) %>% read_artifacts
     return(new_tree(ans))
   }
 
@@ -82,13 +81,13 @@ dollar_name.single_result <- function (x, i) {
       abort('cannot plot a non-plot')
     }
 
-    return(new_replot(artifact_data(x$artifact)))
+    return(new_replot(artifact_data(a)))
   }
 
   # return the raw value
   if (identical(i, "value")) {
-    cinform0(silver = "Extracting element ", white = shorten(x$artifact$id))
-    return(artifact_data(x$artifact))
+    cinform0(silver = "Extracting element ", white = shorten(a$id))
+    return(artifact_data(a))
   }
 
   abort("unknown key: ", i)
