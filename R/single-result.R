@@ -33,7 +33,6 @@ dispatch_result <- function (q) {
 #' operations via the dollar operator `$`.
 #'
 #' @param artifact retrieved from a repository with [repository::read_artifacts]
-#' @param store origin of `artifact`.
 #'
 #' @rdname single_result
 new_single_result <- function (artifact) {

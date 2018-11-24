@@ -18,7 +18,6 @@ new_state <- function () {
   state
 }
 
-#' @param x object being tested.
 #' @rdname state
 is_state <- function (x) is.environment(x)
 
@@ -37,7 +36,7 @@ state_reset <- function (state) {
 
 
 #' @param x a [repository::repository] object or a directory path for
-#'        the new/existing repository.
+#'        the new/existing repository; or object to be tested.
 #' @param int an [interactions] object.
 #'
 #' @importFrom rlang is_character
