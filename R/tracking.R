@@ -36,23 +36,37 @@ state_reset <- function (state) {
 }
 
 
-#' @param path directory for the new/existing repository.
+#' @param x a [repository::repository] object or a directory path for
+#'        the new/existing repository.
 #' @param int an [interactions] object.
 #'
+#' @importFrom rlang is_character
 #' @rdname state
 #' @export
-open_repository <- function (state, path, int = interactions()) {
-  if (file.exists(path)) {
-    inform(glue("attaching to repository '{path}'"))
+open_repository <- function (state, x, int = interactions()) {
+  # it's either a repository object or a path
+  if (is_repository(x)) {
+    state$repo <- x
+    return(TRUE)
+  }
+
+  if (!is_character(x)) {
+    abort("`x` is not repository object nor a path")
+  }
+
+  # if a path, see if needs and can be created
+  if (file.exists(x)) {
+    inform(glue("attaching to repository '{x}'"))
   } else {
     if (isTRUE(int$create_repository())) {
-      inform(glue("no repository found, creating one under '{path}'"))
+      inform(glue("no repository found, creating one under '{x}'"))
     } else {
-      abort(glue("repository '{path}' not found, aborting"))
+      abort(glue("repository '{x}' not found, aborting"))
     }
   }
 
-  state$repo <- repository(filesystem(path, create = TRUE))
+  state$repo <- repository(filesystem(x, create = TRUE))
+  TRUE
 }
 
 

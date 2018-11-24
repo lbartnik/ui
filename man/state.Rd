@@ -17,7 +17,7 @@ is_state(x)
 
 state_reset(state)
 
-open_repository(state, path, int = interactions())
+open_repository(state, x, int = interactions())
 
 pick_branch(state, env, int = interactions())
 
@@ -32,8 +32,6 @@ stop_tracking(state)
 \item{x}{object being tested.}
 
 \item{state}{state object (environment).}
-
-\item{path}{directory for the new/existing repository.}
 
 \item{int}{an \link{interactions} object.}
 
@@ -50,6 +48,9 @@ stop_tracking(state)
 \item{choose_branch}{callback function}
 
 \item{callback_name}{passed to \link{addTaskCallback} as \code{name}}
+
+\item{x}{a \link[repository:repository]{repository::repository} object or a directory path for
+the new/existing repository.}
 }
 \description{
 \code{new_state} creates a new \code{state} object and
