@@ -17,7 +17,7 @@ is_state(x)
 
 state_reset(state)
 
-open_repository(state, path, int = interactions())
+open_repository(state, x, int = interactions())
 
 pick_branch(state, env, int = interactions())
 
@@ -29,11 +29,10 @@ start_tracking(state, callback_name)
 stop_tracking(state)
 }
 \arguments{
-\item{x}{object being tested.}
+\item{x}{a \link[repository:repository]{repository::repository} object or a directory path for
+the new/existing repository; or object to be tested.}
 
 \item{state}{state object (environment).}
-
-\item{path}{directory for the new/existing repository.}
 
 \item{int}{an \link{interactions} object.}
 

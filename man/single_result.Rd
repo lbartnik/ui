@@ -9,7 +9,7 @@
 \usage{
 dispatch_result(q)
 
-new_single_result(artifact, repository)
+new_single_result(artifact)
 
 \method{print}{single_result}(x, ...)
 }
@@ -17,8 +17,6 @@ new_single_result(artifact, repository)
 \item{q}{a \code{query} object.}
 
 \item{artifact}{retrieved from a repository with \link[repository:read_artifacts]{repository::read_artifacts}}
-
-\item{repository}{origin of \code{artifact}.}
 
 \item{x}{an object used to select a method.}
 

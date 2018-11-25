@@ -20,7 +20,7 @@ dollar_names.id <- function (x, pattern = "") {
 }
 
 dollar_name.id <- function (x, i) {
-  i <- storage::enlongate(i, x$query$repository$store)
+  i <- storage::enlongate(i, x$query$store)
   stopifnot(length(i) > 0)
   dispatch_result(x$query %>% filter(UQ(i) == id))
 }

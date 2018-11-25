@@ -8,16 +8,16 @@ test_that("dispatch result", {
 })
 
 test_that("dollar names", {
-  s <- new_single_result(fake_artifact(), fake_repository())
+  s <- new_single_result(fake_artifact())
   expect_setequal(dollar_names(s), c("explain", "inspect", "value"))
 
-  s <- new_single_result(fake_plot_artifact(), fake_repository())
+  s <- new_single_result(fake_plot_artifact())
   expect_setequal(dollar_names(s), c("explain", "inspect", "value", "plot"))
 })
 
 test_that("dollar name", {
   a <- sample_artifact()
-  s <- new_single_result(a, sample_repository())
+  s <- new_single_result(a)
 
   x <- dollar_name(s, 'explain')
   expect_true(is_wrapper(x))
@@ -31,7 +31,7 @@ test_that("dollar name", {
 })
 
 test_that("dollar name, plot", {
-  s <- new_single_result(sample_plot_artifact(), sample_repository())
+  s <- new_single_result(sample_plot_artifact())
 
 #  x <- expect_silent(dollar_name(s, 'plot'))
   x <- dollar_name(s, 'plot')
