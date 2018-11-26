@@ -11,7 +11,7 @@
 #'   * query specifier: `name`, `id`, `class`, `time`, `session`
 #'   * artifact name or identifier
 #'
-#' @param state object returned by [new_state()]
+#' @param repository object returned by [repository::repository]
 #' @param x [repository::query] object.
 #' @param n action name.
 #'
@@ -21,10 +21,57 @@
 #'
 #' @export
 #' @rdname ui-query
-artifacts_query <- function (state) {
-  stopifnot(is_state(state))
-  wrap(as_artifacts(state$repo))
+new_query_proxy <- function (repository) {
+  stopifnot(is_repository(repository))
+
+  wrap(structure(list(factory = function(...)as_artifacts(repository)),
+                 class = 'query_proxy'))
 }
+
+#' @export
+print.query_proxy <- function (x, ...) {
+  cat('Query\n')
+  # TODO inform about the possibility of specifying the name, id, date, etc.
+  invisible(x)
+}
+
+dollar_names.query_proxy <- function (x, pattern) {
+  c(x$factory(), c("plots", "models"))
+}
+
+dollar_name.query_proxy <- function (x, n) {
+
+  q <- x$factory()
+
+  # shortcut to class$plot
+  if (identical(n, "plots")) {
+    return(wrap(filter(q, 'plot' %in% class)))
+  }
+
+  # if it looks like a date specification...
+  d <- ymd(n, quiet = TRUE)
+  if (!is.na(d)) {
+    return(wrap(filter(q, as_date(time) == UQ(as.character(d)))))
+  }
+
+  # if it doesn't look like anything else, it must be an attempt at name or id
+  num <- as_artifacts(q) %>% filter(UQ(n) %in% names) %>% summarise(n = n()) %>% first
+  if (is.numeric(num) && num > 0) {
+    res <- filter(x, UQ(n) %in% names)
+  }
+  else {
+    id <- tryCatch(match_short(n, q$store), error = function (e) {
+      abort(glue("{n} is not an artifact name nor identifier"))
+    })
+    # id is unique so we can drop all other filters
+    # TODO introduce reset_query
+    res <- as_query(q$store) %>% filter(UQ(id) == id)
+  }
+
+  dispatch_result(res)
+}
+
+
 
 #' @rdname ui-query
 dollar_name.query <- function (x, n) {
@@ -53,11 +100,6 @@ dollar_name.query <- function (x, n) {
     return(wrap(new_specifier(x, n)))
   }
 
-  # shortcut to class$plot
-  if (identical(n, "plots")) {
-    return(wrap(filter(x, 'plot' %in% class)))
-  }
-
   # if there is only one element that matches
   if (identical(n, "value")) {
     res <- x %>% summarise(n = n()) %>% nth("n")
@@ -69,26 +111,7 @@ dollar_name.query <- function (x, n) {
     abort('cannot extract value because query matches multiple artifacts')
   }
 
-  # if it looks like a date specification...
-  d <- ymd(n, quiet = TRUE)
-  if (!is.na(d)) {
-    return(wrap(filter(x, as_date(time) == UQ(as.character(d)))))
-  }
-
-  # if it doesn't look like anything else, it must be an attempt at name or id
-  num <- as_artifacts(x) %>% filter(UQ(n) %in% names) %>% summarise(n = n()) %>% first
-  if (is.numeric(num) && num > 0) {
-    res <- filter(x, UQ(n) %in% names)
-  }
-  else {
-    id <- tryCatch(match_short(n, x$store), error = function (e) {
-      abort(glue("{n} is not an artifact name nor identifier"))
-    })
-    # id is unique so we can drop all other filters
-    res <- as_query(x$store) %>% filter(UQ(id) == id)
-  }
-
-  dispatch_result(res)
+  abort(glue("Query specifier {n} is not supported."))
 }
 
 
@@ -155,40 +178,4 @@ print.query <- function (x, ..., n = 3) {
 table_tag_values <- function (qry, tag) {
   vls <- as_tags(qry) %>% read_tags(UQ(as.symbol(tag))) %>% first
   table(unlist(vls))
-}
-
-#' Assigned in .onLoad
-#'
-DollarNamesMapping <- NULL
-
-#' @importFrom rlang quo
-#' @importFrom lubridate as_date ddays dhours floor_date today wday
-#'
-createDollarNamesMapping <- function () {
-  last_wday <- function (which) {
-    date <- today() - wday(today(), week_start = 7) + which
-    if (date > today()) date <- date - 7
-    as.character(date)
-  }
-
-  list(
-    time = list(
-      today           = quo(as_date(time) == today()),
-      yesterday       = quo(as_date(time) == today()-1),
-      thisweek        = quo(as_date(time) >= floor_date(today(), "week")),
-      last_24hrs      = quo(time > today() - dhours(24)),
-      last_3days      = quo(as_date(time) > today() - ddays(3)),
-      last_7days      = quo(as_date(time) > today() - ddays(7)),
-      last_day        = quo(as_date(time) > today() - ddays(1)),
-      last_week       = quo(as_date(time) > today() - ddays(7)),
-      since_yesterday = quo(as_date(time) >= today() - ddays(1)),
-      since_Monday    = quo(as_date(time) >= UQ(last_wday(1))),
-      since_Tuesday   = quo(as_date(time) >= UQ(last_wday(2))),
-      since_Wednesay  = quo(as_date(time) >= UQ(last_wday(3))),
-      since_Thursday  = quo(as_date(time) >= UQ(last_wday(4))),
-      since_Friday    = quo(as_date(time) >= UQ(last_wday(5))),
-      since_Saturday  = quo(as_date(time) >= UQ(last_wday(6))),
-      since_Sunday    = quo(as_date(time) >= UQ(last_wday(7)))
-    )
-  )
 }
