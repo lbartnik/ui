@@ -44,7 +44,7 @@ dollar_name.query_proxy <- function (x, n) {
 
   q <- x$factory()
 
-  if (length(grep(n, dollar_names(q), fixed = TRUE))) {
+  if (match(n, dollar_names(q), nomatch = 0L) > 0L) {
     return(dollar_name(q, n))
   }
 
@@ -167,7 +167,7 @@ print.query <- function (x, ..., n = 3) {
 
   # print the first n objects
   if (nrow(res)) {
-    obj <- as_artifacts(x$store) %>% top_n(n) %>% read_artifacts
+    obj <- as_artifacts(x) %>% top_n(n) %>% read_artifacts
     lapply(obj, function (x) {
       ccat(green = '\n*\n')
       print(x)
