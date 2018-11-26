@@ -1,3 +1,4 @@
+# TODO update the doc: distinguish between first-level keys and reqular query keys
 #' Interactive UI for queries.
 #'
 #' UI for the [repository::query] object. It employs R's dollar operator
@@ -36,12 +37,22 @@ print.query_proxy <- function (x, ...) {
 }
 
 dollar_names.query_proxy <- function (x, pattern) {
-  c(x$factory(), c("plots", "models"))
+  c(dollar_names(x$factory()), c("plots", "models"))
 }
 
 dollar_name.query_proxy <- function (x, n) {
 
   q <- x$factory()
+
+  if (length(grep(n, dollar_names(q), fixed = TRUE))) {
+    return(dollar_name(q, n))
+  }
+
+  # assign name to an artifact
+  if (identical(n, "assign")) {
+    # TODO implement assignment
+    abort("assign not implemented yet")
+  }
 
   # shortcut to class$plot
   if (identical(n, "plots")) {
@@ -57,7 +68,8 @@ dollar_name.query_proxy <- function (x, n) {
   # if it doesn't look like anything else, it must be an attempt at name or id
   num <- as_artifacts(q) %>% filter(UQ(n) %in% names) %>% summarise(n = n()) %>% first
   if (is.numeric(num) && num > 0) {
-    res <- filter(x, UQ(n) %in% names)
+    cinform(grey = "")
+    res <- filter(q, UQ(n) %in% names)
   }
   else {
     id <- tryCatch(match_short(n, q$store), error = function (e) {
@@ -93,13 +105,6 @@ dollar_name.query <- function (x, n) {
     return(wrap(g, 'history'))
   }
 
-  # key specifier
-  # TODO check only actual search tags
-  is_query_key <- function (k) identical(k, dollar_names(x, k))
-  if (is_query_key(n)) {
-    return(wrap(new_specifier(x, n)))
-  }
-
   # if there is only one element that matches
   if (identical(n, "value")) {
     res <- x %>% summarise(n = n()) %>% nth("n")
@@ -109,6 +114,13 @@ dollar_name.query <- function (x, n) {
     }
 
     abort('cannot extract value because query matches multiple artifacts')
+  }
+
+  # key specifier
+  # TODO check only actual search tags
+  is_query_key <- function (k) identical(k, dollar_names(x, k))
+  if (is_query_key(n)) {
+    return(wrap(new_specifier(x, n)))
   }
 
   abort(glue("Query specifier {n} is not supported."))
