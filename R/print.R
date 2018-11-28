@@ -89,7 +89,7 @@ print.artifact <- function (x, ..., style = 'full') {
   # full artifact description
   if (identical(style, 'full')) {
     # preamble
-    ccat0(silver = "Artifact: ", green = x$id, silver = if (is_plot) ' (plot)', '\n')
+    ccat0(silver = "Artifact: ", green = toString(x$id), silver = if (is_plot) ' (plot)', '\n')
 
     # expression that produced this artifact
     ccat0(silver = 'Expression:\n', x$expression)
@@ -104,7 +104,7 @@ print.artifact <- function (x, ..., style = 'full') {
 
   # shortened artifact description
   if (identical(style, 'short')) {
-    ccat0(green = x$id)
+    ccat0(green = toString(x$id))
 
     if (length(x$parents)) {
       ccat0(silver = '  parents:', yellow = join(toString(x$parents), ' '))
@@ -119,9 +119,9 @@ print.artifact <- function (x, ..., style = 'full') {
   # a single line
   if (identical(style, 'line')) {
     if ('plot' %in% x$class)
-      ccat0(grey = '<plot> ', silver = '(', yellow = x$id, silver = ')\n')
+      ccat0(grey = '<plot> ', silver = '(', yellow = toString(x$id), silver = ')\n')
     else
-      ccat0(green = first(x$names), silver = ' (', yellow = x$id, silver = ') ',
+      ccat0(green = first(x$names), silver = ' (', yellow = toString(x$id), silver = ') ',
             x$description, '\n')
   }
 

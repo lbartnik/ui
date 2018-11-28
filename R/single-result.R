@@ -85,7 +85,7 @@ dollar_name.single_result <- function (x, i) {
 
   # return the raw value
   if (identical(i, "value")) {
-    cinform0(silver = "Extracting element ", white = a$id)
+    cinform0(silver = "Extracting element ", white = toString(a$id))
     return(artifact_data(a))
   }
 
