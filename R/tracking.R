@@ -115,7 +115,7 @@ pick_branch <- function (state, env, int = interactions()) {
     if (!identical(n_ma, 0L)) {
       if (identical(n_ma, 1L)) {
         commit <- first(matching)
-        cinform("only commit", green = shorten(commit$id), "matches the session")
+        cinform("only commit", green = commit$id, "matches the session")
       } else {
         # if there are multiple matches, ask user which attach to;
         # the default is the most recent one
@@ -150,7 +150,7 @@ pick_branch <- function (state, env, int = interactions()) {
     commit <- int$choose_branch(leaves)
   }
 
-  cinform("attaching to commit", green = storage::shorten(commit$id))
+  cinform("attaching to commit", green = commit$id)
   repository_rewind(state$repo, commit$id)
   commit_checkout(commit, env)
 }

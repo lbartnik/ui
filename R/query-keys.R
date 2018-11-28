@@ -19,8 +19,9 @@ dollar_names.id <- function (x, pattern = "") {
   grep(pattern, vls, value = TRUE)
 }
 
+#' @importFrom storage match_short
 dollar_name.id <- function (x, i) {
-  i <- storage::enlongate(i, x$query$store)
+  i <- match_short(i, x$query$store)
   stopifnot(length(i) > 0)
   dispatch_result(x$query %>% filter(UQ(i) == id))
 }
