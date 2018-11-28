@@ -17,7 +17,7 @@
 #'
 #' @importFrom rlang abort UQ
 #' @importFrom lubridate as_date ymd
-#' @importFrom storage enlongate
+#' @importFrom storage match_short
 #'
 #' @export
 #' @rdname ui-query
@@ -81,7 +81,7 @@ dollar_name.query <- function (x, n) {
     res <- filter(x, UQ(n) %in% names)
   }
   else {
-    id <- tryCatch(enlongate(n, x$store), error = function (e) {
+    id <- tryCatch(match_short(n, x$store), error = function (e) {
       abort(glue("{n} is not an artifact name nor identifier"))
     })
     # id is unique so we can drop all other filters
