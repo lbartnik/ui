@@ -1,6 +1,6 @@
 Query:
-  <repository:/tmp/Rtmplt2nhR/london-meters> %>%
-    filter(artifact, "plot" %in% class) 
+  <repository:%/london-meters> %>%
+    filter(artifact, "plot" %in% class)
 
 Matched 6 artifact(s), of that 6 plot(s)
 
@@ -9,24 +9,21 @@ Artifact: 8d934677 (plot)
 Expression:
 ggplot(x) + geom_boxplot(aes(x = hour, y = usage)) + facet_wrap(~dow)
 Class:   rawplot plot
-Created: 2018-10-26 02:06:07
-Summary: 
+Created: %
 
 *
 Artifact: 90b386d2 (plot)
 Expression:
 with(meter_4929, plot(timestamp, usage, type = "p", pch = "."))
 Class:   rawplot plot
-Created: 2018-10-25 23:51:47
-Summary: 
+Created: %
 
 *
 Artifact: 9176430b (plot)
 Expression:
 ggplot(x) + geom_boxplot(aes(x = hour, y = usage)) + facet_wrap(~dow)
 Class:   rawplot plot
-Created: 2018-10-25 23:56:54
-Summary: 
+Created: %
 
 ... with 3 more artifact(s)
 You can still specify following tags: class id name session time

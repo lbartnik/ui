@@ -157,7 +157,7 @@ double_bracket.query <- function (x, i) {
 print.query <- function (x, ..., n = 3) {
   # print the query itself
   ccat(silver = 'Query:\n')
-  cat(format(x, ...), '\n')
+  cat0(format(x, ...), '\n')
 
   # and a short summary of types of artifacts
   res <- as_tags(x) %>% read_tags(-parent_commit, -id, -parents)
