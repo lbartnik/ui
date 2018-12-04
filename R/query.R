@@ -1,4 +1,6 @@
-#' Interactive UI for queries.
+# TODO update the doc: distinguish between first-level keys and reqular query keys
+
+#' Interactive user interface to retrieve artifacts.
 #'
 #' UI for the [repository::query] object. It employs R's dollar operator
 #' `$` to provide an interactive access to the repository of artifacts.
@@ -11,7 +13,8 @@
 #'   * query specifier: `name`, `id`, `class`, `time`, `session`
 #'   * artifact name or identifier
 #'
-#' @param state object returned by [new_state()]
+#' @param repository object returned by [repository::repository]
+#' @param name name of the object this proxy is accessible through.
 #' @param x [repository::query] object.
 #' @param n action name.
 #'
@@ -20,13 +23,101 @@
 #' @importFrom storage match_short
 #'
 #' @export
-#' @rdname ui-query
-artifacts_query <- function (state) {
-  stopifnot(is_state(state))
-  wrap(as_artifacts(state$repo))
+#' @rdname artifacts-query
+new_query_proxy <- function (repository, name = 'proxy') {
+  stopifnot(is_repository(repository))
+  wrap(structure(list(repository = repository, name = name), class = 'query_proxy'))
 }
 
-#' @rdname ui-query
+#' @export
+print.query_proxy <- function (x, ...) {
+  if (!is_visible(x)) {
+    return(invisible(x))
+  }
+
+  ccat0(grey = 'The `', x$name, grey = '` object provides access to artifacts in the repository.\n')
+  ccat0(grey = 'Use the dollar-sign operator ', yellow = '$', grey = ' to specify the query. Examples:\n\n')
+
+  ccat0(grey = '  * ', x$name, yellow = '$', '<name>', grey = ' returns the artifact data if name is unique\n')
+  ccat0(grey = '  * ', x$name, yellow = '$', '<id>', grey = ' returns the artifact data\n')
+  ccat0(grey = '  * ', x$name, yellow = '$', '<tag>', yellow = '$', '<value>',
+        grey = ' find artifacts whose <tag> is equal to <value>\n\n')
+
+  ccat0(grey = '  * ', x$name, yellow = '$', 'plots', grey = ' is a shortcut to ',
+        grey = x$name, grey = '$class$plot\n')
+  ccat0(grey = '  * ', x$name, yellow = '$', '<date>', grey = ' is a shortcut to ',
+        grey = x$name, grey = '$time$<date>\n\n')
+
+  ccat0(grey = 'Query keys: ', paste(query_keys(), collapse = ' '), '\n\n')
+
+  ccat(grey = 'Currently operating on', toString(x$repository))
+
+  invisible(x)
+}
+
+dollar_names.query_proxy <- function (x, pattern) {
+  c(dollar_names(as_query(x$repository), pattern), c("plots"))
+}
+
+dollar_name.query_proxy <- function (x, n) {
+
+  q <- as_artifacts(x$repository)
+
+  # standard key specifier?
+  if (match(n, dollar_names(q), nomatch = 0L) > 0L) {
+    return(dollar_name(q, n))
+  }
+
+  # assign name to an artifact
+  if (identical(n, "assign")) {
+    # TODO implement assignment
+    abort("assign not implemented yet")
+  }
+
+  # shortcut to class$plot
+  if (identical(n, "plots")) {
+    return(wrap(filter(q, 'plot' %in% class)))
+  }
+
+  # if it looks like a date specification...
+  d <- ymd(n, quiet = TRUE)
+  if (!is.na(d)) {
+    return(wrap(filter(q, as_date(time) == UQ(as.character(d)))))
+  }
+
+  # if it doesn't look like anything else, it must be an attempt at name or id
+  num <- as_artifacts(q) %>% filter(UQ(n) %in% names) %>% summarise(n = n()) %>% first
+  stopifnot(is.numeric(num))
+
+  if (num == 1) {
+    a <- as_artifacts(q) %>% filter(UQ(n) %in% names) %>% read_artifacts %>% first
+    ccat(grey = "Name", n, grey = "is unique, retrieving artifact", toString(a$id))
+    return(a %>% artifact_data)
+  }
+  if (num > 1) {
+    ccat0(default = 'grey', "Multiple objects named ", green = n, ", try ",
+          x$name, "$", green = "name", "$", green = n, " instead.")
+    return(set_invisible(x))
+  }
+
+  id <- match_short(n, q$store)
+  if (is.null(id)) {
+    abort(glue("{n} is not an artifact name nor identifier"))
+  }
+
+  cinform(grey = "Retrieving artifact with id matching", toString(id))
+  reset_query(q) %>% as_artifacts %>% filter(UQ(id) == id) %>% read_artifacts %>% first %>% artifact_data
+}
+
+
+# --- query ------------------------------------------------------------
+
+query_keys <- function () c("class", "id", "name", "time", "session")
+
+is_query_key <- function (x) !identical(match(x, query_keys(), nomatch = 0L), 0L)
+
+
+#' @rdname artifacts-query
 dollar_name.query <- function (x, n) {
   # TODO
   # 1. if `i` is an action key (browse, etc.) run that action
@@ -46,18 +137,6 @@ dollar_name.query <- function (x, n) {
     return(wrap(g, 'history'))
   }
 
-  # key specifier
-  # TODO check only actual search tags
-  is_query_key <- function (k) identical(k, dollar_names(x, k))
-  if (is_query_key(n)) {
-    return(wrap(new_specifier(x, n)))
-  }
-
-  # shortcut to class$plot
-  if (identical(n, "plots")) {
-    return(wrap(filter(x, 'plot' %in% class)))
-  }
-
   # if there is only one element that matches
   if (identical(n, "value")) {
     res <- x %>% summarise(n = n()) %>% nth("n")
@@ -69,36 +148,19 @@ dollar_name.query <- function (x, n) {
     abort('cannot extract value because query matches multiple artifacts')
   }
 
-  # if it looks like a date specification...
-  d <- ymd(n, quiet = TRUE)
-  if (!is.na(d)) {
-    return(wrap(filter(x, as_date(time) == UQ(as.character(d)))))
+  # key specifier
+  if (is_query_key(n)) {
+    return(wrap(new_specifier(x, n)))
   }
 
-  # if it doesn't look like anything else, it must be an attempt at name or id
-  num <- as_artifacts(x) %>% filter(UQ(n) %in% names) %>% summarise(n = n()) %>% first
-  if (is.numeric(num) && num > 0) {
-    res <- filter(x, UQ(n) %in% names)
-  }
-  else {
-    id <- tryCatch(match_short(n, x$store), error = function (e) {
-      abort(glue("{n} is not an artifact name nor identifier"))
-    })
-    # id is unique so we can drop all other filters
-    res <- as_query(x$store) %>% filter(UQ(id) == id)
-  }
-
-  dispatch_result(res)
+  abort(glue("Query specifier {n} is not supported."))
 }
 
 
-# TODO expose search tags so that they can be checked against in
-#      is_query_key() inside dollar_name.query
 dollar_names.query <- function (x, pattern = "", action = TRUE) {
-  search_tags <- c("class", "id", "name", "time", "session")
   action_keys <- c("history", "tree")
 
-  tags <- if (isTRUE(action)) c(search_tags, action_keys) else search_tags
+  tags <- if (isTRUE(action)) c(query_keys(), action_keys) else query_keys()
   grep(pattern, sort(tags), value = TRUE)
 }
 
@@ -122,17 +184,26 @@ double_bracket.query <- function (x, i) {
 print.query <- function (x, ..., n = 3) {
   # print the query itself
   ccat(silver = 'Query:\n')
-  cat(format(x, ...), '\n')
+  cat0(format(x, ...), '\n')
 
   # and a short summary of types of artifacts
-  res <- as_tags(x) %>% read_tags(-parent_commit, -id, -parents)
+  res <- tryCatch(as_tags(x) %>% read_tags(-parent_commit, -id, -parents),
+                  `nothing-matched` = function(e) NULL)
+
+  # if empty
+  if (is.null(res)) {
+    ccat0(grey = 'Query does not match any artifacts.')
+    return(invisible(x))
+  }
+
+  # if not empty
   ccat0(grey = '\nMatched ', nrow(res),
         grey = ' artifact(s), of that ', sum(map_lgl(res$class, function(x) "plot" %in% x)),
         grey = " plot(s)\n")
 
   # print the first n objects
   if (nrow(res)) {
-    obj <- as_artifacts(x$store) %>% top_n(n) %>% read_artifacts
+    obj <- as_artifacts(x) %>% top_n(n) %>% read_artifacts
     lapply(obj, function (x) {
       ccat(green = '\n*\n')
       print(x)
@@ -155,40 +226,4 @@ print.query <- function (x, ..., n = 3) {
 table_tag_values <- function (qry, tag) {
   vls <- as_tags(qry) %>% read_tags(UQ(as.symbol(tag))) %>% first
   table(unlist(vls))
-}
-
-#' Assigned in .onLoad
-#'
-DollarNamesMapping <- NULL
-
-#' @importFrom rlang quo
-#' @importFrom lubridate as_date ddays dhours floor_date today wday
-#'
-createDollarNamesMapping <- function () {
-  last_wday <- function (which) {
-    date <- today() - wday(today(), week_start = 7) + which
-    if (date > today()) date <- date - 7
-    as.character(date)
-  }
-
-  list(
-    time = list(
-      today           = quo(as_date(time) == today()),
-      yesterday       = quo(as_date(time) == today()-1),
-      thisweek        = quo(as_date(time) >= floor_date(today(), "week")),
-      last_24hrs      = quo(time > today() - dhours(24)),
-      last_3days      = quo(as_date(time) > today() - ddays(3)),
-      last_7days      = quo(as_date(time) > today() - ddays(7)),
-      last_day        = quo(as_date(time) > today() - ddays(1)),
-      last_week       = quo(as_date(time) > today() - ddays(7)),
-      since_yesterday = quo(as_date(time) >= today() - ddays(1)),
-      since_Monday    = quo(as_date(time) >= UQ(last_wday(1))),
-      since_Tuesday   = quo(as_date(time) >= UQ(last_wday(2))),
-      since_Wednesay  = quo(as_date(time) >= UQ(last_wday(3))),
-      since_Thursday  = quo(as_date(time) >= UQ(last_wday(4))),
-      since_Friday    = quo(as_date(time) >= UQ(last_wday(5))),
-      since_Saturday  = quo(as_date(time) >= UQ(last_wday(6))),
-      since_Sunday    = quo(as_date(time) >= UQ(last_wday(7)))
-    )
-  )
 }

@@ -1,6 +1,6 @@
 Query:
   <repository:%/london-meters> %>%
-    filter(artifact, "data.frame" %in% class) 
+    filter(artifact, "data.frame" %in% class)
 
 Matched 10 artifact(s), of that 0 plot(s)
 

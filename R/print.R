@@ -98,7 +98,7 @@ print.artifact <- function (x, ..., style = 'full') {
     if (!is_plot) ccat(silver = '\nName:   ', x$names)
     ccat(silver = '\nClass:  ', x$class)
     ccat(silver = '\nCreated:', x$time)
-    ccat(silver = '\nSummary:', x$description)
+    if (!is_empty(x$description)) ccat(silver = '\nSummary:', x$description)
     cat('\n')
   }
 

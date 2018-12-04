@@ -1,6 +1,48 @@
 context("query")
 
-test_that("dollar name", {
+test_that("print", {
+  p <- new_query_proxy(london_meters())
+  expect_output_file(print(p), "text-output/query-proxy.txt", wildcard = '%')
+})
+
+test_that("dollar proxy", {
+  p <- new_query_proxy(london_meters())
+
+  # shortcut to plots
+  x <- dollar_name(p, "plots")
+  expect_true(is_wrapper(x))
+  expect_true(is_query(unwrap(x)))
+
+  # shortcut by date
+  x <- dollar_name(p, "2018-08-19")
+  expect_true(is_wrapper(x))
+  expect_true(is_query(unwrap(x)))
+
+  # shortcut by id
+  x <- dollar_name(p, sample_artifact_id())
+  expect_false(is_wrapper(x))
+  expect_true(is.data.frame(x))
+})
+
+test_that("query proxy name shortcut", {
+  p <- new_query_proxy(london_meters())
+
+  # unique name
+  x <- expect_output(dollar_name(p, "m"),
+                     "Name m is unique, retrieving artifact 57fbe755")
+  expect_false(is_wrapper(x))
+  expect_s3_class(x, 'lm')
+
+  # not-unique name
+  expect_output(dollar_name(p, "x"),
+                "Multiple objects named x, try proxy\\$name\\$x instead.")
+
+  # not a name, not an identifier
+  expect_error(dollar_name(p, "xyz"),
+               "xyz is not an artifact name nor identifier")
+})
+
+test_that("query dollar name", {
   q <- as_query(london_meters())
 
   # explain as tree
@@ -19,26 +61,6 @@ test_that("dollar name", {
     expect_true(is_wrapper(x), info = name)
     expect_true(is_specifier(unwrap(x)), info = name)
   }
-
-  # shortcut to plots
-  x <- dollar_name(q, "plots")
-  expect_true(is_wrapper(x))
-  expect_true(is_query(unwrap(x)))
-
-  # shortcut by date
-  x <- dollar_name(q, "2018-08-19")
-  expect_true(is_wrapper(x))
-  expect_true(is_query(unwrap(x)))
-
-  # shortcut by id
-  x <- dollar_name(q, sample_artifact_id())
-  expect_true(is_wrapper(x))
-  expect_s3_class(unwrap(x), 'single_result')
-
-  # shortcut by id
-  x <- dollar_name(q, "m")
-  expect_true(is_wrapper(x))
-  expect_s3_class(unwrap(x), 'single_result')
 })
 
 test_that("dollar names", {
@@ -64,6 +86,12 @@ test_that("double bracket", {
 test_that("print query", {
   q <- sample_wrapped_query()
   expect_output_file(print(q$class$data.frame), 'text-output/query.txt',
+                     wildcard = '%')
+})
+
+test_that("print plots query", {
+  q <- sample_query() %>% filter('plot' %in% class)
+  expect_output_file(print(q), 'text-output/query-plots.txt',
                      wildcard = '%')
 })
 
