@@ -187,7 +187,16 @@ print.query <- function (x, ..., n = 3) {
   cat0(format(x, ...), '\n')
 
   # and a short summary of types of artifacts
-  res <- as_tags(x) %>% read_tags(-parent_commit, -id, -parents)
+  res <- tryCatch(as_tags(x) %>% read_tags(-parent_commit, -id, -parents),
+                  `nothing-matched` = function(e) NULL)
+
+  # if empty
+  if (is.null(res)) {
+    ccat0(grey = 'Query does not match any artifacts.')
+    return(invisible(x))
+  }
+
+  # if not empty
   ccat0(grey = '\nMatched ', nrow(res),
         grey = ' artifact(s), of that ', sum(map_lgl(res$class, function(x) "plot" %in% x)),
         grey = " plot(s)\n")
