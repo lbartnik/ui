@@ -31,6 +31,10 @@ new_query_proxy <- function (repository, name = 'proxy') {
 
 #' @export
 print.query_proxy <- function (x, ...) {
+  if (!is_visible(x)) {
+    return(invisible(x))
+  }
+
   ccat0(grey = 'The `', x$name, grey = '` object provides access to artifacts in the repository.\n')
   ccat0(grey = 'Use the dollar-sign operator ', yellow = '$', grey = ' to specify the query. Examples:\n\n')
 
@@ -44,9 +48,10 @@ print.query_proxy <- function (x, ...) {
   ccat0(grey = '  * ', x$name, yellow = '$', '<date>', grey = ' is a shortcut to ',
         grey = x$name, grey = '$time$<date>\n\n')
 
+  ccat0(grey = 'Query keys: ', paste(query_keys(), collapse = ' '), '\n\n')
+
   ccat(grey = 'Currently operating on', toString(x$repository))
 
-  # TODO inform about the possibility of specifying the name, id, date, etc.
   invisible(x)
 }
 
@@ -85,13 +90,14 @@ dollar_name.query_proxy <- function (x, n) {
   stopifnot(is.numeric(num))
 
   if (num == 1) {
-    ccat(grey = "Retrieving the only artifact named", n)
-    return(as_artifacts(q) %>% filter(UQ(n) %in% names) %>% read_artifacts %>% first %>% artifact_data)
+    a <- as_artifacts(q) %>% filter(UQ(n) %in% names) %>% read_artifacts %>% first
+    ccat(grey = "Name", n, grey = "is unique, retrieving artifact", toString(a$id))
+    return(a %>% artifact_data)
   }
   if (num > 1) {
     ccat0(default = 'grey', "Multiple objects named ", green = n, ", try ",
           x$name, "$", green = "name", "$", green = n, " instead.")
-    return(invisible(x))
+    return(set_invisible(x))
   }
 
   id <- match_short(n, q$store)
@@ -99,10 +105,16 @@ dollar_name.query_proxy <- function (x, n) {
     abort(glue("{n} is not an artifact name nor identifier"))
   }
 
-  cinform(grey = "Retrieving artifact with id matching", id)
+  cinform(grey = "Retrieving artifact with id matching", toString(id))
   reset_query(q) %>% as_artifacts %>% filter(UQ(id) == id) %>% read_artifacts %>% first %>% artifact_data
 }
 
+
+# --- query ------------------------------------------------------------
+
+query_keys <- function () c("class", "id", "name", "time", "session")
+
+is_query_key <- function (x) !identical(match(x, query_keys(), nomatch = 0L), 0L)
 
 
 #' @rdname artifacts-query
@@ -137,8 +149,6 @@ dollar_name.query <- function (x, n) {
   }
 
   # key specifier
-  # TODO check only actual search tags
-  is_query_key <- function (k) identical(k, dollar_names(x, k))
   if (is_query_key(n)) {
     return(wrap(new_specifier(x, n)))
   }
@@ -147,13 +157,10 @@ dollar_name.query <- function (x, n) {
 }
 
 
-# TODO expose search tags so that they can be checked against in
-#      is_query_key() inside dollar_name.query
 dollar_names.query <- function (x, pattern = "", action = TRUE) {
-  search_tags <- c("class", "id", "name", "time", "session")
   action_keys <- c("history", "tree")
 
-  tags <- if (isTRUE(action)) c(search_tags, action_keys) else search_tags
+  tags <- if (isTRUE(action)) c(query_keys(), action_keys) else query_keys()
   grep(pattern, sort(tags), value = TRUE)
 }
 

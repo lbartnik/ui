@@ -1,0 +1,13 @@
+The `proxy` object provides access to artifacts in the repository.
+Use the dollar-sign operator $ to specify the query. Examples:
+
+  * proxy$<name> returns the artifact data if name is unique
+  * proxy$<id> returns the artifact data
+  * proxy$<tag>$<value> find artifacts whose <tag> is equal to <value>
+
+  * proxy$plots is a shortcut to proxy$class$plot
+  * proxy$<date> is a shortcut to proxy$time$<date>
+
+Query keys: class id name time session
+
+Currently operating on <repository:%/london-meters>

@@ -1,5 +1,10 @@
 context("query")
 
+test_that("print", {
+  p <- new_query_proxy(london_meters())
+  expect_output_file(print(p), "text-output/query-proxy.txt", wildcard = '%')
+})
+
 test_that("dollar proxy", {
   p <- new_query_proxy(london_meters())
 
@@ -24,7 +29,7 @@ test_that("query proxy name shortcut", {
 
   # unique name
   x <- expect_output(dollar_name(p, "m"),
-                     "Retrieving the only artifact named m")
+                     "Name m is unique, retrieving artifact 57fbe755")
   expect_false(is_wrapper(x))
   expect_s3_class(x, 'lm')
 
