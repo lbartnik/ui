@@ -1,0 +1,7 @@
+x (2b0c3bb1) data.frame[150, 5]
+└── x (2b7a1690) data.frame[150, 7]
+    └── virginica (ee9776b0) data.frame[150, 8]
+        └── m (dcd273b7) lm adjR2:0.68 AIC:34 df:3
+            └── virginica (3b9c6d54) data.frame[150, 9]
+                ├── <plot> (909a1c6d)
+                └── <plot> (0f1105f2)
