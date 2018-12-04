@@ -1,3 +1,8 @@
+* see if the dollar-sign operator can capture the whole expression;
+  if so, we could handle extra tags at the end, e.g. "$full" for
+  full printout, "$value" to access the artifact, "$plot$ to plot
+  the plot
+
 * document concepts: commit, origin, artifact, etc.
 
 * send code (functions) to repository, track them as parents
