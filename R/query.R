@@ -1,5 +1,6 @@
 # TODO update the doc: distinguish between first-level keys and reqular query keys
-#' Interactive UI for queries.
+
+#' Interactive user interface to retrieve artifacts.
 #'
 #' UI for the [repository::query] object. It employs R's dollar operator
 #' `$` to provide an interactive access to the repository of artifacts.
@@ -13,6 +14,7 @@
 #'   * artifact name or identifier
 #'
 #' @param repository object returned by [repository::repository]
+#' @param name name of the object this proxy is accessible through.
 #' @param x [repository::query] object.
 #' @param n action name.
 #'
@@ -21,29 +23,42 @@
 #' @importFrom storage match_short
 #'
 #' @export
-#' @rdname ui-query
-new_query_proxy <- function (repository) {
+#' @rdname artifacts-query
+new_query_proxy <- function (repository, name = 'proxy') {
   stopifnot(is_repository(repository))
-
-  wrap(structure(list(factory = function(...)as_artifacts(repository)),
-                 class = 'query_proxy'))
+  wrap(structure(list(repository = repository, name = name), class = 'query_proxy'))
 }
 
 #' @export
 print.query_proxy <- function (x, ...) {
-  cat('Query\n')
+  ccat0(grey = 'The `', x$name, grey = '` object provides access to artifacts in the repository.\n')
+  ccat0(grey = 'Use the dollar-sign operator ', yellow = '$', grey = ' to specify the query. Examples:\n\n')
+
+  ccat0(grey = '  * ', x$name, yellow = '$', '<name>', grey = ' returns the artifact data if name is unique\n')
+  ccat0(grey = '  * ', x$name, yellow = '$', '<id>', grey = ' returns the artifact data\n')
+  ccat0(grey = '  * ', x$name, yellow = '$', '<tag>', yellow = '$', '<value>',
+        grey = ' find artifacts whose <tag> is equal to <value>\n\n')
+
+  ccat0(grey = '  * ', x$name, yellow = '$', 'plots', grey = ' is a shortcut to ',
+        grey = x$name, grey = '$class$plot\n')
+  ccat0(grey = '  * ', x$name, yellow = '$', '<date>', grey = ' is a shortcut to ',
+        grey = x$name, grey = '$time$<date>\n\n')
+
+  ccat(grey = 'Currently operating on', toString(x$repository))
+
   # TODO inform about the possibility of specifying the name, id, date, etc.
   invisible(x)
 }
 
 dollar_names.query_proxy <- function (x, pattern) {
-  c(dollar_names(x$factory()), c("plots", "models"))
+  c(dollar_names(as_query(x$repository), pattern), c("plots"))
 }
 
 dollar_name.query_proxy <- function (x, n) {
 
-  q <- x$factory()
+  q <- as_artifacts(x$repository)
 
+  # standard key specifier?
   if (match(n, dollar_names(q), nomatch = 0L) > 0L) {
     return(dollar_name(q, n))
   }
@@ -67,25 +82,30 @@ dollar_name.query_proxy <- function (x, n) {
 
   # if it doesn't look like anything else, it must be an attempt at name or id
   num <- as_artifacts(q) %>% filter(UQ(n) %in% names) %>% summarise(n = n()) %>% first
-  if (is.numeric(num) && num > 0) {
-    cinform(grey = "")
-    res <- filter(q, UQ(n) %in% names)
+  stopifnot(is.numeric(num))
+
+  if (num == 1) {
+    ccat(grey = "Retrieving the only artifact named", n)
+    return(as_artifacts(q) %>% filter(UQ(n) %in% names) %>% read_artifacts %>% first %>% artifact_data)
   }
-  else {
-    id <- tryCatch(match_short(n, q$store), error = function (e) {
-      abort(glue("{n} is not an artifact name nor identifier"))
-    })
-    # id is unique so we can drop all other filters
-    # TODO introduce reset_query
-    res <- as_query(q$store) %>% filter(UQ(id) == id)
+  if (num > 1) {
+    ccat0(default = 'grey', "Multiple objects named ", green = n, ", try ",
+          x$name, "$", green = "name", "$", green = n, " instead.")
+    return(invisible(x))
   }
 
-  dispatch_result(res)
+  id <- match_short(n, q$store)
+  if (is.null(id)) {
+    abort(glue("{n} is not an artifact name nor identifier"))
+  }
+
+  cinform(grey = "Retrieving artifact with id matching", id)
+  reset_query(q) %>% as_artifacts %>% filter(UQ(id) == id) %>% read_artifacts %>% first %>% artifact_data
 }
 
 
 
-#' @rdname ui-query
+#' @rdname artifacts-query
 dollar_name.query <- function (x, n) {
   # TODO
   # 1. if `i` is an action key (browse, etc.) run that action

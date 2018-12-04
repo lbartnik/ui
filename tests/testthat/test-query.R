@@ -15,16 +15,29 @@ test_that("dollar proxy", {
 
   # shortcut by id
   x <- dollar_name(p, sample_artifact_id())
-  expect_true(is_wrapper(x))
-  expect_s3_class(unwrap(x), 'single_result')
-
-  # shortcut by id
-  x <- dollar_name(p, "m")
-  expect_true(is_wrapper(x))
-  expect_s3_class(unwrap(x), 'single_result')
+  expect_false(is_wrapper(x))
+  expect_true(is.data.frame(x))
 })
 
-test_that("dollar name", {
+test_that("query proxy name shortcut", {
+  p <- new_query_proxy(london_meters())
+
+  # unique name
+  x <- expect_output(dollar_name(p, "m"),
+                     "Retrieving the only artifact named m")
+  expect_false(is_wrapper(x))
+  expect_s3_class(x, 'lm')
+
+  # not-unique name
+  expect_output(dollar_name(p, "x"),
+                "Multiple objects named x, try proxy\\$name\\$x instead.")
+
+  # not a name, not an identifier
+  expect_error(dollar_name(p, "xyz"),
+               "xyz is not an artifact name nor identifier")
+})
+
+test_that("query dollar name", {
   q <- as_query(london_meters())
 
   # explain as tree

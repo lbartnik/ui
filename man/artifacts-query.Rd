@@ -3,14 +3,16 @@
 \name{new_query_proxy}
 \alias{new_query_proxy}
 \alias{dollar_name.query}
-\title{Interactive UI for queries.}
+\title{Interactive user interface to retrieve artifacts.}
 \usage{
-new_query_proxy(repository)
+new_query_proxy(repository, name = "proxy")
 
 \method{dollar_name}{query}(x, n)
 }
 \arguments{
 \item{repository}{object returned by \link[repository:repository]{repository::repository}}
+
+\item{name}{name of the object this proxy is accessible through.}
 
 \item{x}{\link[repository:query]{repository::query} object.}
 
