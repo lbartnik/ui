@@ -16,6 +16,8 @@ fake_repository <- function () {
   structure(list, class = 'repository')
 }
 
+empty_repository <- function () repository::repository(storage::memory())
+
 sample_repository <- function () repository::london_meters()
 
 sample_artifact_id <- function () as_id('2b67f4934da0aa3baecfdd3001008539217d5719')

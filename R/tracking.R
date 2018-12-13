@@ -39,6 +39,8 @@ state_reset <- function (state) {
 #'        the new/existing repository; or object to be tested.
 #' @param int an [interactions] object.
 #'
+#' @return `open_repository` returns the `state` object.
+#'
 #' @importFrom rlang is_character
 #' @rdname state
 #' @export
@@ -46,7 +48,7 @@ open_repository <- function (state, x, int = interactions()) {
   # it's either a repository object or a path
   if (is_repository(x)) {
     state$repo <- x
-    return(TRUE)
+    return(state)
   }
 
   if (!is_character(x)) {
@@ -55,17 +57,17 @@ open_repository <- function (state, x, int = interactions()) {
 
   # if a path, see if needs and can be created
   if (file.exists(x)) {
-    inform(glue("attaching to repository '{x}'"))
+    inform(glue("Attaching to repository '{x}'."))
   } else {
     if (isTRUE(int$create_repository())) {
-      inform(glue("no repository found, creating one under '{x}'"))
+      inform(glue("No repository found, creating one under '{x}'."))
     } else {
-      abort(glue("repository '{x}' not found, aborting"))
+      abort(glue("Repository '{x}' not found, aborting."))
     }
   }
 
   state$repo <- repository(filesystem(x, create = TRUE))
-  TRUE
+  invisible(state)
 }
 
 
@@ -73,6 +75,8 @@ open_repository <- function (state, x, int = interactions()) {
 #' to attach to.
 #'
 #' @param env [environment] used to find the branch to attach to.
+#' @return `pick_branch` returns the identifier of the commit pulled into
+#'         R session.
 #'
 #' @rdname state
 #' @export
@@ -81,28 +85,29 @@ pick_branch <- function (state, env, int = interactions()) {
   stopifnot(is_interactions(int))
 
   # is there anything in the repository?
-  n_co <- as_commits(state$repo) %>% summary(n = n()) %>% first
+  n_co <- as_commits(state$repo) %>% summarise(n = n()) %>% first
   n_en <- length(ls(env)) # ignore hidden objects in global environment
 
   # if repository is empty, it's quite simple
   if (identical(n_co, 0L)) {
     # if environment is empty simply return right away
     if (identical(n_en, 0L)) {
-      inform("attached to an empty repository")
-      return()
+      inform("Attached to an empty repository.")
+      return(NA_character_)
     }
 
     # otherwise, see if the user wants to initialize the repository with
     # the contents of the environment; if not, throw an error
     if (!int$create_first_commit()) {
-      abort("repository is empty but session contains data")
+      abort("Repository is empty but session contains data.")
     }
 
     # finally, initialize the repository and exit
-    inform("creating the first commit in the repository")
+    inform("Creating the first commit in the repository.")
     repository_update(state$repo, env, NULL, bquote())
 
-    return(TRUE)
+    # TODO it shouldn't reach into "private" members of the repository
+    return(state$repo$last_commit$id)
   }
 
   # if session environment is not empty, try to identify a matching
@@ -123,7 +128,7 @@ pick_branch <- function (state, env, int = interactions()) {
       }
 
       repository_rewind(state$repo, toString(commit$id))
-      return()
+      return(commit$id)
     }
 
     # if nothing matches, ask about removing session data
@@ -153,6 +158,8 @@ pick_branch <- function (state, env, int = interactions()) {
   cinform("attaching to commit", green = commit$id)
   repository_rewind(state$repo, commit$id)
   commit_checkout(commit, env)
+
+  commit$id
 }
 
 
