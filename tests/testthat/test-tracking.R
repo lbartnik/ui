@@ -5,12 +5,10 @@ test_that("open repository", {
   p <- file.path(tempdir(), 'xyz')
   on.exit(unlink(p, TRUE, TRUE))
 
-  expect_message(open_repository(s, p),
-                 "no repository found, creating one under")
+  expect_message(open_repository(s, p), "No repository found, creating one under")
   expect_true(dir.exists(p))
 
-  expect_message(open_repository(s, p),
-                 "attaching to repository")
+  expect_message(open_repository(s, p), "Attaching to repository")
   expect_true(dir.exists(p))
 })
 
@@ -19,7 +17,7 @@ test_that("fail to open", {
   on.exit(unlink(p, TRUE, TRUE))
 
   expect_error(open_repository(s, p, interactions(create_repository = function()FALSE)),
-               "repository '.*/xyz' not found, aborting")
+               "Repository '.*/xyz' not found, aborting")
   expect_false(dir.exists(p))
 })
 
