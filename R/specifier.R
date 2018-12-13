@@ -45,6 +45,13 @@ dollar_name.specifier <- function (x, i) {
 #' @rdname specifier
 #' @export
 print.specifier <- function (x, ...) {
+  n <- as_artifacts(x$query) %>% summarise(n = n()) %>% first
+
+  if (identical(n, 0L)) {
+    ccat(grey = "No artifacts match the query.\n")
+    return(invisible(x))
+  }
+
   print_specifier(x)
 }
 
