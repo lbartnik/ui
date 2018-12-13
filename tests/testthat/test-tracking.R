@@ -34,3 +34,10 @@ test_that("pick branch", {
                c("hourly", "input", "m", "meter_0010", "meter_4391", "meter_4929", "x"),
                ignore.order = TRUE)
 })
+
+test_that("open empty repo", {
+  s <- open_repository(new_state(), empty_repository())
+
+  id <- expect_message(pick_branch(s, emptyenv()), "Attached to an empty repository.")
+  expect_true(is.na(id))
+})

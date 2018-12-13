@@ -50,6 +50,12 @@ the new/existing repository; or object to be tested.}
 
 \item{callback_name}{passed to \link{addTaskCallback} as \code{name}}
 }
+\value{
+\code{open_repository} returns the \code{state} object.
+
+\code{pick_branch} returns the identifier of the commit pulled into
+R session.
+}
 \description{
 \code{new_state} creates a new \code{state} object and
 assigns the default values to all its attributes.
